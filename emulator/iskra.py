@@ -2,15 +2,14 @@
 """
 iskra - toolkit for Iskra-226 (Искра 226) floppy images.
 
-The Iskra 226 loads its interpreter from disk at power-on. Before any of
-that can be looked at, the image has to be addressable as sectors.
+The Iskra 226 loads its interpreter from disk at power-on.
 
-IBM 3740 geometry: 77 tracks x 26 sectors x 128 bytes. That comes out to
-exactly 256256 bytes, which is the size of every file in the archive. So
-the geometry is right, or at least it is not wrong.
+  * disk geometry (IBM 3740: 77 tracks x 26 sectors x 128 bytes)
+  * KOI-8 character set
 
 Usage:
     python3 iskra.py info <images...>
+    python3 iskra.py text <image>
 """
 
 import sys
@@ -24,6 +23,32 @@ SECTORS_PER_TRACK = 26
 TRACKS = 77
 IMAGE_SIZE = TRACKS * SECTORS_PER_TRACK * SECTOR_SIZE   # 256256
 BOOT_HEADER_LEN = 32    # magic + version string + test pattern
+
+# --------------------------------------------------------------------------
+# Character set
+# --------------------------------------------------------------------------
+
+# KOI-8: 0xC0..0xFF carry the Cyrillic alphabet. The Iskra uses the same
+# range; lowercase ASCII 0x60..0x7F is the 7-bit variant KOI-7 of the
+# same characters.
+_KOI8_HIGH = ("юабцдефгхийклмнопярстужвьызшэщчъ"
+              "ЮАБЦДЕФГХИЙКЛМНОПЯРСТУЖВЬЫЗШЭЩЧЪ")
+
+KOI8 = {0xC0 + i: ch for i, ch in enumerate(_KOI8_HIGH)}
+
+
+def decode(data, placeholder="·"):
+    """Bytes to readable text: ASCII stays, 0xC0-0xFF becomes Cyrillic."""
+    out = []
+    for b in data:
+        if b in KOI8:
+            out.append(KOI8[b])
+        elif 0x20 <= b < 0x7F:
+            out.append(chr(b))
+        else:
+            out.append(placeholder)
+    return "".join(out)
+
 
 # --------------------------------------------------------------------------
 # Disk image
@@ -66,6 +91,24 @@ def cmd_info(paths):
               % (d.name, len(d.data), len(d), zero * 100))
 
 
+def cmd_text(path, min_len=12):
+    """Print runs of KOI-8 text."""
+    d = Disk(path)
+    run = bytearray()
+    seen = set()
+    printable = set(range(0xC0, 0x100)) | set(b" ,.?()-/0123456789:;=")
+    for b in d.data:
+        if b in printable:
+            run.append(b)
+            continue
+        if len(run) >= min_len:
+            t = decode(bytes(run)).strip()
+            if t not in seen and any(c in _KOI8_HIGH for c in t):
+                seen.add(t)
+                print("  " + t)
+        run.clear()
+
+
 USAGE = __doc__
 
 
@@ -76,6 +119,8 @@ def main(argv):
     cmd, args = argv[1], argv[2:]
     if cmd == "info":
         cmd_info(args)
+    elif cmd == "text":
+        cmd_text(args[0])
     else:
         print(USAGE)
         return 1
