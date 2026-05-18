@@ -1,0 +1,9 @@
+__pycache__/
+*.pyc
+.DS_Store
+
+# Working copies of disk images that are not mine to publish, and anything
+# marked private. The seventh image lives here and stays here.
+private/
+*-PRIVATE.md
+*.private.dsk
