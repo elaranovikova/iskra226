@@ -7,11 +7,16 @@ The Iskra 226 loads its interpreter from disk at power-on.
   * disk geometry (IBM 3740: 77 tracks x 26 sectors x 128 bytes)
   * Wang-2200-style catalog (16-byte entries)
   * KOI-8 character set
+  * detection and extraction of boot images
+
+What is NOT in here: a CPU core. The Iskra has no microprocessor, it has
+K589 bit slices (Intel 3000 clones).
 
 Usage:
-    python3 iskra.py info <images...>
-    python3 iskra.py cat  <image>
-    python3 iskra.py text <image>
+    python3 iskra.py info    <images...>
+    python3 iskra.py cat     <image>
+    python3 iskra.py extract <image> [outdir]
+    python3 iskra.py text    <image>
 """
 
 import sys
@@ -214,6 +219,28 @@ def cmd_cat(path):
           (len(entries), sum(e.size for e in entries) / 1024))
 
 
+def cmd_extract(path, outdir="."):
+    d = Disk(path)
+    os.makedirs(outdir, exist_ok=True)
+
+    if d.is_boot():
+        target = os.path.join(outdir, d.name.replace(".dsk", "") + ".ucode")
+        with open(target, "wb") as fh:
+            fh.write(d.data[BOOT_HEADER_LEN:])
+        print("boot image '%s' -> %s" % (d.boot_signature(), target))
+        return
+
+    entries = d.catalog()
+    if not entries:
+        print("%s: nothing to extract" % d.name)
+        return
+    for e in entries:
+        target = os.path.join(outdir, e.safe_name() + ".bin")
+        with open(target, "wb") as fh:
+            fh.write(d.sectors(e.first, e.last))
+        print("%-10s -> %s (%d bytes)" % (e.name, target, e.size))
+
+
 def cmd_text(path, min_len=12):
     """Print runs of KOI-8 text."""
     d = Disk(path)
@@ -244,6 +271,8 @@ def main(argv):
         cmd_info(args)
     elif cmd == "cat":
         cmd_cat(args[0])
+    elif cmd == "extract":
+        cmd_extract(args[0], args[1] if len(args) > 1 else ".")
     elif cmd == "text":
         cmd_text(args[0])
     else:
