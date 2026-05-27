@@ -1,0 +1,13 @@
+The documentation in this repository -- everything under findings/ and docs/
+that I wrote myself, plus the decoded listings -- is licensed under
+Creative Commons Attribution 4.0 International (CC BY 4.0).
+
+    https://creativecommons.org/licenses/by/4.0/
+
+This does not cover the scanned manuals in docs/. Those are reproductions of
+Soviet technical publications from 1987 and later, mirrored from Jim Battle's
+collection at wang2200.org, and they carry whatever status they carried
+before I found them.
+
+It does not cover the disk images in disks/ either. Those are other people's
+recovery work, and the note in disks/README.md says whose.
