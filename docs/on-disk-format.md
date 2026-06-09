@@ -13,3 +13,20 @@ difference cost me an evening, see below.
 
 One file is one *side*. The three physical disks in the archive are six
 files, and the naming says so: `disk1side0`, `disk1side1`, and so on.
+
+## The two sector sizes
+
+The physical sector is 128 bytes. The logical sector, the one the catalog
+counts in, is 256.
+
+I did not believe this for a while because the catalog parses correctly
+either way: the entries live in the first few sectors and 16-byte records
+land on the same boundaries at both sizes. What does not survive is
+extraction. Reading a file at 128-byte sectors gives you exactly half of it
+and the half is the wrong half, interleaved.
+
+The proof is in the header. `disk3side0` reports its catalog area as 1000
+sectors. The image has 2002 physical sectors of 128 bytes. It has 1001
+sectors of 256 bytes. Only one of those is near 1000.
+
+So: address the medium in 128, address the *files* in 256.
