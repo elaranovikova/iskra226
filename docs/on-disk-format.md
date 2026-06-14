@@ -53,3 +53,16 @@ Entries are monotone: each file's first sector is at or after the previous
 file's last. A scratched file keeps its entry and its name, with the status
 byte changed. `disk2side1` carries one of those, a Cyrillic name that reads
 СПИСОК.
+
+## Boot sides
+
+Three of the six sides are not catalogued at all. They begin at byte zero
+with the same six bytes,
+
+    06 90 09 90 07 90
+
+which as little-endian 16-bit words is 9006, 9009, 9007. Then eighteen ASCII
+characters of signature, then eight more bytes I have not explained, then the
+body.
+
+`disk3side1` is 256,256 zero bytes. Not erased: never written.
