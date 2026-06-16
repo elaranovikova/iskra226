@@ -66,3 +66,9 @@ characters of signature, then eight more bytes I have not explained, then the
 body.
 
 `disk3side1` is 256,256 zero bytes. Not erased: never written.
+
+## Character set
+
+KOI-8, and the machine only ever used capitals. 0xC0 to 0xFF carry the
+Cyrillic alphabet. Text on these disks is legible with nothing but a lookup
+table, which is how the first readable line came out.
