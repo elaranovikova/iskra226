@@ -72,3 +72,9 @@ body.
 KOI-8, and the machine only ever used capitals. 0xC0 to 0xFF carry the
 Cyrillic alphabet. Text on these disks is legible with nothing but a lookup
 table, which is how the first readable line came out.
+
+## What is still open
+
+The eight bytes after the signature in a boot header. The flags byte in a
+catalog entry, where I can see values but not meanings. And whatever is
+inside the boot sides, which is the whole question and not a footnote.
