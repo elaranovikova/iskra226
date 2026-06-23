@@ -3,9 +3,10 @@
 Tools for reading the floppy images of the Iskra-226 (Искра 226), a Soviet
 desktop computer built at Schyotmash Kursk from 1980/81.
 
-Right now this reads sectors, decodes the catalog and pulls text out of a
-disk image. That is all it does. There is no emulator here and I am not
-promising one.
+Right now this reads sectors, decodes the catalog, extracts files and
+pulls text out of a disk image. The on-disk format is documented in
+`docs/on-disk-format.md` against the bytes. There is no emulator here
+and I am not promising one.
 
 ## Use
 
