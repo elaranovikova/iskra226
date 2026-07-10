@@ -15,6 +15,12 @@ and I am not promising one.
     python3 emulator/iskra.py extract <image> [outdir]
     python3 emulator/iskra.py text    <image>
 
+## Firmware
+
+Both boot sides carry their interpreter four times over. `emulator/
+firmware_vote.py` takes the most common byte at each offset and writes
+an error-corrected master.
+
 ## What this is not
 
 It is not a CPU emulator. The Iskra has no microprocessor; it has K589 bit
