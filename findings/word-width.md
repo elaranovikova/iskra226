@@ -38,3 +38,9 @@ What a 16-bit unit means is the next question. A microinstruction that wide
 would be narrow for horizontal microcode and ordinary for machine code, and
 the difference between those two readings is the whole project. I am not
 going to guess it from one number.
+
+## Not a Wang
+
+The Wang 2200 VP microcode is 24 bits wide. This is 16. Whatever the
+Iskra is doing, it is not running the VP's control store, and the
+shortcut I was hoping for is gone.
