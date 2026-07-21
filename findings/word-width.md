@@ -44,3 +44,11 @@ going to guess it from one number.
 The Wang 2200 VP microcode is 24 bits wide. This is 16. Whatever the
 Iskra is doing, it is not running the VP's control store, and the
 shortcut I was hoping for is gone.
+
+## Field boundaries, and why I do not believe them
+
+Mutual information between adjacent bit positions has minima after
+bit 4 and bit 12. The histogram of the top four bits is not the shape
+an opcode field makes: too flat in the middle, no dominant idle
+encoding. Either the field is not there or it is not at the top of
+the word.
