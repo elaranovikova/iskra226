@@ -17,9 +17,13 @@ and I am not promising one.
 
 ## Firmware
 
-Both boot sides carry their interpreter four times over. `emulator/
-firmware_vote.py` takes the most common byte at each offset and writes
-an error-corrected master.
+A boot side is not one interpreter written four times. It is four
+slots, and the slots hold different builds. `emulator/firmware_extract.py`
+takes them apart. Eight distinct builds survive across the three boot
+sides, 1981 to 1986, each byte-identical wherever it repeats.
+
+One of them is BASIC 02 10.09.86, which is the revision the BAM suite
+on disk2side1 says it was written for.
 
 ## What this is not
 
