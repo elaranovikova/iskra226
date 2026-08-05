@@ -1,0 +1,35 @@
+BAM00, 33 lines decoded
+
+  50 REM *** BAM00 *** ДАТА КОРР-КИ  08.02.85 ( БЕЙСИК 02 10.09.86 )
+  60 DIM V00 V01 V02 V03 V04 V05 : V05 1 ) = "18F" : V05 2 ) = "18R" : V05 3 ) = "1CF" : V05 4 ) = "1CR"
+ 280 ‹E1› V01 13 ) = "*** СИСТЕМА ВЕДЕНИЯ АРХИВА ИНФОРМАЦИОННЫХ МАССИВОВ ***" : ‹E1› V02 24 ) = "( ФОРМИРОВАНИЕ ФАЙЛА  'СПИСОК' )"
+ 290 SELECT V07 V05 , V05 : PRINT AT(1,3) ; V01 ; V02
+ 340 PRINT AT(11,6) , 60 : PRINT "МАКСИМАЛЬНОЕ КОЛИЧЕСТВО МАССИВОВ В ФАЙЛЕ 'СПИСОК' (0 - КОНЕЦ)" ; : PRINT AT(11,70) : INPUT V06 : IF V06 = 0 GOTO 1580 : IF V06 ‹D7› 0 GOTO 360 : IF V06 ‹D7› 99 GOTO 390
+ 360 PRINT AT(1,7) : GOTO V03 @
+ 390 PRINT AT(15,6) , 60 : PRINT "УКАЖИТЕ АДРЕС ДИСКОВОГО УСТРОЙСТВА ДЛЯ ФАЙЛА 'СПИСОК'" ; AT(1,18) ; : PRINT AT(15,61)
+ 395 IF V00 = " " GOTO 340 : ‹S06› V0F ‹E0› V05 , = ‹E1› V00 1 )
+ 400 ON ( ‹EF› ‹E1› ‹E0› V04 2 ) ‹EA› 2 ) ‹DC› 3 ‹CD› V04 V02 V04 V03 V04 V04 V04 V05
+ 402 SELECT V00 V01 V18 V00 : GOTO V04
+ 403 SELECT V00 V01 V18 V01 : GOTO V04
+ 404 SELECT V00 V01 V1C V00 : GOTO V04
+ 405 SELECT V00 V01 V1C V01 : GOTO V04
+ 420 ‹S34› V07 V08 ‹CD› V07 V00 : LIMITS V02 ‹DB› 1 , "СПИСОК" V09 V0A V0B : ‹S34› : PRINT AT(19,1) : PRINT "НА ДИСКОВОМ УСТРОЙСТВЕ УЖЕ ИМЕЕТСЯ ФАЙЛ 'СПИСОК' НА  " ; ( V0B ‹E9› 2 ) ‹DF› 8 ; " МАССИВОВ"
+ 430 PRINT AT(17,6) , 60 : V00 = "0" : PRINT "ПОДТВЕРДИТЕ ГАШЕНИЕ ФАЙЛА 'СПИСОК' ( ДА - 1, НЕТ - 0" ; AT(1,18) ; : PRINT AT(17,61) : ‹S06› V01 V00 L V03 AT(1,17) $ V08 V00 = "0" GOTO 390 $ V08 V00 = "1" GOTO 748 L V03 AT(1,7) ! V02 V04 0
+ 700 V0C = ‹F3› ( V06 ‹E9› 1 ) ‹DC› 16 ) ‹EA› 1 : PRINT AT(18,1) , ‹E7› V05 `
+ 710 ‹S34› V07 V08 ‹CD› V07 V12 : ‹S78› V02 ‹DB› 1 , ( 2 ‹DF› V0C ‹EA› 2 ) "СПИСОК" : LIMITS V02 ‹DB› 1 , "СПИСОК" V09 V0A V0D : ‹S34› : GOTO V07 P
+ 712 ‹S34› : PRINT AT(24,1) : PRINT "ОШИБКА " ; V07 ; " НА ДИСКЕ  " ; V00 ;
+ 714 KEYIN V0E V07 V16 V07 V16 : GOTO V07 V14
+ 716 PRINT AT(24,1) , 79 : GOTO V03 @
+ 748 V0C = ( V0B ‹E9› 2 ) ‹DC› 2
+ 750 V0B = V09 : FOR V0D 1 ‹D1› V0C
+ 760 ‹S6E› V02 ‹DB› 1 , ( V0B , V0F ) ‹E0› V03 : V0B = V0F
+ 762 ‹S6E› V02 ‹DB› 1 , ( V0B , V0F ) ‹E0› V03 : V0B = V0F
+ 764 NEXT V0D
+ 766 ‹E1› ‹E0› V03 1 , 7 ) = "* END *"
+ 768 ‹S6E› V02 ‹DB› 1 , ( V0B , V0F ) ‹E0› V03 : V0B = V0F
+ 770 ‹S70› V02 ‹DB› 1 , ( V0A , V0B ) ‹E0› V03
+ 772 BIN( ‹E1› ‹E0› V03 3 , 1 ) V0A ‹E9› V09 ‹EA› 1
+ 774 ‹S6E› V02 ‹DB› 1 , ( V0A , V0B ) ‹E0› V03
+ 780 PRINT AT(23,1) , 80 : PRINT "ЗАКОНЧИТЬ ФОРМИРОВАНИЕ ФАЙЛА 'СПИСОК' (ДА -1, НЕТ -0)" ; : INPUT V06 : IF V06 = 1 GOTO 1580 : IF V06 = 0 GOTO 340 : PRINT AT(2,7) V0C : GOTO V07 ‹80›
+1580 PRINT AT(23,1) , 80 : PRINT "ЗАГРУЗКА ПРОГРАММЫ  " ; AT(1,18) ; "'BAM0'" ; AT(2,18)   ; : CLEAR V12 : ‹S7D› V02 "BAM0"
+5000 ‹E1› V0E 1 , 8 ) = "BAM00" : SCRATCH V02 V0E : ‹S80› V02 ‹D6› ‹D1› ( V0E ) V0E : STOP "BAM00   ЗАПИСАНА"

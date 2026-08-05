@@ -1,0 +1,133 @@
+S/BAM03, 131 lines decoded
+
+ 200 REM  % *** S/ВAM03 (КОРРЕКТИРОВКA 04.08.86 - 16.00) ***БЕЙСИК 02  10.09.86
+ 210 V00 = "210DIM Y2$(256)Q8,Y3$(256)Q8,U$(256)Q8"
+ 220 CONVERT V01 ‹D1› ‹E1› V00 16 , 2 ) "##" : CONVERT V01 ‹D1› ‹E1› V00 27 , 2 ) "##" : CONVERT V01 ‹D1› ‹E1› V00 37 , 2 ) "##" : ‹E1› V00 40 , 1 ) = AT(1,133) : LOAD ; V00 V02 V10 , V02
+ 230 DIM V02 V03 V04 V05 V06 V07 V08 V09 V0A V0B V0C V0D V0E V0F V10 V11 V12 V13 V14 V15
+ 330 V16 = " " : ‹E1› V16 24 ) = "( ОБСЛУЖИВАНИЕ КЛАССИФИКАТОРОВ )"
+ 340 V17 = 0 : V18 = 0
+ 350 ‹S23›   "КЛАССИФИКАТОР ДЛЯ ПОКАЗАТЕЛЯ" , 1 , V19 , 2 : IF V1A = 0 GOTO 880 : ‹S23› " V1A : IF V1B = "К" GOTO 360 : PRINT AT(1,7) : GOTO V03 P
+ 360 V1C = V1D : IF V1C AT(0,0) : V1C = V1A ‹EA› ‹E7› V10 V00 ‹DF› V1E
+ 370 CONVERT V1C ‹D1› ‹E1› V1F 5 ) 2 ) "#####" : ‹S34›   ! ‹CD› V03 ‹80› : LIMITS V02 ‹DB› 5 , V1F 5 ) " # V1C : ‹S71› V02 ‹DB› 5 , ( " , V1C ) $ V15 % & ' V1D ( V07 ) * + , - . / 0 1 2 V08 : ‹S34› : V0B V0C = " " : GOSUB V09 V00 : GOTO V06 `
+ 380 ‹S34› : PRINT AT(1,7) ; : GOTO V03 P
+ 660 V0B V0C = " " : IF V07 = " " GOTO 710 : PRINT "УКАЖИТЕ ПАРОЛЬ ДОСТУПА " ; : FOR 3 1 ‹D1› 4
+ 670 KEYIN V0C V06 ‹80› V06 ‹80› : GOTO V06 p
+ 680 IF V0C = AT(1,133) GOTO 690 : ‹E1› V0B 3 , 1 ) = V0C : NEXT 3
+ 690 IF V0B = V07 GOTO 710 : IF V0B = AT(1,223) GOTO 710 : V18 = V18 ‹EA› 1 : PRINT ‹DF› 40 ) ; AT(2,7) V12 ; "ЗАЩИТА ПАРОЛЕМ" : PRINT AT(2,17) V0C ; : IF V18 ‹D7› 3 GOTO 660 : GOTO V03 @
+ 700 REM ***
+ 710 ‹S23› 1 : PRINT V16 : 4 = ‹F3› ( 80 ‹E9› ( ‹ED› $ ‹EA› 16 ) ) ‹DC› 2 ) : PRINT AT(5,1) , 80 : PRINT ‹DF› 4 ) ; "КЛАССИФИКАТОР /" ; ‹E1› $ 1 , ‹ED› $ ) ; "/" ;
+ 720 PRINT AT(7,22) : PRINT "ИЗМЕНЕНИЕ ФАМИЛИИ ВЛАДЕЛЬЦА...   - 1"
+ 730 PRINT AT(9,22) : PRINT "ИЗМЕНЕНИЕ ПАРОЛЯ ДОСТУПА......   - 2"
+ 735 PRINT AT(11,22) : PRINT "ИЗМЕНЕНИЕ ПОРЦИИ ВВОДА........   - 3"
+ 740 PRINT AT(13,22) : PRINT "ИЗМЕНЕНИЕ ИМЕНИ КЛАССИФИКАТОРА   - 4"
+ 745 PRINT AT(15,22) : PRINT "ОЧИСТКА КЛАССИФИКАТОРА........   - 5"
+ 750 5 = 0 : PRINT AT(17,24) : PRINT "УКАЖИТЕ НОМЕР ( 0 - КОНЕЦ )" ; : INPUT 5
+ 760 IF 5 ‹D5› ‹F3› 5 ) GOTO 765 : ON 5 ‹CD› V07 p V07 ‹80› V07 ‹90› V08 V00 V08 V05 : IF 5 = 0 GOTO 330
+ 765 PRINT AT(1,7) : GOTO V07 V10
+ 770 ‹S23› 1 : PRINT V16 : PRINT AT(13,1) : PRINT "КОРРЕКТИРУЙТЕ ФАМИЛИЮ ВЛАДЕЛЬЦА КЛАССИФИКАТОРА:" ; : PRINT AT(13,57) : PRINT AT(1,18) ; : ‹S06› V08 ‹E1› V15 1 , 16 ) L V04 AT(1,17) ; $ V0F ‹E1› V15 1 , 16 ) ‹D5› " " GOTO 1530 L V04 ‹E2› V01
+ 780 6 = 0 : V02 = "КОРРЕКТИРУЙТЕ ПАРОЛЬ ДОСТУПА К КЛАССИФИКАТОРУ (CR/LF - БЕЗ ПАРОЛЯ)" : PRINT AT(19,1) , ‹E7› V01 ` : PRINT ‹E1› V02 1 , ‹ED› V02 ) : PRINT AT(19,70)
+ 781 V07 V0C = " " : FOR 3 1 ‹D1› 4
+ 782 KEYIN V0C V07 ‹84› V07 ‹84› : GOTO V07 ‹82›
+ 784 IF V0C = AT(1,133) GOTO 786 : ‹E1› V07 3 , 1 ) = V0C : NEXT 3 : GOTO V07 ‹86›
+ 786 IF 6 = 1 GOTO 787 : PRINT AT(20,1) : PRINT "ПОВТОРНО " ; ‹E1› V02 1 , ‹ED› V02 ) : PRINT AT(20,77) : 6 = 1 : V0B = V07 : GOTO V07 ‹81›
+ 787 IF V07 = V0B GOTO 1530 : PRINT AT(1,7) ; : GOTO V07 ‹80›
+ 790 PRINT AT(4,1) , ‹E7› V16 ‹80› : PRINT AT(13,1) : PRINT "КОРРЕКТИРУЙТЕ ЧИСЛО ЭЛЕМЕНТОВ В ПОРЦИИ ВВОДА В КЛАССИФИКАТОР " ;
+ 792 V0B = " " : CONVERT 0 ‹D1› ‹E1› V0B 1 , 3 ) "###" : PRINT AT(1,18) ; : ‹S06› V08 ‹E1› V0B 1 , 3 ) L V04 AT(1,17) ; $ V0F ‹EE› ‹E1› V0B 1 , 3 ) ‹D7› 3 GOTO 795 G V0A ‹E1› V0B : ‹SE8› , : ‹SE8› ) ‹D1› 0 : IF 0 ‹D5› ‹F3› 0 ) GOTO 795 : IF 0 ‹D6› 0 GOTO 795 : IF 0 ‹D8› , GOTO 795 : GOTO V15 0
+ 795 PRINT AT(1,7) ; : 0 = , ‹E9› 1 : GOTO V07 ‹90›
+ 800 PRINT AT(19,1) , 80 : PRINT "КОРРЕКТИРУЙТЕ ИМЯ КЛАССИФИКАТОРА:" ; ‹DF› 40 ) ; AT(1,18) ;
+ 805 V0C = "( ЧИСТКА КЛАССИФИКАТОРА /" : 4 = ‹F3› ( 80 ‹E9› ( ‹ED› V0C ‹EA› ‹ED› $ ‹EA› 3 ) ) ‹DC› 2 ) : ‹S23› 1 : PRINT AT(2,1) , 80 : PRINT ‹D5› 2 , 4 : PRINT ‹E1› V0C 1 , ‹ED› V0C ) ; ‹E1› $ 1 , ‹ED› $ ) ; "/ )"
+ 810 PRINT AT(8,24) : PRINT AT(1,18) ; "ЗАДАЙТЕ ИНТЕРВАЛ ОЧИЩАЕМЫХ ЗАПИСЕЙ:" ; AT(1,17) ; : PRINT AT(10,12) : PRINT "НАЧАЛО" ; ‹DF› 65 ) ; "КОНЕЦ"
+ 820 7 = 11 : 8 = 1 : ‹S23› ) : 9 = 8 : 7 = 65 : 8 = 1 : ‹S23› ) : : = 8
+ 830 IF : ‹D8› 9 GOTO 840 : PRINT AT(1,7) ; : GOTO V08
+ 840 PRINT AT(15,1) , 80 : PRINT "ПОДТВЕРДИТЕ ОЧИСТКУ КЛАССИФИКАТОРА /" ; ‹E1› $ 1 , ‹ED› $ ) ; "/ (CR/LF - ДА, 0 - НЕТ)" ; : V0C = " "
+ 850 KEYIN V0C V08 ` V08 ` : GOTO V08 P
+ 860 IF V0C = AT(1,133) GOTO 910 : IF V0C = AT(1,48) GOTO 700 : PRINT AT(1,7) ; : GOTO V08 @
+ 880 GOTO V00 V16
+ 900 ‹S06› V1B ‹E0›
+ 910 V06 = "0" : V0F = " " : PRINT AT(18,1) , 80 : PRINT AT(1,7) ; "БУДЕТЕ ЗАДАВАТЬ ШАБЛОН НАИМЕНОВАНИЯ (ДА - 1, НЕТ - 0)? " ; AT(1,18) ;
+ 920 PRINT AT(1,18) ; : PRINT AT(19,1)
+ 930 V06 = & : PRINT AT(18,1) , ‹E7› V04 V00 : V02 = "ИДЕТ ФОРМАТИЗАЦИЯ КЛАССИФИКАТОРА /" : > = ‹F3› ( 80 ‹E9› ( ‹ED› V02 ‹EA› ‹ED› $ ‹EA› 1 ) ) ‹DC› 2 ) : PRINT ‹D5› 18 , > : PRINT ‹E1› V02 1 , ‹ED› V02 ) ; ‹E1› $ 1 , ‹ED› $ ) ; "/" : PRINT AT(20,1) : PRINT "ОБРАБАТЫВАЕТСЯ ЗАПИСЬ N: " ;
+ 940 LIMITS V02 ‹DB› 5 , V1F 5 ) " # V1C : ‹S75› V02 ‹DB› 5 , V1F 5 ) : DSKIP ‹DB› 5 , ( # ‹E9› " ‹E9› 1 ) V05 : ‹S76› ‹DB› 5 , ‹D7› : FOR ? 9 ‹D1› : : ‹S23› % 0 , ? : IF V06 = @ GOTO 950 : INIT , V00 ‹E1› ‹E0› V0E A , ' ) : GOTO V09 `
+ 950 ‹E1› ‹E0› V0E A , ' ) = " "
+ 960 ‹E1› ‹E0› V0E A ‹EA› ' , ( ) = V0F : PRINT AT(20,35) : PRINT AT(1,18) ; ? ; AT(1,17) ; : ‹S23› % 1 , ? : NEXT ?
+ 965 IF : ‹D5› 1 GOTO 1010
+ 970 IF : ‹E9› 9 ‹EA› 1 ‹D5› 1 GOTO 1010 : INIT , V00 V08 : 2 1 = 0
+1010 V06 = " " : PRINT AT(23,1) : PRINT "ВОССТАНАВЛИВАТЬ РЕЕСТР КЛАССИФИКАТОРА ( ДА -CR/LF, НЕТ - 0)" ;
+1020 KEYIN V06 V10 0 V10 0 : GOTO V10
+1030 IF V06 = AT(1,133) GOTO 2250 : IF V06 = AT(1,48) GOTO 700 : PRINT AT(1,7) ; : GOTO V10
+1530 ‹S34›   ! ‹CD› V15 5 : GOSUB V15 @ : GOTO V07 V00
+1535 V0B = " " : PRINT AT(23,1) , ‹E7› V01 ` : PRINT "НЕ ГОТОВО УСТРОЙСТВО" : PRINT "ДЛЯ ПРОДОЛЖЕНИЯ - CR/LF" ;
+1536 KEYIN V0B V15 7 V15 7 : GOTO V15 6
+1537 IF V0B = AT(1,133) GOTO 1540 : PRINT AT(1,7) ; : GOTO V15 6
+1540 ‹E1› V15 17 ) = ‹E1› B 73 ) : ‹S6F› V02 ‹DB› 5 , ( " , 3 ) $ , V15 , % , & , ' , V1D , ( , V07 , ) , * , + , , , - , . , / , 0 , 1 , 2 , V08 : 5 = " : ‹S34› : PRINT AT(23,1) , ‹E7› V01 ` : RETURN
+2250 REM  % *** ВОССТАНОВЛЕНИЕ КЛАССИФИКАТОРОВ ***
+2260 V06 = &
+2270 INIT , V00 ‹E0› V0D ‹E0› < : C = 1 : D = 0
+2280 ‹S6F› V02 ‹DB› 5 , ( " ‹EA› 1 , 3 ) C , ‹E0› V0D
+2290 FOR V1A 1 ‹D1› - : ‹S23› & 1 , V1A : NEXT V1A
+2300 ‹S23› 1 : PRINT V16 : PRINT AT(5,24) : PRINT "(ФОРМИРОВАНИЕ РЕЕСТРА И УКАЗАТЕЛЕЙ)"
+2310 2 E = 0 : INIT " " ‹E0› = : IF 1 = 0 GOTO 2390
+2320 PRINT AT(7,11) , 40 : PRINT "ОБРАБАТЫВАЕТСЯ ЗАПИСЬ N" ; AT(1,6)
+2330 FOR F 1 ‹D1› 1 : ‹S23› % 0 , F : PRINT AT(7,41) : PRINT AT(1,18) ; F ; AT(1,17) ; : V0F = ‹E1› ‹E0› V0E A , ' ) : IF V06 ‹D5› @ GOTO 2335 : ‹S23› #
+2335 V0B = V0F
+2340 IF V06 ‹D5› @ GOTO 2360 : IF ‹E1› ‹E0› V0E A , ' ‹EA› ( ) = " " GOTO 2350 : GOTO # p
+2350 IF 2 ‹D8› . GOTO 2380 : BIN( ‹E1› V08 2 ‹DF› 2 ‹EA› 1 ) F ‹DC› ‹E7› V02 V : BIN( ‹E1› V08 2 ‹DF› 2 ‹EA› 2 ) F ‹E9› ‹E7› V02 V ‹DF› ‹F3› F ‹DC› ‹E7› V02 V ) : 2 = 2 ‹EA› 1 : GOTO # ‹80›
+2360 ‹S06› V08 ( V02 = & ) V0B ‹D1› 5 $ V07 5 ‹D5› ‹E8›
+2370 BIN( ‹E1› = E ‹EA› 1 ) 1 ) F ‹DC› ‹E7› V02 V : BIN( ‹E1› = E ‹EA› 1 ) 2 ) F ‹E9› ‹E7› V02 V ‹DF› ‹F3› F ‹DC› ‹E7› V02 V ) : ‹E1› = E ‹EA› 1 ) 3 ) = V0B : E = E ‹EA› 1 : IF E ‹D7› 0 GOTO 2380 : GOSUB $ V10 : E = 0 : INIT " " ‹E0› =
+2380 NEXT F : IF E = 0 GOTO 2390 : GOSUB $ V10
+2390 ‹S6F› V02 ‹DB› 5 , ( " ‹EA› 1 , 3 ) C , ‹E0› V0D : GOSUB V15 @ : PRINT "ДЛЯ ПРОДОЛЖЕНИЯ НАЖМИТЕ КЛАВИШУ  'CR/LF' " ;
+2400 KEYIN V0B V07 V00 V07 V00 : GOTO $ V00
+2410 IF E ‹D7› 2 GOTO 2450
+2420 FOR 8 1 ‹D1› E ‹E9› 1 : IF ‹E1› = 8 ) 3 ) ‹D6› ‹E1› = 8 ‹EA› 1 ) 3 ) GOTO 2440 : V0C = = 8 ‹EA› 1 ) : = 8 ‹EA› 1 ) = = 8 ) : # = 0 : IF 8 = 1 GOTO 2430 : FOR # 8 ‹E9› 1 ‹D1› 1 ‹D2› ‹E9› 1 : IF ‹E1› = # ) 3 ) ‹D6› ‹E1› V0C 3 ) GOTO 2430 : = # ‹EA› 1 ) = = # ) : NEXT # : # = 0
+2430 = # ‹EA› 1 ) = V0C
+2440 NEXT 8
+2450 G H I = 1 : GOSUB % V10 : GOSUB %
+2460 IF J ‹D6› , GOTO 2470 : GOSUB % 0 : I = I ‹EA› 1 : GOSUB %
+2470 IF K ‹D6› L GOTO 2480 : IF H ‹D8› C GOTO 2550 : H = H ‹EA› 1 : GOSUB % V10
+2480 IF G > E GOTO 2540 : IF G ‹D6› 1 GOTO 2490 : IF G ‹D8› E GOTO 2490 : IF ‹E1› = G ) 3 ) = ‹E1› = G ‹E9› 1 ) 3 ) GOTO 2500
+2490 IF ‹E1› ; K ) 3 ) > ‹E1› = G ) 3 ) GOTO 2560 : IF ‹E1› ; K ) 3 ) ‹D5› ‹E1› = G ) 3 ) GOTO 2540 : K = K ‹EA› 1
+2500 PRINT AT(11,21) : PRINT "НАЛИЧИЕ СИНОНИМОВ В КЛАССИФИКАТОРЕ" : G = G ‹EA› 1 : GOTO $ `
+2510 ‹S23› & 0 , H : K = 1 : L = D : RETURN
+2520 J = 1 : INIT , V00 ‹E0› < : RETURN
+2530 D = J ‹E9› 1 : V0D I ) = ‹E1› < D ) 3 ) : ‹S23› & 1 , I : RETURN
+2540 < J ) = ; K ) : K = K ‹EA› 1 : GOTO % p
+2550 IF G > E GOTO 2580
+2560 < J ) = = G ) : G = G ‹EA› 1
+2570 J = J ‹EA› 1 : GOTO $ `
+2580 C = I ‹E9› 1 : IF J = 1 GOTO 2590 : GOSUB % 0 : C = I
+2590 RETURN
+3070 DEFFN'   ‹B0› V01 V15 V15 V0C V1C M #
+3080 ‹S23› 1 : PRINT V16 : PRINT AT(3,7) : PRINT ‹E1› V0C 1 , ‹ED› V0C ) ; " ( ЛИСТ -" ; V17 ‹DC› 2 ‹EA› 1 ; ")" ; AT(1,10) : FOR 5 V1C ‹EA› 16 ‹DF› V17 ‹D1› V1C ‹EA› 16 ‹DF› V17 ‹EA› 15 : IF 5 ‹D6› M GOTO 3090 : PRINT ‹DF› 15 ) ; "*** КОНЕЦ ***" : 5 = 5 ‹E9› 1 : GOTO 1 0
+3090 ‹S23› " 5 : PRINT 5 ; ‹DF› 6 ) ; $ ; ‹DF› 34 ) ; V1B ; : IF 5 ‹EA› 16 ‹D6› M GOTO 3110 : IF 5 ‹EA› 15 ‹D5› M GOTO 3100 : PRINT ‹DF› 55 ) ; "*** КОНЕЦ ***" ;
+3100 PRINT : GOTO 1
+3110 ‹S23› " 5 ‹EA› 16 : PRINT ‹DF› 40 ) ; 5 ‹EA› 16 ; ‹DF› 46 ) ; $ ; ‹DF› 74 ) ; V1B
+3120 NEXT 5
+3130 V1A = 5 ‹EA› 17 : INPUT "УКАЖИТЕ НОМЕР ( 0 - КОНЕЦ ) " V1A : IF V1A = 0 GOTO 3140 : IF V1A ‹D6› M GOTO 3150 : PRINT AT(2,7) V0C ; : GOTO 1 0
+3140 RETURN
+3150 V1A = ‹F2› V1A ) : IF V1A ‹D8› V1C ‹EA› 16 ‹DF› V17 GOTO 3170
+3160 V17 = V17 ‹E9› 2 : IF V1A ‹D7› V1C ‹EA› 16 ‹DF› V17 GOTO 3160 : GOTO 0 ‹80›
+3170 IF V1A > 5 ‹EA› 16 GOTO 3180 : RETURN
+3180 V17 = V17 ‹EA› 2 : IF V1A > V1C ‹EA› 16 ‹DF› V17 ‹EA› 31 GOTO 3180 : GOTO 0 ‹80›
+3250 DEFFN' # ‹B8› V01 0 V15
+3260 ‹S06› V0D ‹E1› V0F 1 , ‹ED› V0F ) , N ) : ‹SDE› : RETURN
+3270 DEFFN' % ‹D8› V01 V12 V16 # V1C
+3280 8 = ‹F3› ( ' ‹EA› ( ) ‹DF› ( V1C ‹E9› 1 ) ‹DC› ‹E7› V02 V ) : M = " ‹EA› / ‹EA› - ‹DF› ) ‹EA› 8 ‹EA› 1 : 5 = ‹F3› ( ' ‹EA› ( ) ‹DF› V1C ‹DC› ‹E7› V02 V ) ‹E9› 8 ‹EA› 1 : IF # = 1 GOTO 3330
+3290 IF M ‹D5› O GOTO 3300 : IF 5 = P GOTO 3320
+3300 O = M : FOR # 1 ‹D1› 5 ‹DF› ‹E7› V02 V ‹D2› ‹E7› V02 V
+3310 ‹S70› V02 ‹DB› 5 , ( M , M ) ‹E1› ‹E0› V0E # , ‹E7› V02 V ) : NEXT # : P = M ‹E9› O
+3320 A = ( ' ‹EA› ( ) ‹DF› ( V1C ‹E9› 1 ) ‹E9› 8 ‹DF› ‹E7› V02 V ‹EA› 1 : RETURN
+3330 FOR # 1 ‹D1› 5 ‹DF› ‹E7› V02 V ‹D2› ‹E7› V02 V
+3340 ‹S6E› V02 ‹DB› 5 , ( M , 8 ) ‹E1› ‹E0› V0E # , ‹E7› V02 V ) : M = 8 : NEXT # : RETURN
+3350 DEFFN' & ‹E4› V01 ] V16 # 8
+3360 M = " ‹EA› / ‹EA› 1 ‹EA› ( 8 ‹E9› 1 ) ‹DF› ) : IF # = 0 GOTO 3370 : ‹S6F› V02 ‹DB› 5 , ( M , 8 ) D , ‹E0› < : RETURN
+3370 ‹S71› V02 ‹DB› 5 , ( M , M ) D ‹E0› ; : RETURN
+3590 DEFFN' - ‹F0› V01 x V16
+3600 ‹S06› V0C ‹E1› V0F 1 , ‹ED› V0F ) , ‹E0› Q
+3610 RETURN
+4940 DEFFN' ) V00 V00 V00 V00
+4945 ‹S34›   ! ‹CD› I p : PRINT AT(12,0) 6 : PRINT AT(1,18) ;
+4950 CONVERT 8 ‹D1› V14 "#####"
+4960 CONVERT V14 ‹D1› 8 : ‹S34› : IF 8 ‹D6› 0 GOTO 4970 : IF 8 > * GOTO 4970 : IF 8 ‹D5› ‹F3› 8 ) GOTO 4970 : GOTO I ‹80›
+4970 ‹S34› : 8 = 0 : PRINT AT(1,7) ; : GOTO I E
+4980 RETURN
+5000 ‹E1› V0B 1 , 8 ) = "S/BAM03" : SCRATCH V02 V0B : ‹S80› V02 ‹D6› ‹D1› ( V0B ) V0B : STOP "S/BAM03   ЗАПИСАНА"

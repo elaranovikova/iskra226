@@ -1,0 +1,111 @@
+BAM, 109 lines decoded
+
+   1 REM  *** BAM *** (25.04.87 - 12.00) ***БЕЙСИК 02  10.09.86
+  10 DIM V00 V01 V02 V03
+  12 V04 V05 = 0 : V06 = " " : FOR V07 1 ‹D1› V08 : ‹S23› " V07 : IF V09 = 0 GOTO 14 : V04 = V04 ‹EA› 1
+  14 NEXT V07
+  16 REM *** ВЫХОД ****
+  17 V0A = V0B ‹EA› 2 : V0C V0D V0E = 0 : V00 = " " : GOSUB V01 T
+  18 SELECT V07 V05 ( V00 P : ‹S23› 1 : V0F = " "
+  20 PRINT ‹DF› 26 ) ; "( ВЫБОР НЕОБХОДИМОЙ РАБОТЫ )"
+  22 V11 = 0 : PRINT AT(5,34) : PRINT "ПЕРЕЧЕНЬ РАБОТ" : V12 = AT(1,3)
+  24 PRINT AT(7,20) : PRINT "ФОРМИРОВАНИЕ   ОПИСАНИЙ    ПОКАЗАТЕЛЕЙ  -  1"
+  26 PRINT AT(8,20) : PRINT "ВВОД  И КОРРЕКТИРОВКА  КЛАССИФИКАТОРОВ  -  2"
+  28 PRINT AT(9,20) : PRINT "РАЗРАБОТКА  ФОРМ  ВВОДА-ВЫВОДА  ДАННЫХ  -  3"
+  30 PRINT AT(10,20) : PRINT "ВВОД ДАННЫХ  В  ИНФОРМАЦИОННЫЙ  МАССИВ  -  4"
+  32 PRINT AT(11,20) : PRINT "КОРРЕКТИРОВКА  ИНФОРМАЦИИ   В  МАССИВЕ  -  5"
+  34 PRINT AT(12,20) : PRINT "ПОИСК ИНФОРМАЦИИ С  ВЫВОДОМ  НА ПЕЧАТЬ  -  6"
+  36 PRINT AT(13,20) : PRINT "ФОРМИРОВАНИЕ  ИНВЕРТИРОВАННЫХ  СПИСКОВ  -  7"
+  38 PRINT AT(14,20) : PRINT "СЕРВИС И РАБОТА С БЛОКАМИ ПОЛЬЗОВАТЕЛЯ  -  8"
+  40 PRINT AT(15,20) : PRINT "ВВОД ИНФОРМАЦИИ С МАГНИТНОГО  НОСИТЕЛЯ  -  9"
+  42 PRINT AT(16,20) : PRINT "ВЫВОД ИНФОРМАЦИИ НА МАГНИТНЫЙ НОСИТЕЛЬ  - 10"
+  44 PRINT AT(18,29) , 30 : PRINT "РАБОТА ( 0 - КОНЕЦ )? " ; : V13 = V14 : IF V14 ‹D8› 0 GOTO 45 : V13 = 1 : GOTO V00 G
+  45 IF V14 ‹D5› ‹E7› V01 V00 GOTO 46 : V13 = 0 : GOTO V00 G
+  46 IF V14 = ‹F3› V14 ) GOTO 47 : V13 = 8
+  47 ‹S06› V08 ( V01 = V12 ) V00 ‹CA› V13 L V04 ‹E2› V01
+  48 IF V13 = 8 GOTO 62 : PRINT AT(18,50) , 3 : PRINT V13 : IF V14 = V13 GOTO 152 : IF V13 = 0 ‹E7› V14 = ‹E7› V01 V00 GOTO 152 : IF V13 ‹D7› 0 ‹E6› V13 ‹D5› ‹F3› V13 ) GOTO 60 : IF V13 > 10 GOTO 60 : IF V13 > 9 GOTO 50
+  49 CONVERT V13 ‹D1› ‹E1› V15 4 , 1 ) "#" : GOTO V00 R
+  50 CONVERT V13 ‹D1› ‹E1› V15 4 , 2 ) "##"
+  52 ‹S34› V16 V17 ‹CD› V00 X
+  53 V18 = " " : PRINT AT(24,1) , 79 : PRINT "ЗАГРУЗКА ПРОГРАММЫ  " ; AT(2,18) ' ; ‹E1› V15 1 , ‹ED› V15 ) ; AT(3,39) V11   ; : IF V11 AT(0,0) : IF V13 AT(0,0) : V14 = ‹E7› V01 V00 : GOTO V00 V
+  54 V14 = V13
+  56 ‹S7D› V02 V15 V02 V00
+  58 V14 = V14 ‹E9› 1 : ‹S34› : PRINT AT(18,60) : PRINT AT(1,18) ; "НЕТ В БИБЛИОТЕКЕ " ; AT(1,17) ;
+  60 PRINT AT(1,7) : IF V11 = 0 GOTO 44 : GOTO V00 ‹82›
+  62 ‹S23› 1 : V15 = "BAM0" : V13 = 8 : PRINT ‹DF› 23 ) ; "( СЕРВИС И ЗАДАЧИ ПОЛЬЗОВАТЕЛЯ )" : V0F = " "
+  64 PRINT AT(5,27) : PRINT "ПЕРЕЧЕНЬ СЕРВИСНЫХ ФУНКЦИЙ"
+  66 PRINT AT(7,22) : PRINT "ИЗМЕНЕНИЕ  ПАРАМЕТРОВ    МАССИВА  - 1"
+  68 PRINT AT(8,22) : PRINT "ЧИСТКА     ОТКРЫТОГО     МАССИВА  - 2"
+  70 PRINT AT(9,22) : PRINT "ОБСЛУЖИВАНИЕ     КЛАССИФИКАТОРОВ  - 3"
+  72 PRINT AT(10,22) : PRINT "ВЕДЕНИЕ  ФИКСИРОВАННЫХ  ЗАПРОСОВ  - 4"
+  74 PRINT AT(11,22) : PRINT "ВЛОЖЕННАЯ СОРТИРОВКА ПО ЗАПРОСАМ  - 5"
+  76 PRINT AT(12,22) : PRINT "................................  - 6"
+  78 PRINT AT(13,22) : PRINT "................................  - 7"
+  80 PRINT AT(14,22) : PRINT "ВЫПОЛНЕНИЕ ПРОГРАММ ПОЛЬЗОВАТЕЛЯ  - 8"
+  82 PRINT AT(16,27) : PRINT "УКАЖИТЕ НОМЕР ( 0 - КОНЕЦ )? " ; : V11 = 8 : IF V14 = ‹F3› V14 ) GOTO 83 : V11 = V14 ‹DF› 10
+  83 ‹S06› V08 ( V01 = V12 ) V00 ‹CA› V11 L V04 ‹E2› V01
+  84 V14 = V11 ‹DC› 10 : PRINT AT(16,55) , 2 : PRINT V11 : IF V11 = 8 GOTO 49 : V15 = "S/BAM.." : CONVERT V11 ‹D1› ‹E1› V15 6 , 2 ) "##" : GOTO V00 R
+  85 V15 = " " : PRINT AT(19,1) : PRINT "ИМЯ БЛОКА? " ; AT(1,18) ;
+  86 DEFFN' V00 ‹BC› V00 ‹FD› V0B : V06 = " " : GOTO V01 V16
+  87 DEFFN' V1F V18 V01 V0A V0F
+  88 ‹S23› 1
+  89 PRINT ‹DF› 24 ) ; "( ВЕРСИЯ 3.9       10.06.87 )" ; ‹DF› 73 ) ; AT(1,91) ; V19 ; AT(1,93) : PRINT : PRINT "   ОСНОВНЫЕ ПАРАМЕТРЫ МАССИВА         '" ; ‹E1› V1A 1 , ‹ED› V1A ) ; "'" : PRINT : PRINT : V07 = V08
+  90 ‹S23› " V07 : V07 = V07 ‹E9› 1 : IF ‹E1› V15 1 , 1 ) = "*" GOTO 90
+  92 PRINT ‹DF› 11 ) ; "КОЛИЧЕСТВО ПОКАЗАТЕЛЕЙ" ; ‹DF› 51 ) ; : PRINT V08 ; ‹DF› 71 ) ; V1B : PRINT
+  94 PRINT ‹DF› 11 ) ; "ДЛИНА ЗАПИСИ ДАННЫХ" ; ‹DF› 51 ) ; V1C ‹EA› V1D ; ‹DF› 71 ) ; V1E : PRINT
+  96 PRINT ‹DF› 11 ) ; "КОЛИЧЕСТВО ЗАПИСЕЙ" ; ‹DF› 51 ) ; V1F ‹E9›   ; ‹DF› 71 ) ; ! : PRINT
+  97 PRINT ‹DF› 16 ) ; "ПОКАЗАТЕЛЕЙ ПРЯМОГО ДОСТУПА" ; ‹DF› 61 ) ; V04
+  98 PRINT ‹DF› 16 ) ; "МАКСИМАЛЬНОЕ ЧИСЛО ПОИСКОВЫХ ПОКАЗАТЕЛЕЙ" ; ‹DF› 61 ) ; "
+ 100 PRINT ‹DF› 16 ) ; "КОЛИЧЕСТВО ЗАПИСЕЙ ВВОДИМЫХ В ОДНОМ СЕАНСЕ" ; ‹DF› 61 ) ; #
+ 102 PRINT ‹DF› 16 ) ; "МАКСИМАЛЬНАЯ ДЛИНА ПРЯМОГО ПОКАЗАТЕЛЯ" ; ‹DF› 61 ) ; V0B
+ 104 PRINT ‹DF› 16 ) ; "РАЗМЕР СТРАНИЦЫ ИНВЕРТИРОВАННОГО СПИСКА" ; ‹DF› 61 ) ; $
+ 106 PRINT ‹DF› 16 ) ; "РАЗМЕР СТРАНИЦЫ РЕЕСТРА КЛАССИФИКАТОРА" ; ‹DF› 61 ) ; %
+ 108 PRINT ‹DF› 16 ) ; "АЛФАВИТ ДЛЯ СОРТИРОВКИ - " ; : IF & = 1 GOTO 109 : PRINT "ЛАТИНСКИЙ" : GOTO V01 V10
+ 109 PRINT "РУССКИЙ"
+ 110 PRINT ‹DF› 16 ) ; "БЛОКИ ПОЛЬЗОВАТЕЛЯ     - " ; : IF ' = 1 GOTO 111 : PRINT "ОТКЛ" : GOTO V01 V13
+ 111 IF V18 ‹D5› " " GOTO 112 : PRINT "ВКЛ" : GOTO V01 V13
+ 112 PRINT V18
+ 113 SELECT V07 V05 : PRINT AT(24,1) : PRINT "ПРОДОЛЖИТЬ - CR/LF, ПЕЧАТАТЬ - 1" ;
+ 114 KEYIN V00 V01 V15 V01 V15 : GOTO V01 V14
+ 115 ON ‹EF› V00 ‹E9› 48 ‹CD› V01 V17
+ 116 ‹S30› ‹CB› : GOSUB V01 T : GOTO V00 V17
+ 117 SELECT V07 V0C : PRINT : PRINT ( : GOTO V00 ‹89›
+ 118 DEFFN' " V1C V01 : V0F V07 : ‹S06› " , ‹E5› U v V00 V00 , V15 , ) , * , + , , , V09 , V1C , V1D , - , . , / , 0 , 1 V07 ) ^ V00
+ 120 DEFFN' + 0 V01 V01 V10 2 3
+ 122 V13 = ‹F3› V1E ‹DF› ( 3 ‹E9› 1 ) ‹DC› ‹E7› V02 V ) : 4 = 5 ‹EA› V13 : V07 = ‹F3› V1E ‹DF› 3 ‹DC› ‹E7› V02 V ) ‹E9› V13 ‹EA› 1 : IF 2 = 1 GOTO 128 : IF 4 ‹D5› 6 GOTO 124 : IF V07 = 7 GOTO 126
+ 124 6 = 4 : FOR 2 1 ‹D1› V07 ‹DF› ‹E7› V02 V ‹D2› ‹E7› V02 V : ‹S70› V02 ‹DB› 4 , ( 4 , 8 ) ‹E1› ‹E0› 9 2 ) : 4 = 8 : NEXT 2 : 7 = 4 ‹E9› 6
+ 126 : = V1E ‹DF› ( 3 ‹E9› 1 ) ‹E9› V13 ‹DF› ‹E7› V02 V ‹EA› 1 : RETURN
+ 128 FOR 2 1 ‹D1› V07 ‹DF› ‹E7› V02 V ‹D2› ‹E7› V02 V : ‹S6E› V02 ‹DB› 4 , ( 4 , V13 ) ‹E1› ‹E0› 9 2 ) : 4 = V13 : NEXT 2 : RETURN
+ 129 DEFFN' . 4 V01 V15 V10 V11 V07 : ‹S23› " V07 : ‹S23› ! V11 : RETURN
+ 130 DEFFN' 0 T V01 ‹86› V11 V11 : IF ; = 0 GOTO 145 : IF V11 = 1 GOTO 138 : IF 8 AT(0,0) : ‹S34› V16 V17 ‹CC› V01 F : ‹S71› V02 ‹DB› 3 , ( ; ) < V03 V15 3 = > : ‹S34› : GOSUB V01 ‹94› : ? = 1 : @ = ‹E7› V02 V : GOSUB V01 4 : @ = 1 : RETURN
+ 134 IF @ ‹D6› ‹E7› V02 U GOTO 136 : ‹S70› V02 ‹DB› 3 , ( ; ‹EA› ? ) ‹E0› A : @ = 1 : ? = ? ‹EA› 1
+ 136 8 = ‹EF› ‹E1› ‹E0› A @ ) , ‹DB› : @ = @ ‹EA› 2 : RETURN
+ 138 IF 8 AT(0,0) : ‹S34› V16 V17 ‹CC› V01 F : GOSUB V01 ‹92› : ‹S6F› V02 ‹DB› 3 , ( ; ) ‹E1› < 1 , ‹ED› < ) , V03 , V06 , V14 , = , > : ‹S34› : @ = ‹E7› V02 V : GOSUB V01 @ : @ ? = 1 : = = 0 : RETURN
+ 140 IF @ ‹D6› ‹E7› V02 U GOTO 144 : ‹S6E› V02 ‹DB› 3 , ( ; ‹EA› ? ) ‹E0› A : ? = ? ‹EA› 1 : @ = 1 : INIT , V00 ‹E0› A
+ 144 BIN( ‹E1› ‹E0› A @ , 2 ) , ‹DB› 8 : @ = @ ‹EA› 2 : = = = ‹EA› 1
+ 145 RETURN
+ 146 ‹S34› : PRINT AT(23,1) , 79 : PRINT AT(1,7) ; "НЕ ГОТОВО УСТРОЙСТВО!" ; : GOSUB V01 ‹82› : PRINT AT(23,1) , ‹E7› V01 Y : RETURN
+ 150 DEFFN' 1 p V01 R V12 : CONVERT ‹E1› B 1 , 2 ) ‹D1› 8 : CONVERT ‹E1› B 4 , 2 ) ‹D1› V13 : 8 = 8 ‹DF› ‹E7› 6 V00 ‹EA› V13 ‹DF› 60 : INPUT ‹D6› V13 : 8 = 8 ‹EA› ( C ‹E9› V13 ) ‹DC› ‹E7›   V00 : CONVERT ‹F3› 8 ‹DC› ‹E7› 6 V00 ) ‹D1› ‹E1› ( 4 , 2 ) "##" : CONVERT ‹F3› ( 8 ‹E9› ‹E7› 6 V00 ‹DF› ‹F3› 8 ‹DC› ‹E7› 6 V00 ) ) ‹DC› 60 ) ‹D1› ‹E1› ( 7 , 2 ) "##" : PRINT AT(1,3) ; : PRINT AT(1,1) : PRINT ( : RETURN
+ 152 IF V14 = 0 GOTO 52 : GOTO V03 0
+ 154 ON D ‹CD› V01 V V01 X V01 ` V01 b
+ 156 SELECT V00 V01 V18 V00 : RETURN
+ 158 SELECT V00 V01 V18 V01 : RETURN
+ 160 SELECT V00 V01 V1C V00 : RETURN
+ 162 SELECT V00 V01 V1C V01 : RETURN
+ 165 DEFFN' V0E V00 V00 V00 V00
+ 170 IF ; = 0 ‹E6› @ > 1 GOTO 188 : ‹S23› 1 : PRINT ‹DF› 24 ) ; "( ИНДИКАЦИЯ ФАЙЛА СВЯЗИ )" ; : PRINT AT(4,18) : PRINT "ФАЙЛ СВЯЗИ ДЛЯ МАССИВА / " ; ‹E1› V1A 1 , ‹ED› V1A ) ; " /" : 8 = 0 : ‹S23› 0 0 : PRINT AT(6,1) : PRINT "ПО СОСТОЯНИЮ НА" ; ‹DF› 17 ) ; "<" ; V02 ; "> <" ; V01 ; ">"
+ 172 PRINT "СОЗДАН В РЕЖИМЕ  <" ; 3 ; ">" ; : IF V15 = " " GOTO 174 : PRINT ‹DF› 40 ) ; "БЛОК ПОЛЬЗОВАТЕЛЯ  <" ; ‹E1› V15 1 , ‹ED› V15 ) ; ">" ; : V15 = " "
+ 174 PRINT : PRINT "ПО ЗАПРОСУ  <" ; > ; "> " ; : IF V03 = " " GOTO 176 : PRINT " ИМЯ ЗАПРОСА:" : PRINT V03 : V03 = " "
+ 176 PRINT : PRINT ‹DF› 30 ) ; "СОДЕРЖИТ ЗАПИСЕЙ: " ; = : INIT , - V0F : PRINT V0F
+ 178 GOSUB V01 ‹82› : IF = = 0 GOTO 188 : E = ‹E7› V01 V00 : PRINT AT(14,1) , ‹E7› V07 : FOR V13 1 ‹D1› = : ‹S23› 0 0 : IF V13 ‹D6› E GOTO 180 : E = E ‹EA› ‹E7› V01 V00 : GOSUB V01 ‹82› : PRINT AT(14,1) , ‹E7› V07
+ 180 PRINT 8 ; : NEXT V13 : GOSUB V01 ‹82› : GOTO V01 ‹87›
+ 182 PRINT AT(24,1) , 79 : PRINT "ПРОДОЛЖИТЬ (ДА - CR/LF, НЕТ - 0)" ; : V00 = " "
+ 184 KEYIN V00 V01 ‹86› V01 ‹86› : GOTO V01 ‹84›
+ 186 IF V00 = AT(1,133) GOTO 190 : IF V00 = AT(1,48) GOTO 187 : PRINT AT(1,7) ; : GOTO V01 ‹84›
+ 187 @ ? = 1 : = = 0
+ 188 GOTO V01 V16
+ 190 PRINT AT(23,1) , ‹E7› V01 ` : RETURN
+ 192 < = ‹E1› ( 73 ) : ‹E1› < 9 ) = ‹E1› ( 4 , 5 ) : ‹E1› < 14 ) = F : ROTATE > ( ‹E1› < 1 , ‹ED› < ) , 2 ) : RETURN
+ 194 ROTATE > ( ‹E1› < 1 , ‹ED› < ) , ‹E9› 2 ) : V02 = < : V01 = ‹E1› < 9 ) : V00 = ‹E1› < 14 ) : < = " " : RETURN
+ 200 ‹E1› V00 1 , 8 ) = "BAM" : SCRATCH V02 V00 : ‹S80› V02 ‹D6› ‹D1› ( V00 ) V00
+ 330 REM  ** НАЧ. СЕГМ **

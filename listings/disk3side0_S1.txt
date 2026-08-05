@@ -1,0 +1,204 @@
+S1, 202 lines decoded
+
+   1 REM   ЗАДАЧА "РАСЧЕТ СТИПЕНДИЙ" /БЛОК ВВОДА НСИ/                                      АВТОРЫ ГОРЕНБУРГОВ М.А. МУЧКИНА Л.В.                                                 / СПТУ-132/ 04.04.89
+   2 REM   N-НОМЕР ВИДА РАБОТ
+   5 REM   N3-НОМЕР ГРУППЫ
+   6 REM   N4-ПОИМ.НОМЕР УЧАЩЕГОСЯ-КОД СТРОКИ
+   7 REM   N5-НОМЕР ЭЛЕМЕНТА В СТРОКЕ СПРАВОЧНИКА
+   8 REM   N6-ЗНАЧЕНИЕ ЭЛЕМЕНТА В СТРОКЕ СПРАВОЧНИКА
+   9 REM   K-КОЛИЧЕСТВО СЕКТОРОВ ДЛЯ ПТУ
+  10 REM  K1-КОЛИЧЕСТВО УЧАЩИХСЯ В ГРУППЕ
+  11 REM  K2-КОЛИЧЕСТВО СЕКТОРОВ ДЛЯ ГРУППЫ(ЛОГ.ЗАПИСИ)
+  12 REM  B1-B9 ПЕРЕМЕННЫЕ БИНАРНОГО ПОИСКА 
+  13 REM  B1-НАЧАЛЬНЫЙ АДРЕС СЕКТОРА В ФАЙЛЕ  
+  14 REM  B2-КОНЕЧНЫЙ  АДРЕС СЕКТОРА В ФАЙЛЕ  
+  15 REM  B3-К-ВО ЗАНЯТЫХ ФАКТИЧЕСКИ СЕКТОРОВ В ФАЙЛЕ  
+  16 REM  B4-К-ВО ЛОГИЧЕСКИХ ЗАПИСЕЙ (ГРУПП) ФАКТИЧЕСКИ В ФАЙЛЕ  
+  17 REM  B9-К-ВО ШАГОВ БИНАРНОГО ПОИСКА
+  20 REM  К3-К-ВО ЛОГИЧЕСКИХ ЗАПИСЕЙ (ГРУПП) МАКСИМАЛЬНО В ФАЙЛЕ  
+  21 REM  ОБРАБОТКА ОШИБОК (С МЕТКИ 3000) - DEFFN ' 100
+  22 REM  E1$,E2$ - КОД И НОМЕР СТРОКИ ОШИБКИ
+  24 COM V00
+  25 DIM V01 V02 V03 V04 V05 V06 V07 V08 V09 V0A V0B V0C V0D V0E V0F V10 V11 V12
+  29 V00 = 40
+  30 DEFFN' V0F ‹A8› V02 V14 V1C : PRINT AT(1,3) : SELECT V07 V05 : SELECT V05
+  32 PRINT AT(1,3) : PRINT "КЛ.0-СИСТЕМНЫЙ ДИСПЕТЧЕР" : PRINT "КЛ.15-ДИСПЕТЧЕР СЕГМЕНТА" : PRINT "*************************"
+  35 PRINT "ЗАДАЧА-РАСЧЕТ ДЕНЕЖНЫХ ВЫПЛАТ УЧАЩИМСЯ" : PRINT "ВЕДЕНИЕ БАЗЫ ДАННЫХ" : PRINT
+  40 PRINT ‹DF› 20 ) ; "ВВЕДИТЕ НОМЕР ВИДА РАБОТ" : PRINT ‹DF› 20 ) ; "************************"
+  50 PRINT ‹DF› 12 ) ; "РЕЗЕРВИРОВАНИЕ СЕКТОРОВ ДЛЯ БАЗЫ ДАННЫХ -1"
+  51 PRINT ‹DF› 12 ) ; "ЗАПИСЬ НА ДИСК .........................-2"
+  52 PRINT ‹DF› 12 ) ; "ЧТЕНИЕ С ДИСКА .........................-3"
+  53 PRINT ‹DF› 12 ) ; "КОРРЕКТИРОВКА ПО СТРОКЕ В ГРУППЕ .......-4"
+  54 PRINT ‹DF› 12 ) ; "КОРРЕКТИРОВКА ПО СТОЛБЦУ В ГРУППЕ ......-5"
+  55 PRINT ‹DF› 12 ) ; "КОПИРОВАНИЕ БАЗЫ ДАННЫХ С ДИСКА НА ДИСК -6"
+  60 INPUT V13 : IF V13 > 6 GOTO 197 : IF V13 = 0 GOTO 197
+  80 V11 = "132"
+ 110 IF V13 > 1 GOTO 200
+ 120 PRINT "РЕЗЕРВИРОВАНИЕ СЕКТОРОВ ДЛЯ БАЗЫ ДАННЫХ"
+ 130 PRINT ‹DF› ‹E7› V02 V00 ) ; "К-ВО ГРУПП ДЛЯ ПТУ N " ; V11 ;
+ 140 INPUT V14 : V15 = V14 ‹DF› 28 ‹EA› 1
+ 145 ‹S34› V16 V17 ‹CD› V01 F : GOTO V01 `
+ 146 ‹S23› d
+ 160 PRINT AT(1,18) : PRINT "ВЫКЛЮЧИТЬ ЗАЩИТУ ЗАПИСИ" : PRINT "ДЛЯ ЗАПИСИ НАЖАТЬ КЛАВИШУ 'CONTINUE'" : PRINT AT(1,17) : STOP : ‹S78› V00 ‹D6› ( V15 ) V11
+ 195 ‹S76› ‹D6› ‹D7› : GOTO V00 2
+ 197 PRINT "ПРОВЕРЬТЕ НОМЕР ВИДА РАБОТ;" : GOTO V00 0
+ 200 REM  ОТКРЫТИЕ ФАЙЛОВ
+ 220 LIMITS V00 V11 V18 V19 V1A : ‹S75› V00 V11
+ 260 ON V13 ‹CD› V01   V02 p V04 V00 V06 V00 V09 ‹80›   V00
+ 270 PRINT "ЗАПИСЬ НА ДИСК"
+ 271 DSKIP ‹D7›
+ 280 PRINT ‹DF› 20 ) ; "ВВЕДИТЕ ДАННЫЕ ПО ГРУППЕ:"
+ 285 PRINT : PRINT "ЧЕРЕЗ ЗАПЯТУЮ: НОМЕР ГРУППЫ, ПОИМЕННЫЙ НОМЕР, Ф.И.О., РАЗМЕР СТИПЕНДИИ"
+ 290 PRINT : PRINT "КОНЕЦ ГРУППЫ-99 ВМЕСТО НОМЕРА ГРУППЫ И КЛАВИША <CR/LF>" : PRINT
+ 300 PRINT "КОНЕЦ ВВОДА-999 ВМЕСТО НОМЕРА ГРУППЫ И КЛАВИША <CR/LF>" : PRINT
+ 310 FOR V1B 1 ‹D1› V00
+ 320 INPUT V01 V1B ) V02 V1B ) V03 V1B )
+ 325 PRINT V01 V1B ) ; V02 V1B ) ; V03 V1B )
+ 330 IF V01 V1B ) = 99 GOTO 350 : IF V01 V1B ) = ‹E7› V09 ‹99› GOTO 380
+ 335 PRINT "ВВЕДЕН УЧАЩИЙСЯ НОМЕР" ; V1B
+ 340 NEXT V1B
+ 350 PRINT AT(1,18) : PRINT AT(23,30) : PRINT "!!!СНЯТЬ БЛОКИРОВКУ ЗАПИСИ!!!" : PRINT AT(25,30) : PRINT "ДЛЯ ЗАПИСИ НАЖМИТЕ <CONTINUE>" : PRINT AT(1,17) : STOP
+ 355 ‹S76› ‹D6› ‹E0› V01 , ‹E0› V02 , ‹E0› V03 , ‹E0› V04 , ‹E0› V05 , ‹E0› V06 , ‹E0› V07 , ‹E0› V08 , ‹E0› V09 , ‹E0› V0A , ‹E0› V0B , ‹E0› V0C , ‹E0› V0D , ‹E0› V0E , ‹E0› V0F , ‹E0› V10
+ 360 FOR V1B 1 ‹D1› V00 : V03 V1B ) = "0" : NEXT V1B : ‹S06› V04 : ‹SE0› = : ‹SEF› V01 V04 ‹E0› V02 = ‹EF› : ‹S06› V04 : ‹SE0› = ‹EF› V06 V01
+ 370 ‹S76› ‹D6› ‹D7› : GOTO V02 ‹80›
+ 380 ‹S76› ‹D6› ‹D7›
+ 390 ‹S77› : GOTO V00 2
+ 400 PRINT "ЧТЕНИЕ С ДИСКА"
+ 410 PRINT "ВВЕДИТЕ НОМЕР ГРУППЫ(НОМЕР=0-ПЕЧАТЬ С ПЕРВОЙ ГРУППЫ)"
+ 420 INPUT V1C
+ 425 PRINT "РАБОТА НА АЦПУ-1; НА ЭКРАНЕ-2" : INPUT V1D : IF V1D = 2 GOTO 426 : IF V1D = 1 GOTO 427 : PRINT "НЕВЕРНЫЙ ВВОД" : GOTO V04 %
+ 426 SELECT V07 V05 : SELECT V05 V06 : GOTO V04 0
+ 427 SELECT V07 V0C
+ 430 GOSUB V15 V00
+ 490 FOR V1B 1 ‹D1› V00
+ 500 PRINT V01 V1B ) ; V02 V1B ) ; V03 V1B ) ; V06 V1B ) ; V09 V1B ) ; V0A V1B ) ; V0B V1B ) ; V0C V1B ) ; V04 V1B ) ; V05 V1B ) ; V0D V1B ) ; V0F V1B ) ; V10 V1B )
+ 501 IF V01 V1B ) = 99 GOTO 520
+ 510 NEXT V1B
+ 520 ‹S74› ‹E0› V01 ‹E0› V02 ‹E0› V03 ‹E0› V04 ‹E0› V05 ‹E0› V06 ‹E0› V07 ‹E0› V08 ‹E0› V09 ‹E0› V0A ‹E0› V0B ‹E0› V0C ‹E0› V0D ‹E0› V0E ‹E0› V0F ‹E0› V10
+ 525 ‹S1E› V05 @
+ 530 GOTO V04 ‹90›
+ 540 PRINT "КОНЕЦ ПЕЧАТИ" : GOTO V00 0
+ 600 PRINT "КОРРЕКТИРОВКА ПО СТРОКЕ В ГРУППЕ"
+ 610 PRINT "ВВЕДИТЕ НОМЕР ГРУППЫ (НОМЕР=0-КОНЕЦ КОРРЕКТИРОВКИ)"
+ 620 INPUT V1C : IF V1C = 0 GOTO 975
+ 630 GOSUB V15 V00
+ 670 PRINT : PRINT : PRINT : PRINT "КОД СТРОКИ (НОМЕР=-1-КОНЕЦ КОРРЕКТИРОВКИ ГРУППЫ)"
+ 680 INPUT V1E : IF V1E = ‹E9› 1 GOTO 960
+ 690 PRINT AT(1,3) : PRINT : PRINT "1-НОМЕР ГРУППЫ"
+ 700 PRINT "2-ПОИМ.НОМЕР"
+ 710 PRINT "3-Ф.И.О. УЧАЩЕГОСЯ"
+ 720 PRINT "4-ЗАРПЛАТА"
+ 730 PRINT "5-К-ВО ВЫХОДНЫХ ДНЕЙ"
+ 740 PRINT "6-К-ВО ДНЕЙ ПРАКТИКИ"
+ 750 PRINT "7-К-ВО ДНЕЙ БОЛЕЗНИ"
+ 760 PRINT "8-КОМПЕНСАЦИЯ"
+ 770 PRINT "9-ДЕПОНЕНТ"
+ 780 PRINT "10-УДЕРЖАНИЯ"
+ 800 FOR V1B 1 ‹D1› V00 : IF V02 V1B ) = V1E GOTO 820 : IF V01 V1B ) = 99 GOTO 977
+ 810 NEXT V1B
+ 820 PRINT AT(1,5) : PRINT V03 V1B ) : PRINT AT(19,1) : PRINT : PRINT "НОМЕР ЭЛЕМЕНТА (НОМЕР=0-КОНЕЦ КОРРЕКТИРОВКИ СТРОКИ)"
+ 830 INPUT V1F : IF V1F > 18 GOTO 978 : IF V1F = 0 GOTO 670
+ 840 ON V1F ‹CD› V08 P V08 ` V08 p V08 ‹80› V08 ‹90› V09 V00 V09 V10 V09   V09 0 V09 @
+ 850 PRINT V01 V1B ) : INPUT V01 V1B ) : GOTO V06 ‹90›
+ 860 PRINT V02 V1B ) : INPUT V02 V1B ) : GOTO V06 ‹90›
+ 870 PRINT V03 V1B ) : INPUT V03 V1B ) : GOTO V06 ‹90›
+ 880 PRINT V06 V1B ) : INPUT V06 V1B ) : GOTO V06 ‹90›
+ 890 PRINT V0A V1B ) : INPUT V0A V1B ) : V09 V1B ) = 1 : IF V0A V1B ) AT(0,0) : V09 V1B ) = 0 : GOTO V06 ‹90›
+ 900 PRINT V0C V1B ) : INPUT V0C V1B ) : V0B V1B ) = 2 : IF V0C V1B ) AT(0,0) : V0B V1B ) = 0 : GOTO V06 ‹90›
+ 910 PRINT V05 V1B ) : INPUT V05 V1B ) : V04 V1B ) = 3 : IF V05 V1B ) AT(0,0) : V04 V1B ) = 0 : GOTO V06 ‹90›
+ 920 PRINT V0D V1B ) : INPUT V0D V1B ) : GOTO V06 ‹90›
+ 930 PRINT V0F V1B ) : INPUT V0F V1B ) : GOTO V06 ‹90›
+ 940 PRINT V10 V1B ) : INPUT V10 V1B ) : GOTO V06 ‹90›
+ 960 PRINT AT(1,18) : PRINT AT(23,30) : PRINT "!!!СНЯТЬ БЛОКИРОВКУ ЗАПИСИ!!!" : PRINT AT(25,30) : PRINT "ДЛЯ ЗАПИСИ НАЖМИТЕ -<CONTINUE>" : PRINT AT(1,17) : STOP : DBACKSPACE 1
+ 965 ‹S76› ‹D6› ‹E0› V01 , ‹E0› V02 , ‹E0› V03 , ‹E0› V04 , ‹E0› V05 , ‹E0› V06 , ‹E0› V07 , ‹E0› V08 , ‹E0› V09 , ‹E0› V0A , ‹E0› V0B , ‹E0› V0C , ‹E0› V0D , ‹E0› V0E , ‹E0› V0F , ‹E0› V10
+ 970 FOR V1B 1 ‹D1› V00 : V03 V1B ) = "0" : NEXT V1B : ‹S06› V04 : ‹SE0› = : ‹SEF› V01 V04 ‹E0› V02 = ‹EF› : ‹S06› V04 : ‹SE0› = ‹EF› V06 V01
+ 975 ‹S77› : GOTO V00 0
+ 977 PRINT "НЕСУЩЕСТВУЮЩИЙ КОД СТРОКИ" : GOTO V06 p
+ 978 PRINT "НЕСУЩЕСТВУЮЩИЙ НОМЕР ЭЛЕМЕНТА" : GOTO V08
+ 980 PRINT "КОРРЕКТИРОВКА ПО СТОЛБЦУ В ГРУППЕ"
+ 990 PRINT "ВВЕДИТЕ НОМЕР ГРУППЫ (НОМЕР=0-КОНЕЦ КОРРЕКТИРОВКИ)"
+1000 INPUT V1C : IF V1C = 0 GOTO 1420
+1010 GOSUB V15 V00
+1100 PRINT AT(1,3)
+1110 PRINT "4-ЗАРПЛАТА"
+1120 PRINT "5-К-ВО ВЫХОДНЫХ ДНЕЙ"
+1130 PRINT "6-К-ВО ДНЕЙ ПРАКТИКИ"
+1140 PRINT "7-К-ВО ДНЕЙ БОЛЕЗНИ"
+1150 PRINT "8-КОМПЕНСАЦИЯ"
+1160 PRINT "9-ДЕПОНЕНТ"
+1170 PRINT "10-УДЕРЖАНИЯ"
+1178 PRINT : PRINT "НОМЕР ЭЛЕМЕНТА (НОМЕР=0-КОНЕЦ КОРРЕКТИРОВКИ ГРУППЫ)"
+1179 INPUT V1F : IF V1F > 10 GOTO 1450 : IF V1F = 0 GOTO 1400 : IF V1F ‹D7› 4 GOTO 1450
+1180 PRINT "ЗНАЧЕНИЕ ЗАНОСИМОЙ В СТОЛБЕЦ КОНСТАНТЫ" : INPUT
+1200 ON V1F ‹CD› V14 0 V14 0 V14 0 V12 @ V12 P V12 ` V12 p V12 ‹80› V12 ‹90› V13 V00
+1240 FOR V1B 1 ‹D1› V00 : IF V01 V1B ) = 99 GOTO 1100 : V06 V1B ) =   : NEXT V1B : GOTO V11 V00
+1250 IF   = 0 GOTO 1255 : FOR V1B 1 ‹D1› V00 : IF V01 V1B ) = 99 GOTO 1100 : V0A V1B ) =   : V09 V1B ) = 1 : NEXT V1B : GOTO V11 V00
+1255 FOR V1B 1 ‹D1› V00 : IF V01 V1B ) = 99 GOTO 1100 : V0A V1B ) = 0 : V09 V1B ) = 0 : NEXT V1B : GOTO V11 V00
+1260 IF   = 0 GOTO 1265 : FOR V1B 1 ‹D1› V00 : IF V01 V1B ) = 99 GOTO 1100 : V0C V1B ) =   : V0B V1B ) = 2 : NEXT V1B : GOTO V11 V00
+1265 FOR V1B 1 ‹D1› V00 : IF V01 V1B ) = 99 GOTO 1100 : V0C V1B ) = 0 : V0B V1B ) = 0 : NEXT V1B : GOTO V11 V00
+1270 IF   = 0 GOTO 1275 : FOR V1B 1 ‹D1› V00 : IF V01 V1B ) = 99 GOTO 1100 : V05 V1B ) =   : V04 V1B ) = 3 : NEXT V1B : GOTO V11 V00
+1275 FOR V1B 1 ‹D1› V00 : IF V01 V1B ) = 99 GOTO 1100 : V05 V1B ) = 0 : V04 V1B ) = 0 : NEXT V1B : GOTO V11 V00
+1280 FOR V1B 1 ‹D1› V00 : IF V01 V1B ) = 99 GOTO 1100 : V0D V1B ) =   : NEXT V1B : GOTO V11 V00
+1290 FOR V1B 1 ‹D1› V00 : IF V01 V1B ) = 99 GOTO 1100 : V0F V1B ) =   : NEXT V1B : GOTO V11 V00
+1300 FOR V1B 1 ‹D1› V00 : IF V01 V1B ) = 99 GOTO 1100 : V10 V1B ) =   : NEXT V1B : GOTO V11 V00
+1400 PRINT AT(1,18) : PRINT AT(23,30) : PRINT "!!!СНЯТЬ БЛОКИРОВКУ ЗАПИСИ!!!" : PRINT AT(25,30) : PRINT "ДЛЯ ЗАПИСИ НАЖМИТЕ -<CONTINUE>" : PRINT AT(1,17) : STOP : DBACKSPACE 1
+1405 ‹S76› ‹D6› ‹E0› V01 , ‹E0› V02 , ‹E0› V03 , ‹E0› V04 , ‹E0› V05 , ‹E0› V06 , ‹E0› V07 , ‹E0› V08 , ‹E0› V09 , ‹E0› V0A , ‹E0› V0B , ‹E0› V0C , ‹E0› V0D , ‹E0› V0E , ‹E0› V0F , ‹E0› V10
+1410 FOR V1B 1 ‹D1› V00 : V03 V1B ) = "0" : NEXT V1B : ‹S06› V04 : ‹SE0› = : ‹SEF› V01 V04 ‹E0› V02 = ‹EF› : ‹S06› V04 : ‹SE0› = ‹EF› V06 V01
+1420 ‹S77› : GOTO V00 0
+1430 PRINT "НЕКОРРЕКТИРУЕМЫЙ ЭЛЕМЕНТ" : GOTO V11 u
+1450 PRINT "НЕСУЩЕСТВУЮЩИЙ НОМЕР ЭЛЕМЕНТА" : GOTO V11 u
+1460 REM "ПОДПРОГРАММА БИНАРНОГО ПОИСКА"
+1500 V12 1 ) = 11 : V12 2 ) = 12 : V12 3 ) = ‹E7› V01 V11 : V12 4 ) = ‹E7› V01 V12 : V12 5 ) = ‹E7› V01 V13 : V12 6 ) = ‹E7› V01 V15 : V12 7 ) = ‹E7› V01 V16 : V12 8 ) = ‹E7› V01 V17
+1501 V12 9 ) = ‹E7› V02 V01 : V12 10 ) = ‹E7› V02 V02 : V12 11 ) = ‹E7› V02 V03 : V12 12 ) = ‹E7› V02 V04 : V12 13 ) = ‹E7› V02 V05 : V12 14 ) = ‹E7› V02 V06 : V12 15 ) = ‹E7› V03 ‹91› : V12 16 ) = ‹E7› V03 ‹92› : V12 17 ) = ‹E7› V03 ‹95› : V12 18 ) = ‹E7› V03 ‹96› : V12 19 ) = ‹E7› V03 ‹97›
+1502 FOR ! 1 ‹D1› 21 : IF V12 ! ) = V1C GOTO 1505 : NEXT ! : GOTO V16 V00
+1505 DBACKSPACE ‹D6› : DSKIP ( ! ‹E9› 1 ) ‹DF› 28 V05
+1506 ‹S74› ‹E0› V01 ‹E0› V02 ‹E0› V03 ‹E0› V04 ‹E0› V05 ‹E0› V06 ‹E0› V07 ‹E0› V08 ‹E0› V09 ‹E0› V0A ‹E0› V0B ‹E0› V0C ‹E0› V0D ‹E0› V0E ‹E0› V0F ‹E0› V10
+1507 RETURN
+1600 PRINT "НЕСУЩЕСТВУЮЩАЯ ГРУППА" : STOP "НАЖМИТЕ КЛ.CONTINUE" : GOTO V00 0
+2000 REM ***КОПИРОВАНИЕ БАЗЫ ДАННЫХ С ДИСКА НА ДИСК***
+2010 PRINT "КОПИРОВАНИЕ БАЗЫ ДАННЫХ С ДИСКА НА ДИСК" : PRINT "ДИСК ПРИЕМНИК-F" : PRINT "ДИСК ИСТОЧНИК-R"
+2012 SELECT V00 V00 V18 V00 , V00 V01 V18 V01
+2015 LIMITS V01 ‹DB› 1 , V11 V18 V19 V1A : ‹S75› V01 ‹DB› 1 , V11
+2020 DBACKSPACE ‹DB› 1 , ( 20 ‹DF› V1A ‹EA› 1 ) V05 : DSKIP ‹D7›
+2030 INPUT "НОМЕР ГРУППЫ" V1C
+2040 ‹S74› ‹DB› 1 , ‹E0› V01 ‹E0› V02 ‹E0› V03 ‹E0› V04 ‹E0› V05 ‹E0› V06 ‹E0› V07 ‹E0› V08 ‹E0› V09 ‹E0› V0A ‹E0› V0B ‹E0› V0C ‹E0› V0D ‹E0› V0E ‹E0› V0F ‹E0› V10 : ‹S1E›
+2050 IF V1C = V01 1 ) GOTO 2060 : GOTO   @
+2060 PRINT "ЗАПИСАТЬ ГРУППУ НОМЕР " ; V01 1 ) ; "НА ДИСК F" : INPUT "(ДА-1 , НЕТ-2)" " : IF " = 1 GOTO 2120 : IF " = 2 GOTO 2070 : GOTO   `
+2070 ‹S74› ‹DB› 1 , ‹E0› V01 ‹E0› V02 ‹E0› V03 ‹E0› V04 ‹E0› V05 ‹E0› V06 ‹E0› V07 ‹E0› V08 ‹E0› V09 ‹E0› V0A ‹E0› V0B ‹E0› V0C ‹E0› V0D ‹E0› V0E ‹E0› V0F ‹E0› V10 : ‹S1E›   `
+2120 PRINT AT(1,18) : PRINT AT(23,30) : PRINT "!!!СНЯТЬ БЛОКИРОВКУ ЗАПИСИ!!!" : PRINT AT(25,30) : PRINT "ДЛЯ ЗАПИСИ НАЖМИТЕ <CONTINUE>" : PRINT AT(1,17) : STOP
+2130 ‹S76› ‹D6› ‹E0› V01 , ‹E0› V02 , ‹E0› V03 , ‹E0› V04 , ‹E0› V05 , ‹E0› V06 , ‹E0› V07 , ‹E0› V08 , ‹E0› V09 , ‹E0› V0A , ‹E0› V0B , ‹E0› V0C , ‹E0› V0D , ‹E0› V0E , ‹E0› V0F , ‹E0› V10
+2140 FOR V1B 1 ‹D1› V00 : V03 V1B ) = "0" : NEXT V1B : ‹S06› V04 : ‹SE0› = : ‹SEF› V01 V04 ‹E0› V02 = ‹EF› : ‹S06› V04 : ‹SE0› = ‹EF› V06 V01
+2160 ‹S74› ‹DB› 1 , ‹E0› V01 ‹E0› V02 ‹E0› V03 ‹E0› V04 ‹E0› V05 ‹E0› V06 ‹E0› V07 ‹E0› V08 ‹E0› V09 ‹E0› V0A ‹E0› V0B ‹E0› V0C ‹E0› V0D ‹E0› V0E ‹E0› V0F ‹E0› V10 ‹E0› # ‹E0› $ : ‹S1E›
+2170 PRINT "ЗАПИСАТЬ ГРУППУ НОМЕР " ; V01 1 ) ; "НА ДИСК F" : INPUT "(ДА-1 , НЕТ-2)" " : IF " = 1 GOTO 2120 : IF " = 2 GOTO 2160 : GOTO ! p
+3000 REM  ПОДПРОГРАММА ОБРАБОТКИ ОШИБОК : DEFFN' d   V03 V14
+3050 IF V16 = "55" GOTO 3155 : IF V16 = "57" GOTO 3157
+3060 IF V16 = "60" GOTO 3160 : IF V16 = "67" GOTO 3167 : IF V16 = "68" GOTO 3168
+3070 IF V16 = "71" GOTO 3171 : IF V16 = "72" GOTO 3172 : IF V16 = "73" GOTO 3173
+3074 IF V16 = "74" GOTO 3174 : IF V16 = "75" GOTO 3175 : IF V16 = "76" GOTO 3176
+3078 IF V16 = "78" GOTO 3178
+3080 IF V16 = "8001" GOTO 3181 : IF V16 = "8003" GOTO 3183 : IF V16 = "8005" GOTO 3185
+3087 IF V16 = "8007" GOTO 3187 : IF V16 = "8008" GOTO 3188
+3090 IF V16 = "800A" GOTO 3190 : IF V16 = "800C" GOTO 3192 : IF V16 = "800E" GOTO 3194
+3100 PRINT ‹DC› , V05 , "ОШИБКА" ; V16 ; "В СТРОКЕ" ; V17 : GOTO ‹99› ‹99›
+3155 PRINT ‹DC› , V05 , "НЕДОПУСТИМЫЙ АДРЕС СЕКТОРА" : PRINT AT(2,7) V07 : RETURN
+3157 PRINT ‹DC› , V05 , "НЕДОПУСТИМЫЙ АДРЕС СЕКТОРА" : PRINT AT(2,7) V07 : RETURN
+3167 PRINT ‹DC› , V05 , "НЕПРАВИЛЬНЫЙ ТИП ЗАПИСИ P/D" : PRINT AT(2,7) V07 : RETURN
+3168 PRINT ‹DC› , V05 , "МАЛ БУФЕР ВВОДА-ВЫВОДА" : PRINT AT(2,7) V07 : RETURN
+3171 PRINT ‹DC› , V05 , "ФАЙЛ НЕ ОТКРЫТ ИЛИ ОТСУТСТВУЕТ" : PRINT AT(2,7) V07 : RETURN
+3172 PRINT ‹DC› , V05 , "ФАЙЛ ВЫЧЕРКНУТ" : PRINT AT(2,7) V07 : RETURN
+3173 PRINT ‹DC› , V05 , "ФАЙЛ ОТСУТСТВУЕТ В КАТАЛОГЕ" : PRINT AT(2,7) V07 : RETURN
+3174 PRINT ‹DC› , V05 , "АДРЕС СЕКТОРА ВНЕ ФАЙЛА" : PRINT AT(2,7) V07 : RETURN
+3175 PRINT ‹DC› , V05 , "КОНЕЦ КАТАЛОГА" : PRINT AT(2,7) V07 : RETURN
+3176 PRINT ‹DC› , V05 , "ФАЙЛ ЗАПОЛНЕН" : PRINT AT(2,7) V07 : RETURN
+3178 PRINT ‹DC› , V05 , "УКАЗАТЕЛЬ КАТАЛОГА ЗАПОЛНЕН" : PRINT AT(2,7) V07 : RETURN
+3181 RETURN
+3183 PRINT ‹DC› , V05 , "УСТАНОВИТЕ ДИСК" : PRINT AT(2,7) V07 : RETURN
+3185 PRINT ‹DC› , V05 , "ВЫКЛЮЧИТЕ ЗАЩИТУ ЗАПИСИ" : PRINT AT(2,7) V07 : RETURN
+3187 PRINT ‹DC› , V05 , "ОШИБКА К.С.КОНТР.ЧТЕНИЯ ПОСЛЕ ЗАПИСИ" : PRINT AT(2,7) V07 : RETURN
+3188 PRINT ‹DC› , V05 , "АВАРИЯ БИФ" : PRINT AT(2,7) V07 : RETURN
+3190 PRINT ‹DC› , V05 , "ОШИБКА ПО К.С. ПРИ СЧИТЫВАНИИ" : PRINT AT(2,7) V07 : RETURN
+3192 PRINT ‹DC› , V05 , "СЕКТОР НЕ НАЙДЕН" : PRINT AT(2,7) V07 : RETURN
+3194 PRINT ‹DC› , V05 , "НЕДОПУСТИМЫЙ АДРЕС СЕКТОРА" : PRINT AT(2,7) V07 : RETURN
+9000 SCRATCH V00 "S1" : ‹S80› V00 ‹D6› ‹D2› ( "S1" ) "S1" : STOP
+9910 DEFFN' V00 V00 V00 V00 V00 : SELECT V07 V05 ( V00 P : PRINT AT(1,3) ; "ЗАГРУЗКА УПРАВЛЯЮЩЕЙ ПРОГРАММЫ" : ‹S7D› V00 "S0" V00 V01 , ‹99› ‹99›
+9999 END
