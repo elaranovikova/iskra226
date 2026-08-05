@@ -59,17 +59,22 @@ def decode(w):
                 % addr, "class")
 
     if hi == 0xE:
-        blk = (w >> 10) & 0x3            # E0-3 / E4-7 / E8-B / EC-F
+        # Sub-op nibble (bits 11-8). Only the three sub-blocks with a
+        # worked example in Aladiev are trusted; LE field statistics
+        # show the rest of the E block carries mode bits (F-heavy
+        # fields), so it is disassembled but not executed.
+        sub = (w >> 8) & 0xF
         rb = (w >> 4) & 0xF
         rr = w & 0xF
-        if blk == 0:
+        if sub == 0x0 and rb != 0xF and rr != 0xF:
             return ("TBL", "УП[RS+RB%d] -> RS,RR%d" % (rb, rr), "doc")
-        if blk == 1:
+        if sub == 0x5 and rb != 0xF and rr != 0xF:
             return ("MEMW", "ОП[RB%d]+RS -> RR%d" % (rb, rr), "doc")
-        if blk == 2:
+        if sub == 0x8 and rb != 0xF and rr != 0xF:
             return ("DEV", "RB%d gateway -> RR%d (УП byte / КУ)" % (rb, rr),
                     "doc")
-        return ("EIO?", "E-block C-F, undocumented", "unk")
+        return ("E%X." % sub, "E sub-op, mode fields open (rb=%X rr=%X)"
+                % (rb, rr), "class")
 
     return ("W_%X" % hi, "class undocumented", "unk")
 

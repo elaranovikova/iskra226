@@ -19,6 +19,10 @@ semantics are documented and traps precisely on the rest. Coverage is about
 12 % executable, 30 % class-known, 58 % unknown. It does not boot, and
 `findings/` says exactly why.
 
+`emulator/iskra_basic.py` is the decoder underneath the disks: catalog,
+format, LIST, hex dump. It turns a tokenized BASIC 02 program back into
+source, which is how `listings/` was made.
+
 `emulator/iskra.py` is the disk, sector and catalog toolkit.
 `emulator/firmware_extract.py` recovers the interpreter builds.
 
@@ -55,6 +59,15 @@ criterion that killed it. `microcode-or-machine-code.md` is the question I
 got wrong for a month, kept because the wrong month is part of the record.
 `architecture.md` is the answer. `run-report.md` is what the research tool
 does when you point it at a build.
+
+**listings/**, decoded BASIC source, straight from the disks by
+`iskra_basic.py`: the STIPENDIYA payroll system of vocational school
+SPTU-132, 1988/89, authors Gorenburgov, Vintskevich and Muchkina, and the
+BAM database suite.
+
+**reconstruction/**, an HTML reproduction of the dispatcher, in Russian and
+in a Russian/English version. It is a re-implementation, not emulation; the
+Python is what executes bytes.
 
 **docs/**, the scanned Russian manuals, mirrored from Jim Battle's
 collection at wang2200.org, plus the independent on-disk format
