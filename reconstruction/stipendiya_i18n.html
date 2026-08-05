@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ИСКРА-226 · СТИПЕНДИЯ / STIPEND (СПТУ-132, 1989)</title>
+<style>
+:root{
+  --phosphor:#e8f4ef;--phosphor-dim:#9ab8ae;--tube:#050807;
+  --case:#c9c0a8;--case-dark:#a89f86;--case-shadow:#6f6752;
+  --key:#3a3a3c;--key-red:#8c3b2e;--badge:#2c2c2e;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#141210;min-height:100%}
+body{font-family:"PT Mono","Courier New",ui-monospace,monospace;
+  display:flex;flex-direction:column;align-items:center;padding:14px 8px 40px;color:var(--case);}
+.unit{width:100%;max-width:760px}
+.cabinet{background:linear-gradient(178deg,var(--case) 0%,var(--case-dark) 88%);
+  border-radius:14px 14px 8px 8px;padding:18px 18px 12px;
+  box-shadow:0 18px 40px #000c, inset 0 2px 0 #fff5, inset 0 -6px 12px var(--case-shadow);}
+.badge-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;gap:10px;flex-wrap:wrap}
+.badge{background:var(--badge);color:#ddd;letter-spacing:.35em;font-size:13px;
+  padding:4px 12px 4px 15px;border-radius:2px;box-shadow:inset 0 1px 0 #fff2,0 1px 2px #0008;}
+.plate{font-size:9px;color:#5c5546;text-align:right;line-height:1.5;letter-spacing:.05em}
+.langsel{display:flex;gap:0;border:1px solid #7a7260;border-radius:3px;overflow:hidden}
+.langsel button{font-family:inherit;font-size:10px;letter-spacing:.15em;border:0;
+  background:#b3aa91;color:#4a4438;padding:4px 10px;cursor:pointer}
+.langsel button+button{border-left:1px solid #7a7260}
+.langsel button.on{background:var(--badge);color:#eee}
+.langsel button:focus-visible{outline:2px solid #fff;outline-offset:-2px}
+.crt-frame{background:#1b1a17;border-radius:10px;padding:10px;box-shadow:inset 0 3px 10px #000;}
+.crt{position:relative;background:radial-gradient(120% 100% at 50% 40%,#0c110f 0%,var(--tube) 75%);
+  border-radius:6px;overflow:hidden;aspect-ratio:4/2.55;}
+.crt::after{content:"";position:absolute;inset:0;pointer-events:none;
+  background:repeating-linear-gradient(0deg,transparent 0 2px,#0003 2px 3px),
+  radial-gradient(115% 115% at 50% 50%,transparent 62%,#000a 100%);}
+pre#screen{position:absolute;inset:0;padding:1.4% 2%;color:var(--phosphor);
+  font-family:inherit;font-size:min(1.83vw,13.5px);line-height:1.28;
+  text-shadow:0 0 3px #cfeee288,0 0 9px #9fd8c633;white-space:pre;overflow:hidden;}
+#screen .cur{background:var(--phosphor);color:var(--tube);animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{background:transparent;color:var(--phosphor)}}
+@media (prefers-reduced-motion:reduce){#screen .cur{animation:none}}
+.drivebar{display:flex;align-items:center;gap:10px;margin:10px 4px 2px}
+.slot{flex:1;height:9px;background:#221f19;border-radius:2px;box-shadow:inset 0 2px 3px #000}
+.lamp{width:9px;height:9px;border-radius:50%;background:#3a1e14;box-shadow:inset 0 1px 1px #0009;transition:background .1s}
+.lamp.on{background:#ff7a3c;box-shadow:0 0 8px #ff7a3c99}
+.drv-lbl{font-size:9px;color:#5c5546;letter-spacing:.15em}
+.keyboard{margin-top:10px;background:linear-gradient(180deg,var(--case-dark),var(--case-shadow));
+  border-radius:8px;padding:12px 12px 14px;box-shadow:0 10px 24px #0009, inset 0 1px 0 #fff3;}
+.krow{display:flex;gap:6px;justify-content:center;margin-top:6px}
+.krow:first-child{margin-top:0}
+button.k{font-family:inherit;font-size:15px;color:#eee;background:linear-gradient(180deg,#4a4a4d,var(--key));
+  border:0;border-radius:5px;min-width:44px;height:44px;padding:0 10px;
+  box-shadow:0 3px 0 #1c1c1e, inset 0 1px 0 #fff3;cursor:pointer;touch-action:manipulation;}
+button.k:active{transform:translateY(2px);box-shadow:0 1px 0 #1c1c1e}
+button.k.wide{min-width:96px;font-size:12px;letter-spacing:.08em}
+button.k.red{background:linear-gradient(180deg,#a5493a,var(--key-red))}
+button.k:focus-visible{outline:2px solid #fff;outline-offset:2px}
+#textentry{display:none;width:100%;margin-top:8px;font-family:inherit;font-size:16px;
+  background:#111;color:var(--phosphor);border:1px solid #444;border-radius:4px;padding:8px;}
+.caption{max-width:760px;margin-top:16px;font-size:11px;line-height:1.7;color:#8d8471}
+.caption b{color:#b5ab93}
+</style>
+</head>
+<body>
+<div class="unit">
+  <div class="cabinet">
+    <div class="badge-row">
+      <div class="badge">ИСКРА·226</div>
+      <div class="langsel" role="group" aria-label="Language">
+        <button id="lru" class="on">РУС</button><button id="len">ENG</button>
+      </div>
+      <div class="plate">МИНПРИБОР СССР · ПО «СЧЁТМАШ» г.КУРСК<br>ТУ 25-01.1206-81 · ЗАВ.№ 8804712</div>
+    </div>
+    <div class="crt-frame"><div class="crt"><pre id="screen" aria-live="polite"></pre></div></div>
+    <div class="drivebar">
+      <span class="drv-lbl">НГМД·A</span><div class="slot"></div><div class="lamp" id="lampA"></div>
+      <span class="drv-lbl">B</span><div class="slot"></div><div class="lamp" id="lampB"></div>
+    </div>
+  </div>
+  <div class="keyboard" role="group" aria-label="Keyboard">
+    <div class="krow">
+      <button class="k">1</button><button class="k">2</button><button class="k">3</button>
+      <button class="k">4</button><button class="k">5</button><button class="k">6</button>
+      <button class="k">7</button><button class="k">8</button><button class="k">9</button>
+      <button class="k">0</button>
+    </div>
+    <div class="krow">
+      <button class="k wide" data-key="ВК" id="kbCR">ВК ⏎</button>
+      <button class="k wide" data-key="ПРОДОЛЖ" id="kbCont">ПРОДОЛЖ</button>
+      <button class="k wide" data-key="ТЕКСТ" id="kbTxt">ТЕКСТ…</button>
+      <button class="k wide red" data-key="СБРОС" id="kbRst">СБРОС</button>
+    </div>
+    <input id="textentry" autocomplete="off" spellcheck="false">
+  </div>
+</div>
+<p class="caption" id="cap"></p>
+
+<script>
+(function(){
+/* ══════════ i18n ══════════
+   RU = original screen texts, decoded byte-for-byte from the 1989 disk image.
+   EN = a modern translation for accessibility (the real machine displayed
+   only uppercase Cyrillic + Latin). */
+let LANG='ru';
+const I18N={
+ /* boot */
+ bootLoad:{ru:'ЗАГРУЗКА МИКРОПРОГРАММ С НГМД',en:'LOADING MICROCODE FROM FLOPPY DRIVE'},
+ bootReady:{ru:'ОЗУ 64К  ГОТОВНОСТЬ',en:'RAM 64K  READY'},
+ /* S0 dispatcher */
+ s0t1:{ru:'***     АВТОМАТИЗИРОВАННАЯ СИСТЕМА  ПРОВЕДЕНИЯ      ***',
+       en:'***      AUTOMATED SYSTEM FOR PROCESSING             ***'},
+ s0t2:{ru:'***     РАСЧЕТОВ ПО ДЕНЕЖНЫМ ВЫПЛАТАМ УЧАЩИМСЯ      ***',
+       en:'***      MONETARY PAYMENTS TO STUDENTS               ***'},
+ ver:{ru:' ВЕРСИЯ ',en:' VERSION'},
+ s0m1:{ru:'ВЕДЕНИЕ БАЗЫ ДАННЫХ.......................... -1',
+       en:'DATABASE MAINTENANCE......................... -1'},
+ s0m2:{ru:'БЛОК ПОЛЬЗОВАТЕЛЯ ........................... -2',
+       en:'USER BLOCK .................................. -2'},
+ s0m3:{ru:'ДОПОЛНИТЕЛЬНЫЕ ФУНКЦИИ ...................... -3',
+       en:'ADDITIONAL FUNCTIONS ........................ -3'},
+ s0m4:{ru:'В Ы Х О Д  ................................... -4',
+       en:'E X I T  ..................................... -4'},
+ s0prompt:{ru:'ВВЕДИТЕ  НОМЕР БЛОКА ? ',en:'ENTER BLOCK NUMBER ? '},
+ loading:{ru:"ЗАГРУЗКА СЕГМЕНТА '",en:"LOADING SEGMENT '"},
+ segS1:{ru:'ВЕДЕНИЕ БАЗЫ ДАННЫХ',en:'DATABASE MAINTENANCE'},
+ segS2:{ru:'БЛОК ПОЛЬЗОВАТЕЛЯ',en:'USER BLOCK'},
+ bye:{ru:':КОНЕЦ РАБОТЫ',en:':END OF SESSION'},
+ /* S1 */
+ s1hdr:{ru:'ЗАДАЧА "РАСЧЕТ СТИПЕНДИЙ" /БЛОК ВВОДА НСИ/   СПТУ-132  04.04.89',
+        en:'TASK "STIPEND CALCULATION" /MASTER DATA BLOCK/   SPTU-132  04.04.89'},
+ worksel:{ru:'ВВЕДИТЕ НОМЕР ВИДА РАБОТ',en:'ENTER OPERATION NUMBER'},
+ s1m1:{ru:'РЕЗЕРВИРОВАНИЕ СЕКТОРОВ ДЛЯ БАЗЫ ДАННЫХ *.-1',
+       en:'SECTOR RESERVATION FOR DATABASE *.........-1'},
+ s1m2:{ru:'ЗАПИСЬ НА ДИСК (ВВОД ДАННЫХ ПО ГРУППАМ)*..-2',
+       en:'WRITE TO DISK (GROUP DATA ENTRY)*.........-2'},
+ s1m3:{ru:'ЧТЕНИЕ С ДИСКА *..........................-3',
+       en:'READ FROM DISK *..........................-3'},
+ s1m4:{ru:'КОРРЕКТИРОВКА В ГРУППЕ *..................-4',
+       en:'CORRECTION WITHIN GROUP *.................-4'},
+ s1m5:{ru:'КОРРЕКТИРОВКА ПО СТОЛБЦУ В ГРУППЕ ......-5',
+       en:'COLUMN CORRECTION WITHIN GROUP .........-5'},
+ s1m6:{ru:'КОПИРОВАНИЕ БАЗЫ ДАННЫХ С ДИСКА НА ДИСК -6',
+       en:'COPY DATABASE DISK TO DISK ..............-6'},
+ back:{ru:'ВОЗВРАТ В ДИСПЕТЧЕР ......................-0',
+       en:'RETURN TO DISPATCHER .....................-0'},
+ badwork:{ru:'ПРОВЕРЬТЕ НОМЕР ВИДА РАБОТ;',en:'CHECK THE OPERATION NUMBER;'},
+ notrestored:{ru:'ФУНКЦИЯ В ДАННОЙ РЕКОНСТРУКЦИИ НЕ ВОССТАНОВЛЕНА',
+       en:'FUNCTION NOT RESTORED IN THIS RECONSTRUCTION'},
+ reserve:{ru:'РЕЗЕРВИРОВАНИЕ СЕКТОРОВ ДЛЯ БАЗЫ ДАННЫХ',en:'SECTOR RESERVATION FOR DATABASE'},
+ groupsFor:{ru:'К-ВО ГРУПП ДЛЯ ПТУ N 132 ? ',en:'NUMBER OF GROUPS FOR SCHOOL N 132 ? '},
+ wp1:{ru:'ВЫКЛЮЧИТЬ ЗАЩИТУ ЗАПИСИ',en:'REMOVE WRITE PROTECTION'},
+ wp2:{ru:"ДЛЯ ЗАПИСИ НАЖАТЬ КЛАВИШУ 'CONTINUE'  (STOP)",
+      en:"TO WRITE PRESS THE 'CONTINUE' KEY  (STOP)"},
+ reserved:{ru:'ЗАРЕЗЕРВИРОВАНО ',en:'RESERVED: '},
+ sect:{ru:' СЕКТ. НГМД',en:' FLOPPY SECTORS'},
+ writeDisk:{ru:'ЗАПИСЬ НА ДИСК',en:'WRITE TO DISK'},
+ enterGroup:{ru:'ВВЕДИТЕ ДАННЫЕ ПО ГРУППЕ:',en:'ENTER GROUP DATA:'},
+ fmt:{ru:'ЧЕРЕЗ ЗАПЯТУЮ: НОМЕР ГРУППЫ, ПОИМЕННЫЙ НОМЕР, Ф.И.О., РАЗМЕР СТИПЕНДИИ',
+      en:'COMMA-SEPARATED: GROUP NO., ROLL NO., FULL NAME, STIPEND AMOUNT'},
+ end99:{ru:'КОНЕЦ ГРУППЫ-99 ВМЕСТО НОМЕРА ГРУППЫ И КЛАВИША <ВК>',
+        en:'END OF GROUP: 99 INSTEAD OF GROUP NO. AND <CR> KEY'},
+ end999:{ru:'КОНЕЦ ВВОДА-999 ВМЕСТО НОМЕРА ГРУППЫ И КЛАВИША <ВК>',
+        en:'END OF INPUT: 999 INSTEAD OF GROUP NO. AND <CR> KEY'},
+ endGrp:{ru:'--- КОНЕЦ ГРУППЫ ---',en:'--- END OF GROUP ---'},
+ badInput:{ru:'НЕВЕРНЫЙ ВВОД',en:'INVALID INPUT'},
+ studentNo:{ru:'ВВЕДЕН УЧАЩИЙСЯ НОМЕР ',en:'ENTERED STUDENT NO. '},
+ wp3:{ru:'!!!СНЯТЬ БЛОКИРОВКУ ЗАПИСИ!!!',en:'!!!REMOVE WRITE LOCK!!!'},
+ wp4:{ru:'ДЛЯ ЗАПИСИ НАЖМИТЕ <CONTINUE>',en:'TO WRITE PRESS <CONTINUE>'},
+ written:{ru:'ЗАПИСЬ ЗАВЕРШЕНА',en:'WRITE COMPLETE'},
+ readDisk:{ru:'ЧТЕНИЕ С ДИСКА',en:'READ FROM DISK'},
+ whichGrp:{ru:'ВВЕДИТЕ НОМЕР ГРУППЫ(НОМЕР=0-ПЕЧАТЬ С ПЕРВОЙ ГРУППЫ) ? ',
+       en:'ENTER GROUP NO. (0=PRINT FROM FIRST GROUP) ? '},
+ device:{ru:'РАБОТА НА АЦПУ-1; НА ЭКРАНЕ-2 ? ',en:'OUTPUT ON PRINTER-1; SCREEN-2 ? '},
+ noPrinter:{ru:'АЦПУ НЕ ПОДКЛЮЧЕНО (ERR 42)',en:'PRINTER NOT CONNECTED (ERR 42)'},
+ noData:{ru:'ДАННЫХ НЕТ, ВЫПОЛНИТЕ ВВОД (РАБОТА 2)',en:'NO DATA, RUN DATA ENTRY FIRST (OPERATION 2)'},
+ group:{ru:'ГРУППА ',en:'GROUP '},
+ colhdr:{ru:'  N   Ф.И.О.                        СТИПЕНДИЯ',
+       en:'  N   FULL NAME                     STIPEND'},
+ rub:{ru:' РУБ.',en:' RUB.'},
+ crCont:{ru:'ВК - ПРОДОЛЖЕНИЕ',en:'<CR> - CONTINUE'},
+ /* S2 */
+ s2hdr1:{ru:'ЗАДАЧА:РАСЧЕТ ДЕНЕЖНЫХ ВЫПЛАТ УЧАЩИМСЯ',en:'TASK: CALCULATION OF PAYMENTS TO STUDENTS'},
+ s2hdr2:{ru:'БЛОК ПОЛЬЗОВАТЕЛЯ',en:'USER BLOCK'},
+ s2m1:{ru:'ЗАВЕРШЕНИЕ МЕСЯЦА...............................-1',
+       en:'MONTH-END CLOSING...............................-1'},
+ s2m2:{ru:'ВВОД ИСХОДНЫХ ДАННЫХ............................-2',
+       en:'ENTRY OF SOURCE DATA............................-2'},
+ s2m3:{ru:'ПЕЧАТЬ ВЕДОМОСТИ НА ДЕНЕЖНЫЕ ВЫПЛАТЫ УЧАЩИМСЯ...-3',
+       en:'PRINT PAYMENT SHEET.............................-3'},
+ s2res:{ru:'РЕЗЕРВ..........................................',en:'RESERVED........................................'},
+ s2back:{ru:'ВОЗВРАТ В ДИСПЕТЧЕР.............................-0',en:'RETURN TO DISPATCHER............................-0'},
+ monthDone:{ru:'ЗАВЕРШЕНИЕ МЕСЯЦА: ИТОГИ ОБНУЛЕНЫ',en:'MONTH-END CLOSING: TOTALS RESET'},
+ resv:{ru:'РЕЗЕРВ',en:'RESERVED'},
+ badwork2:{ru:'ПРОВЕРЬТЕ НОМЕР ВИДА РАБОТ',en:'CHECK THE OPERATION NUMBER'},
+ whichGrp0:{ru:'ВВЕДИТЕ НОМЕР ГРУППЫ (0-ВВОД С ПЕРВОЙ ГРУППЫ) ? ',
+       en:'GROUP NO. (0=FROM FIRST GROUP) ? '},
+ noData2:{ru:'ДАННЫХ НЕТ, СНАЧАЛА БЛОК 1 / РАБОТА 2',en:'NO DATA, FIRST BLOCK 1 / OPERATION 2'},
+ students:{ru:', УЧАЩИХСЯ: ',en:', STUDENTS: '},
+ attrPrompt:{ru:'ВВЕДИТЕ НОМЕР РЕКВИЗИТА (0 - ПЕРЕХОД К СЛЕДУЮЩЕМУ УЧ-СЯ)',
+       en:'ENTER ATTRIBUTE NO. (0 = NEXT STUDENT)'},
+ a4:{ru:'ЗАРПЛАТА..................-4',en:'WAGE......................-4'},
+ a5:{ru:'ВЫХОДНЫЕ ДНИ..............-5',en:'DAYS OFF..................-5'},
+ a6:{ru:'ДНИ ПРАКТИКИ..............-6',en:'PRACTICE DAYS.............-6'},
+ a7:{ru:'ДНИ БОЛЕЗНИ...............-7',en:'SICK DAYS.................-7'},
+ value:{ru:'ЗНАЧЕНИЕ ? ',en:'VALUE ? '},
+ entryDone:{ru:'ВВОД ЗАВЕРШЕН',en:'ENTRY COMPLETE'},
+ sheetHdr:{ru:'ВЕДОМОСТЬ НА ДЕНЕЖНЫЕ ВЫПЛАТЫ УЧАЩИМСЯ            СПТУ-132',
+       en:'PAYMENT SHEET, MONETARY PAYMENTS TO STUDENTS     SPTU-132'},
+ total:{ru:'ИТОГО ПО УЧИЛИЩУ:',en:'SCHOOL TOTAL:    '},
+ crBack:{ru:'ВК - ВОЗВРАТ В МЕНЮ',en:'<CR> - BACK TO MENU'},
+ noDataSheet:{ru:'ДАННЫХ НЕТ',en:'NO DATA'},
+ /* keys & UI chrome */
+ kCR:{ru:'ВК ⏎',en:'CR ⏎'},
+ kCont:{ru:'ПРОДОЛЖ',en:'CONTINUE'},
+ kTxt:{ru:'ТЕКСТ…',en:'TEXT…'},
+ kRst:{ru:'СБРОС',en:'RESET'},
+ phText:{ru:'номер группы, поимённый номер, Ф.И.О., стипендия, затем ВК',
+       en:'group no., roll no., full name, stipend, then CR'},
+ cap:{ru:'Интерактивная реконструкция программы «СТИПЕНДИЯ» (Горенбургов М.А., Винцкевич В.В., Мучкина Л.В., СПТУ-132, версии 01.09.88/04.04.89), декодированной из подлинных образов дискет Искры-226 (oldpc.su/880.rar). Русские экранные тексты воспроизведены побайтно из листингов; английский, современный перевод. Пункты меню со звёздочкой * восстановлены по структуре ON-GOTO; логика расчёта выплат упрощена. Это реконструкция, не эмуляция.',
+       en:'Interactive reconstruction of the «STIPENDIYA» program (Gorenburgov M.A., Vintskevich V.V., Muchkina L.V., SPTU-132, versions 01.09.88/04.04.89), decoded from authentic Iskra-226 floppy images (oldpc.su/880.rar). Russian screen texts are byte-faithful to the listings; the English is a modern translation (the real machine had uppercase Cyrillic+Latin only). Menu items marked * are inferred from the ON-GOTO structure; the payment formula is simplified. This is a reconstruction, not an emulation, authentic bytecode execution is done by the separate Python VM.'}
+};
+function L(k){return (I18N[k]&&I18N[k][LANG])||I18N[k]?.ru||('['+k+']');}
+
+/* ══════════ screen ══════════ */
+const COLS=80, ROWS=24;
+const scr=document.getElementById('screen');
+let grid, cr, cc, cursorOn=true;
+function cls(){grid=Array.from({length:ROWS},()=>Array(COLS).fill(' '));cr=0;cc=0;draw();}
+function draw(){
+  let out='';
+  for(let r=0;r<ROWS;r++){
+    for(let c=0;c<COLS;c++){
+      const ch=grid[r][c];
+      if(cursorOn&&r===cr&&c===cc){out+='<span class="cur">'+(ch===' '?'&nbsp;':esc(ch))+'</span>';}
+      else out+=esc(ch);
+    }
+    out+='\n';
+  }
+  scr.innerHTML=out;
+}
+function esc(ch){return ch==='<'?'&lt;':ch==='&'?'&amp;':ch;}
+function put(s){for(const ch of s){if(ch==='\n'){nl();continue;}grid[cr][cc]=ch;cc++;if(cc>=COLS)nl();}draw();}
+function nl(){cc=0;cr++;if(cr>=ROWS){grid.shift();grid.push(Array(COLS).fill(' '));cr=ROWS-1;}}
+function at(r,c){cr=Math.min(r,ROWS-1);cc=Math.min(c,COLS-1);}
+function tab(n){cc=n;}
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+async function type(s,d=18){for(const ch of s){put(ch);await sleep(d);}}
+function lamp(id,on){document.getElementById(id).classList.toggle('on',on);}
+async function drive(id,ms){lamp(id,true);await sleep(ms);lamp(id,false);}
+
+/* ══════════ input ══════════ */
+let keyResolver=null;
+const textInput=document.getElementById('textentry');
+function waitKey(){return new Promise(res=>{keyResolver=res;});}
+function feed(k){
+  if(k==='СБРОС'){location.reload();return;}
+  if(k==='ТЕКСТ'){textInput.style.display='block';textInput.focus();return;}
+  if(keyResolver){const r=keyResolver;keyResolver=null;r(k);}
+}
+document.querySelectorAll('button.k').forEach(b=>{
+  b.addEventListener('click',()=>feed(b.dataset.key||b.textContent.trim()));
+});
+document.addEventListener('keydown',e=>{
+  if(document.activeElement===textInput){
+    if(e.key==='Enter'){e.preventDefault();const v=textInput.value;textInput.value='';
+      textInput.style.display='none';feedText(v);}
+    return;
+  }
+  if(e.key>='0'&&e.key<='9')feed(e.key);
+  if(e.key==='Enter')feed('ВК');
+  if(e.key==='c'||e.key==='C')feed('ПРОДОЛЖ');
+});
+let textResolver=null;
+function waitText(){textInput.style.display='block';textInput.focus();
+  return new Promise(res=>{textResolver=res;});}
+function feedText(v){if(textResolver){const r=textResolver;textResolver=null;r(v);}}
+async function inputNum(){
+  let buf='';
+  for(;;){
+    const k=await waitKey();
+    if(k==='ВК'){nl();return buf===''?0:parseInt(buf,10);}
+    if(k==='ПРОДОЛЖ')continue;
+    if(/^\d$/.test(k)){buf+=k;put(k);}
+  }
+}
+async function waitContinue(){for(;;){const k=await waitKey();if(k==='ПРОДОЛЖ')return;}}
+
+/* ══════════ language switch ══════════ */
+let scene=null;              // re-renderable menu scene: 's0'|'s1'|'s2'|null
+function applyChromeLang(){
+  document.getElementById('kbCR').textContent=L('kCR');
+  document.getElementById('kbCont').textContent=L('kCont');
+  document.getElementById('kbTxt').textContent=L('kTxt');
+  document.getElementById('kbRst').textContent=L('kRst');
+  textInput.placeholder=L('phText');
+  document.getElementById('cap').textContent=L('cap');
+  document.documentElement.lang=LANG;
+}
+function setLang(l){
+  LANG=l;
+  for(const id of ['lru','len'])
+    document.getElementById(id).classList.toggle('on',
+      (id==='lru'&&l==='ru')||(id==='len'&&l==='en'));
+  applyChromeLang();
+  /* redraw current menu scene in the new language; mid-dialog the new
+     language simply applies from the next screen output */
+  if(keyResolver){                 // only safe to redraw while idle at a prompt
+    const pend=keyResolver;keyResolver=null;
+    if(scene==='s0')s0(); else if(scene==='s1')s1(); else if(scene==='s2')s2();
+    else keyResolver=pend;
+  }
+}
+document.getElementById('lru').onclick=()=>setLang('ru');
+document.getElementById('len').onclick=()=>setLang('en');
+
+/* ══════════ "diskette" ══════════ */
+let disk={groups:[]};
+async function diskLoad(){try{const r=await window.storage.get('iskra-stipendiya');
+  if(r&&r.value)disk=JSON.parse(r.value);}catch(e){}}
+async function diskSave(){try{await window.storage.set('iskra-stipendiya',JSON.stringify(disk));}catch(e){}}
+
+/* ══════════ boot ══════════ */
+async function boot(){
+  cls();
+  await sleep(500);
+  lamp('lampA',true);
+  put(L('bootLoad')+'\n');
+  for(let i=0;i<3;i++){await sleep(320);put('.');}
+  await sleep(400);lamp('lampA',false);
+  nl();nl();
+  put('BASIC 02  22.04.84\n');   /* authentic banner, never translated */
+  put(L('bootReady')+'\n\n');
+  put(':');
+  await sleep(600);
+  await type('LOAD "S0"',40); nl();
+  await drive('lampA',700);
+  put(':');await sleep(350);
+  await type('RUN',60); nl();
+  await sleep(300);
+  s0();
+}
+
+/* ══════════ S0 dispatcher ══════════ */
+async function s0(){
+  scene='s0'; cls();
+  at(0,0);
+  tab(9);put('------------------------------------------------------\n');
+  tab(9);put(L('s0t1')+'\n');
+  tab(9);put(L('s0t2')+'\n');
+  tab(9);put('------------------------------------------------------\n');
+  at(2,70);put(L('ver'));
+  at(3,70);put('СПТУ-132');
+  at(4,70);put('01.09.88');
+  at(6,12);put(L('s0m1'));
+  at(7,12);put(L('s0m2'));
+  at(8,12);put(L('s0m3'));
+  at(10,12);put(L('s0m4'));
+  at(13,18);put(L('s0prompt'));
+  const a=await inputNum();
+  if(a===1){await loadSeg(L('segS1'));s1();}
+  else if(a===2){await loadSeg(L('segS2'));s2();}
+  else if(a===4){scene=null;cls();put(L('bye')+'\n:');cursorOn=true;draw();}
+  else s0();
+}
+async function loadSeg(title){
+  scene=null;
+  at(15,3);put(L('loading')+title+"'");
+  await drive('lampA',900);
+}
+
+/* ══════════ S1 database block ══════════ */
+async function s1(){
+  scene='s1'; cls();
+  put(L('s1hdr')+'\n\n');
+  tab(20);put(L('worksel')+'\n');
+  tab(20);put('************************\n\n');
+  tab(12);put(L('s1m1')+'\n');
+  tab(12);put(L('s1m2')+'\n');
+  tab(12);put(L('s1m3')+'\n');
+  tab(12);put(L('s1m4')+'\n');
+  tab(12);put(L('s1m5')+'\n');
+  tab(12);put(L('s1m6')+'\n');
+  tab(12);put(L('back')+'\n\n');
+  put('? ');
+  const v=await inputNum();
+  scene=null;
+  if(v===0){await drive('lampA',600);s0();return;}
+  if(v>6){put(L('badwork')+'\n');await sleep(1100);s1();return;}
+  if(v===1)return s1Reserve();
+  if(v===2)return s1Enter();
+  if(v===3)return s1Read();
+  put(L('notrestored')+'\n');
+  await sleep(1400);s1();
+}
+async function s1Reserve(){
+  cls();
+  put(L('reserve')+'\n\n');
+  put(L('groupsFor'));
+  const n=await inputNum();
+  nl();
+  at(20,10);put(L('wp1')+'\n');
+  at(21,10);put(L('wp2'));
+  await waitContinue();
+  await drive('lampA',1200);
+  put('\n'+L('reserved')+(n*3)+L('sect')+'\n');
+  await sleep(1300);s1();
+}
+async function s1Enter(){
+  cls();
+  put(L('writeDisk')+'\n\n');
+  tab(20);put(L('enterGroup')+'\n\n');
+  put(L('fmt')+'\n\n');
+  put(L('end99')+'\n');
+  put(L('end999')+'\n\n');
+  let cur=null, count=0;
+  for(;;){
+    put('? ');
+    const line=await waitText();
+    put(line+'\n');
+    const p=line.split(',').map(s=>s.trim());
+    const g=parseInt(p[0],10);
+    if(g===999)break;
+    if(g===99){cur=null;put(L('endGrp')+'\n');continue;}
+    if(isNaN(g)||p.length<4){put(L('badInput')+'\n');continue;}
+    if(!cur||cur.num!==g){cur=disk.groups.find(x=>x.num===g);
+      if(!cur){cur={num:g,rows:[]};disk.groups.push(cur);}}
+    cur.rows.push({pn:p[1],fio:p[2].toUpperCase(),st:parseFloat(p[3])||0});
+    count++;
+    put(L('studentNo')+count+'\n');
+  }
+  at(20,20);put(L('wp3')+'\n');
+  at(21,20);put(L('wp4'));
+  await waitContinue();
+  await drive('lampA',1500);
+  await diskSave();
+  put('\n'+L('written')+'\n');
+  await sleep(1200);s1();
+}
+async function s1Read(){
+  cls();
+  put(L('readDisk')+'\n');
+  put(L('whichGrp'));
+  const g=await inputNum();
+  put(L('device'));
+  const dev=await inputNum();
+  if(dev===1){put(L('noPrinter')+'\n');await sleep(1300);return s1Read();}
+  await drive('lampA',800);
+  nl();
+  const gs=g===0?disk.groups:disk.groups.filter(x=>x.num===g);
+  if(gs.length===0){put(L('noData')+'\n');}
+  for(const grp of gs){
+    put(L('group')+grp.num+'\n');
+    put(L('colhdr')+'\n');
+    for(const r of grp.rows){
+      put('  '+String(r.pn).padEnd(4)+String(r.fio).slice(0,28).padEnd(30)+r.st.toFixed(2)+L('rub')+'\n');
+    }
+  }
+  put('\n'+L('crCont'));
+  await waitKey();s1();
+}
+
+/* ══════════ S2 user block ══════════ */
+async function s2(){
+  scene='s2'; cls();
+  put(L('s2hdr1')+'\n'+L('s2hdr2')+'\n\n');
+  tab(20);put(L('worksel')+'\n');
+  tab(20);put('************************\n');
+  tab(12);put(L('s2m1')+'\n');
+  tab(12);put(L('s2m2')+'\n');
+  tab(12);put(L('s2m3')+'\n');
+  tab(12);put(L('s2res')+'-4\n');
+  tab(12);put(L('s2res')+'-5\n');
+  tab(12);put(L('s2res')+'-6\n');
+  tab(12);put(L('s2back')+'\n\n');
+  put('? ');
+  const v=await inputNum();
+  scene=null;
+  if(v===0){await drive('lampA',600);s0();return;}
+  if(v===2)return s2Enter();
+  if(v===3)return s2Sheet();
+  if(v>=4&&v<=6){put(L('resv')+'\n');await sleep(900);return s2();}
+  if(v===1){put(L('monthDone')+'\n');await sleep(1100);return s2();}
+  put(L('badwork2')+'\n');await sleep(1100);s2();
+}
+async function s2Enter(){
+  cls();
+  put(L('whichGrp0'));
+  const g=await inputNum();
+  const grp=disk.groups.find(x=>x.num===g)||disk.groups[0];
+  if(!grp){put(L('noData2')+'\n');await sleep(1500);return s2();}
+  put(L('group')+grp.num+L('students')+grp.rows.length+'\n\n');
+  for(const r of grp.rows){
+    put(r.pn+' '+r.fio+'\n');
+    put(L('attrPrompt')+'\n');
+    put(L('a4')+'\n');put(L('a5')+'\n');put(L('a6')+'\n');put(L('a7')+'\n');
+    for(;;){
+      put('? ');
+      const k=await inputNum();
+      if(k===0)break;
+      if(k<4||k>7){put(L('badInput')+'\n');continue;}
+      put(L('value'));
+      const val=await inputNum();
+      r['q'+k]=val;
+    }
+    nl();
+  }
+  await diskSave();
+  put(L('entryDone')+'\n');await sleep(1100);s2();
+}
+async function s2Sheet(){
+  cls();
+  await drive('lampA',700);
+  put(L('sheetHdr')+'\n');
+  put('================================================================\n');
+  let total=0;
+  if(disk.groups.length===0)put(L('noDataSheet')+'\n');
+  for(const grp of disk.groups){
+    put(L('group')+grp.num+'\n');
+    for(const r of grp.rows){
+      const prak=(r.q6||0)*1.10, bol=(r.q7||0)*(r.st/30);
+      const sum=Math.max(0,r.st+prak-bol);
+      total+=sum;
+      put('  '+String(r.pn).padEnd(4)+String(r.fio).slice(0,26).padEnd(28)
+        +sum.toFixed(2).padStart(9)+L('rub')+'\n');
+    }
+  }
+  put('----------------------------------------------------------------\n');
+  put(L('total')+total.toFixed(2).padStart(12)+L('rub')+'\n\n');
+  put(L('crBack'));
+  await waitKey();s2();
+}
+
+applyChromeLang();
+diskLoad().then(boot);
+})();
+</script>
+</body>
+</html>

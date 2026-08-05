@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ИСКРА-226 · СТИПЕНДИЯ (СПТУ-132, 1989)</title>
+<style>
+:root{
+  --phosphor:#e8f4ef;      /* white phosphor, slightly cold */
+  --phosphor-dim:#9ab8ae;
+  --tube:#050807;
+  --case:#c9c0a8;          /* Schetmash beige */
+  --case-dark:#a89f86;
+  --case-shadow:#6f6752;
+  --key:#3a3a3c;
+  --key-red:#8c3b2e;
+  --badge:#2c2c2e;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#141210;min-height:100%}
+body{
+  font-family:"PT Mono","Courier New",ui-monospace,monospace;
+  display:flex;flex-direction:column;align-items:center;
+  padding:14px 8px 40px;color:var(--case);
+}
+.unit{width:100%;max-width:760px}
+/* -- cabinet -- */
+.cabinet{
+  background:linear-gradient(178deg,var(--case) 0%,var(--case-dark) 88%);
+  border-radius:14px 14px 8px 8px;
+  padding:18px 18px 12px;
+  box-shadow:0 18px 40px #000c, inset 0 2px 0 #fff5, inset 0 -6px 12px var(--case-shadow);
+}
+.badge-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.badge{
+  background:var(--badge);color:#ddd;letter-spacing:.35em;
+  font-size:13px;padding:4px 12px 4px 15px;border-radius:2px;
+  box-shadow:inset 0 1px 0 #fff2, 0 1px 2px #0008;
+}
+.plate{font-size:9px;color:#5c5546;text-align:right;line-height:1.5;letter-spacing:.05em}
+/* -- picture tube -- */
+.crt-frame{
+  background:#1b1a17;border-radius:10px;padding:10px;
+  box-shadow:inset 0 3px 10px #000;
+}
+.crt{
+  position:relative;background:radial-gradient(120% 100% at 50% 40%,#0c110f 0%,var(--tube) 75%);
+  border-radius:6px;overflow:hidden;
+  aspect-ratio:4/2.55;
+}
+.crt::after{ /* scan lines and vignette */
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:
+    repeating-linear-gradient(0deg,transparent 0 2px,#0003 2px 3px),
+    radial-gradient(115% 115% at 50% 50%,transparent 62%,#000a 100%);
+}
+pre#screen{
+  position:absolute;inset:0;padding:1.4% 2%;
+  color:var(--phosphor);
+  font-family:inherit;
+  font-size:min(1.83vw,13.5px);
+  line-height:1.28;letter-spacing:0;
+  text-shadow:0 0 3px #cfeee288,0 0 9px #9fd8c633;
+  white-space:pre;overflow:hidden;
+}
+#screen .cur{background:var(--phosphor);color:var(--tube);animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{background:transparent;color:var(--phosphor)}}
+@media (prefers-reduced-motion:reduce){#screen .cur{animation:none}}
+/* -- drive bar -- */
+.drivebar{display:flex;align-items:center;gap:10px;margin:10px 4px 2px}
+.slot{flex:1;height:9px;background:#221f19;border-radius:2px;box-shadow:inset 0 2px 3px #000}
+.lamp{width:9px;height:9px;border-radius:50%;background:#3a1e14;box-shadow:inset 0 1px 1px #0009;transition:background .1s}
+.lamp.on{background:#ff7a3c;box-shadow:0 0 8px #ff7a3c99}
+.drv-lbl{font-size:9px;color:#5c5546;letter-spacing:.15em}
+/* -- keyboard -- */
+.keyboard{
+  margin-top:10px;background:linear-gradient(180deg,var(--case-dark),var(--case-shadow));
+  border-radius:8px;padding:12px 12px 14px;
+  box-shadow:0 10px 24px #0009, inset 0 1px 0 #fff3;
+}
+.krow{display:flex;gap:6px;justify-content:center;margin-top:6px}
+.krow:first-child{margin-top:0}
+button.k{
+  font-family:inherit;font-size:15px;color:#eee;background:linear-gradient(180deg,#4a4a4d,var(--key));
+  border:0;border-radius:5px;min-width:44px;height:44px;padding:0 10px;
+  box-shadow:0 3px 0 #1c1c1e, inset 0 1px 0 #fff3;cursor:pointer;
+  touch-action:manipulation;
+}
+button.k:active{transform:translateY(2px);box-shadow:0 1px 0 #1c1c1e}
+button.k.wide{min-width:96px;font-size:12px;letter-spacing:.08em}
+button.k.red{background:linear-gradient(180deg,#a5493a,var(--key-red))}
+button.k:focus-visible{outline:2px solid #fff;outline-offset:2px}
+#textentry{
+  display:none;width:100%;margin-top:8px;font-family:inherit;font-size:16px;
+  background:#111;color:var(--phosphor);border:1px solid #444;border-radius:4px;padding:8px;
+}
+.caption{max-width:760px;margin-top:16px;font-size:11px;line-height:1.7;color:#8d8471}
+.caption b{color:#b5ab93}
+</style>
+</head>
+<body>
+<div class="unit">
+  <div class="cabinet">
+    <div class="badge-row">
+      <div class="badge">ИСКРА·226</div>
+      <div class="plate">МИНПРИБОР СССР · ПО «СЧЁТМАШ» г.КУРСК<br>ТУ 25-01.1206-81 · ЗАВ.№ 8804712</div>
+    </div>
+    <div class="crt-frame"><div class="crt"><pre id="screen" aria-live="polite"></pre></div></div>
+    <div class="drivebar">
+      <span class="drv-lbl">НГМД·A</span><div class="slot"></div><div class="lamp" id="lampA"></div>
+      <span class="drv-lbl">B</span><div class="slot"></div><div class="lamp" id="lampB"></div>
+    </div>
+  </div>
+  <div class="keyboard" role="group" aria-label="Клавиатура">
+    <div class="krow">
+      <button class="k">1</button><button class="k">2</button><button class="k">3</button>
+      <button class="k">4</button><button class="k">5</button><button class="k">6</button>
+      <button class="k">7</button><button class="k">8</button><button class="k">9</button>
+      <button class="k">0</button>
+    </div>
+    <div class="krow">
+      <button class="k wide" data-key="ВК">ВК ⏎</button>
+      <button class="k wide" data-key="ПРОДОЛЖ">ПРОДОЛЖ</button>
+      <button class="k wide" data-key="ТЕКСТ">ТЕКСТ…</button>
+      <button class="k wide red" data-key="СБРОС">СБРОС</button>
+    </div>
+    <input id="textentry" autocomplete="off" spellcheck="false"
+      placeholder="номер группы, поимённый номер, Ф.И.О., стипендия, затем ВК">
+  </div>
+</div>
+<p class="caption">
+  An interactive reconstruction of the program <b>«СТИПЕНДИЯ»</b>
+  (Gorenburgov M.A., Vintskevich V.V., Muchkina L.V., SPTU-132, version 01.09.88 /
+  04.04.89), decoded from the original disk images (oldpc.su/880.rar) of an
+  Iskra-226. Screen text, menu structure, branch logic and operating rituals
+  (write protect! CONTINUE!) follow the reconstructed BASIC-02 listing. Menu
+  entries marked with <b>*</b> are inferred from the ON-GOTO structure, because
+  their PRINT lines are damaged in the image. The payout arithmetic is a
+  simplified stand-in.
+</p>
+
+<script>
+(function(){
+const COLS=80, ROWS=24;
+const scr=document.getElementById('screen');
+let grid, cr, cc, cursorOn=true;
+function cls(){grid=Array.from({length:ROWS},()=>Array(COLS).fill(' '));cr=0;cc=0;draw();}
+function draw(){
+  let out='';
+  for(let r=0;r<ROWS;r++){
+    for(let c=0;c<COLS;c++){
+      const ch=grid[r][c];
+      if(cursorOn&&r===cr&&c===cc){out+='<span class="cur">'+(ch===' '?'&nbsp;':esc(ch))+'</span>';}
+      else out+=esc(ch);
+    }
+    out+='\n';
+  }
+  scr.innerHTML=out;
+}
+function esc(ch){return ch==='<'?'&lt;':ch==='&'?'&amp;':ch;}
+function put(s){for(const ch of s){if(ch==='\n'){nl();continue;}grid[cr][cc]=ch;cc++;if(cc>=COLS)nl();}draw();}
+function nl(){cc=0;cr++;if(cr>=ROWS){grid.shift();grid.push(Array(COLS).fill(' '));cr=ROWS-1;}}
+function at(r,c){cr=Math.min(r,ROWS-1);cc=Math.min(c,COLS-1);}
+function tab(n){cc=n;}
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+async function type(s,d=18){for(const ch of s){put(ch);await sleep(d);}}
+function lamp(id,on){document.getElementById(id).classList.toggle('on',on);}
+async function drive(id,ms){lamp(id,true);await sleep(ms);lamp(id,false);}
+
+/* -- input plumbing -- */
+let keyResolver=null, textMode=false;
+const textInput=document.getElementById('textentry');
+function waitKey(){return new Promise(res=>{keyResolver=res;});}
+function feed(k){
+  if(k==='СБРОС'){location.reload();return;}
+  if(k==='ТЕКСТ'){textInput.style.display='block';textInput.focus();return;}
+  if(keyResolver){const r=keyResolver;keyResolver=null;r(k);}
+}
+document.querySelectorAll('button.k').forEach(b=>{
+  b.addEventListener('click',()=>feed(b.dataset.key||b.textContent.trim()));
+});
+document.addEventListener('keydown',e=>{
+  if(document.activeElement===textInput){
+    if(e.key==='Enter'){e.preventDefault();const v=textInput.value;textInput.value='';
+      textInput.style.display='none';feedText(v);}
+    return;
+  }
+  if(e.key>='0'&&e.key<='9')feed(e.key);
+  if(e.key==='Enter')feed('ВК');
+  if(e.key==='c'||e.key==='C')feed('ПРОДОЛЖ');
+});
+let textResolver=null;
+function waitText(){textInput.style.display='block';textInput.focus();
+  return new Promise(res=>{textResolver=res;});}
+function feedText(v){if(textResolver){const r=textResolver;textResolver=null;r(v);}}
+async function inputNum(){ // digits plus ВК, echoing
+  let buf='';
+  for(;;){
+    const k=await waitKey();
+    if(k==='ВК'){nl();return buf===''?0:parseInt(buf,10);}
+    if(k==='ПРОДОЛЖ')continue;
+    if(/^\d$/.test(k)){buf+=k;put(k);}
+  }
+}
+async function waitContinue(){for(;;){const k=await waitKey();if(k==='ПРОДОЛЖ')return;}}
+
+/* -- the "diskette", persisted where the browser allows it -- */
+let disk={groups:[]}; // groups: [{num, rows:[{pn,fio,st}]}]
+async function diskLoad(){try{const r=await window.storage.get('iskra-stipendiya');
+  if(r&&r.value)disk=JSON.parse(r.value);}catch(e){}}
+async function diskSave(){try{await window.storage.set('iskra-stipendiya',JSON.stringify(disk));}catch(e){}}
+
+/* -- boot sequence -- */
+async function boot(){
+  cls();
+  await sleep(500);
+  lamp('lampA',true);
+  put('ЗАГРУЗКА МИКРОПРОГРАММ С НГМД\n');
+  for(let i=0;i<3;i++){await sleep(320);put('.');}
+  await sleep(400);lamp('lampA',false);
+  nl();nl();
+  put('BASIC 02  22.04.84\n');       // authentic banner from disk1side1
+  put('ОЗУ 64К  ГОТОВНОСТЬ\n\n');
+  put(':');
+  await sleep(600);
+  await type('LOAD "S0"',40); nl();
+  await drive('lampA',700);
+  put(':');await sleep(350);
+  await type('RUN',60); nl();
+  await sleep(300);
+  s0();
+}
+
+/* -- S0, the system dispatcher, lines 70 to 200 of the original -- */
+async function s0(){
+  cls();
+  at(0,0);
+  tab(9);put('------------------------------------------------------\n');
+  tab(9);put('***     АВТОМАТИЗИРОВАННАЯ СИСТЕМА  ПРОВЕДЕНИЯ      ***\n');
+  tab(9);put('***     РАСЧЕТОВ ПО ДЕНЕЖНЫМ ВЫПЛАТАМ УЧАЩИМСЯ      ***\n');
+  tab(9);put('------------------------------------------------------\n');
+  at(2,70);put(' ВЕРСИЯ ');
+  at(3,70);put('СПТУ-132');
+  at(4,70);put('01.09.88');
+  at(6,12);put('ВЕДЕНИЕ БАЗЫ ДАННЫХ.......................... -1');
+  at(7,12);put('БЛОК ПОЛЬЗОВАТЕЛЯ ........................... -2');
+  at(8,12);put('ДОПОЛНИТЕЛЬНЫЕ ФУНКЦИИ ...................... -3');
+  at(10,12);put('В Ы Х О Д  ................................... -4');
+  at(13,18);put('ВВЕДИТЕ  НОМЕР БЛОКА ? ');
+  const a=await inputNum();
+  if(a===1){await loadSeg('S1','ВЕДЕНИЕ БАЗЫ ДАННЫХ');s1();}
+  else if(a===2){await loadSeg('S2','БЛОК ПОЛЬЗОВАТЕЛЯ');s2();}
+  else if(a===4){cls();put(':КОНЕЦ РАБОТЫ\n:');cursorOn=true;draw();}
+  else s0();                       // 3 and anything invalid go to GOTO 60, redraw
+}
+async function loadSeg(name,title){
+  at(15,3);put("ЗАГРУЗКА СЕГМЕНТА '"+title+"'");
+  await drive('lampA',900);
+}
+
+/* -- S1, the database block -- */
+async function s1(){
+  cls();
+  put('ЗАДАЧА "РАСЧЕТ СТИПЕНДИЙ" /БЛОК ВВОДА НСИ/   СПТУ-132  04.04.89\n\n');
+  tab(20);put('ВВЕДИТЕ НОМЕР ВИДА РАБОТ\n');
+  tab(20);put('************************\n\n');
+  tab(12);put('РЕЗЕРВИРОВАНИЕ СЕКТОРОВ ДЛЯ БАЗЫ ДАННЫХ *.-1\n');
+  tab(12);put('ЗАПИСЬ НА ДИСК (ВВОД ДАННЫХ ПО ГРУППАМ)*..-2\n');
+  tab(12);put('ЧТЕНИЕ С ДИСКА *..........................-3\n');
+  tab(12);put('КОРРЕКТИРОВКА В ГРУППЕ *..................-4\n');
+  tab(12);put('КОРРЕКТИРОВКА ПО СТОЛБЦУ В ГРУППЕ ......-5\n');
+  tab(12);put('КОПИРОВАНИЕ БАЗЫ ДАННЫХ С ДИСКА НА ДИСК -6\n');
+  tab(12);put('ВОЗВРАТ В ДИСПЕТЧЕР ......................-0\n\n');
+  put('? ');
+  const v=await inputNum();
+  if(v===0){await drive('lampA',600);s0();return;}
+  if(v>6){put('ПРОВЕРЬТЕ НОМЕР ВИДА РАБОТ;\n');await sleep(1100);s1();return;}
+  if(v===1)return s1Reserve();
+  if(v===2)return s1Enter();
+  if(v===3)return s1Read();
+  put('ФУНКЦИЯ В ДАННОЙ РЕКОНСТРУКЦИИ НЕ ВОССТАНОВЛЕНА\n');
+  await sleep(1400);s1();
+}
+async function s1Reserve(){
+  cls();
+  put('РЕЗЕРВИРОВАНИЕ СЕКТОРОВ ДЛЯ БАЗЫ ДАННЫХ\n\n');
+  put('К-ВО ГРУПП ДЛЯ ПТУ N 132 ? ');
+  const n=await inputNum();
+  nl();
+  at(20,10);put('ВЫКЛЮЧИТЬ ЗАЩИТУ ЗАПИСИ\n');
+  at(21,10);put("ДЛЯ ЗАПИСИ НАЖАТЬ КЛАВИШУ 'CONTINUE'  (STOP)");
+  await waitContinue();
+  await drive('lampA',1200);
+  put('\nЗАРЕЗЕРВИРОВАНО '+ (n*3) +' СЕКТ. НГМД\n');
+  await sleep(1300);s1();
+}
+async function s1Enter(){
+  cls();
+  put('ЗАПИСЬ НА ДИСК\n\n');
+  tab(20);put('ВВЕДИТЕ ДАННЫЕ ПО ГРУППЕ:\n\n');
+  put('ЧЕРЕЗ ЗАПЯТУЮ: НОМЕР ГРУППЫ, ПОИМЕННЫЙ НОМЕР, Ф.И.О., РАЗМЕР СТИПЕНДИИ\n\n');
+  put('КОНЕЦ ГРУППЫ-99 ВМЕСТО НОМЕРА ГРУППЫ И КЛАВИША <ВК>\n');
+  put('КОНЕЦ ВВОДА-999 ВМЕСТО НОМЕРА ГРУППЫ И КЛАВИША <ВК>\n\n');
+  let cur=null, count=0;
+  for(;;){
+    put('? ');
+    const line=await waitText();
+    put(line+'\n');
+    const p=line.split(',').map(s=>s.trim());
+    const g=parseInt(p[0],10);
+    if(g===999)break;
+    if(g===99){cur=null;put('--- КОНЕЦ ГРУППЫ ---\n');continue;}
+    if(isNaN(g)||p.length<4){put('НЕВЕРНЫЙ ВВОД\n');continue;}
+    if(!cur||cur.num!==g){cur=disk.groups.find(x=>x.num===g);
+      if(!cur){cur={num:g,rows:[]};disk.groups.push(cur);}}
+    cur.rows.push({pn:p[1],fio:p[2].toUpperCase(),st:parseFloat(p[3])||0});
+    count++;
+    put('ВВЕДЕН УЧАЩИЙСЯ НОМЕР '+count+'\n');
+  }
+  at(20,20);put('!!!СНЯТЬ БЛОКИРОВКУ ЗАПИСИ!!!\n');
+  at(21,20);put('ДЛЯ ЗАПИСИ НАЖМИТЕ <CONTINUE>');
+  await waitContinue();
+  await drive('lampA',1500);
+  await diskSave();
+  put('\nЗАПИСЬ ЗАВЕРШЕНА\n');
+  await sleep(1200);s1();
+}
+async function s1Read(){
+  cls();
+  put('ЧТЕНИЕ С ДИСКА\n');
+  put('ВВЕДИТЕ НОМЕР ГРУППЫ(НОМЕР=0-ПЕЧАТЬ С ПЕРВОЙ ГРУППЫ) ? ');
+  const g=await inputNum();
+  put('РАБОТА НА АЦПУ-1; НА ЭКРАНЕ-2 ? ');
+  const dev=await inputNum();
+  if(dev===1){put('АЦПУ НЕ ПОДКЛЮЧЕНО (ERR 42)\n');await sleep(1300);return s1Read();}
+  await drive('lampA',800);
+  nl();
+  const gs=g===0?disk.groups:disk.groups.filter(x=>x.num===g);
+  if(gs.length===0){put('ДАННЫХ НЕТ, ВЫПОЛНИТЕ ВВОД (РАБОТА 2)\n');}
+  for(const grp of gs){
+    put('ГРУППА '+grp.num+'\n');
+    put('  N   Ф.И.О.                        СТИПЕНДИЯ\n');
+    for(const r of grp.rows){
+      put('  '+String(r.pn).padEnd(4)+String(r.fio).slice(0,28).padEnd(30)+r.st.toFixed(2)+' РУБ.\n');
+    }
+  }
+  put('\nВК - ПРОДОЛЖЕНИЕ');
+  await waitKey();s1();
+}
+
+/* -- S2, the user block -- */
+async function s2(){
+  cls();
+  put('ЗАДАЧА:РАСЧЕТ ДЕНЕЖНЫХ ВЫПЛАТ УЧАЩИМСЯ\nБЛОК ПОЛЬЗОВАТЕЛЯ\n\n');
+  tab(20);put('ВВЕДИТЕ НОМЕР ВИДА РАБОТ\n');
+  tab(20);put('************************\n');
+  tab(12);put('ЗАВЕРШЕНИЕ МЕСЯЦА...............................-1\n');
+  tab(12);put('ВВОД ИСХОДНЫХ ДАННЫХ............................-2\n');
+  tab(12);put('ПЕЧАТЬ ВЕДОМОСТИ НА ДЕНЕЖНЫЕ ВЫПЛАТЫ УЧАЩИМСЯ...-3\n');
+  tab(12);put('РЕЗЕРВ..........................................-4\n');
+  tab(12);put('РЕЗЕРВ..........................................-5\n');
+  tab(12);put('РЕЗЕРВ..........................................-6\n');
+  tab(12);put('ВОЗВРАТ В ДИСПЕТЧЕР.............................-0\n\n');
+  put('? ');
+  const v=await inputNum();
+  if(v===0){await drive('lampA',600);s0();return;}
+  if(v===2)return s2Enter();
+  if(v===3)return s2Sheet();
+  if(v>=4&&v<=6){put('РЕЗЕРВ\n');await sleep(900);return s2();}
+  if(v===1){put('ЗАВЕРШЕНИЕ МЕСЯЦА: ИТОГИ ОБНУЛЕНЫ\n');await sleep(1100);return s2();}
+  put('ПРОВЕРЬТЕ НОМЕР ВИДА РАБОТ\n');await sleep(1100);s2();
+}
+async function s2Enter(){
+  cls();
+  put('ВВЕДИТЕ НОМЕР ГРУППЫ (0-ВВОД С ПЕРВОЙ ГРУППЫ) ? ');
+  const g=await inputNum();
+  const grp=disk.groups.find(x=>x.num===g)||disk.groups[0];
+  if(!grp){put('ДАННЫХ НЕТ, СНАЧАЛА БЛОК 1 / РАБОТА 2\n');await sleep(1500);return s2();}
+  put('ГРУППА '+grp.num+', УЧАЩИХСЯ: '+grp.rows.length+'\n\n');
+  for(const r of grp.rows){
+    put(r.pn+' '+r.fio+'\n');
+    put('ВВЕДИТЕ НОМЕР РЕКВИЗИТА (0 - ПЕРЕХОД К СЛЕДУЮЩЕМУ УЧ-СЯ)\n');
+    put('ЗАРПЛАТА..................-4\n');
+    put('ВЫХОДНЫЕ ДНИ..............-5\n');
+    put('ДНИ ПРАКТИКИ..............-6\n');
+    put('ДНИ БОЛЕЗНИ...............-7\n');
+    for(;;){
+      put('? ');
+      const k=await inputNum();
+      if(k===0)break;
+      if(k<4||k>7){put('НЕВЕРНЫЙ ВВОД\n');continue;}
+      put('ЗНАЧЕНИЕ ? ');
+      const val=await inputNum();
+      r['q'+k]=val;
+    }
+    nl();
+  }
+  await diskSave();
+  put('ВВОД ЗАВЕРШЕН\n');await sleep(1100);s2();
+}
+async function s2Sheet(){
+  cls();
+  await drive('lampA',700);
+  put('ВЕДОМОСТЬ НА ДЕНЕЖНЫЕ ВЫПЛАТЫ УЧАЩИМСЯ            СПТУ-132\n');
+  put('================================================================\n');
+  let total=0;
+  if(disk.groups.length===0)put('ДАННЫХ НЕТ\n');
+  for(const grp of disk.groups){
+    put('ГРУППА '+grp.num+'\n');
+    for(const r of grp.rows){
+      // simplified stand-in: stipend + practice days * 1.10 - sick days * (stipend/30)
+      const prak=(r.q6||0)*1.10, bol=(r.q7||0)*(r.st/30);
+      const sum=Math.max(0,r.st+prak-bol);
+      total+=sum;
+      put('  '+String(r.pn).padEnd(4)+String(r.fio).slice(0,26).padEnd(28)
+        +sum.toFixed(2).padStart(9)+' РУБ.\n');
+    }
+  }
+  put('----------------------------------------------------------------\n');
+  put('ИТОГО ПО УЧИЛИЩУ:'+total.toFixed(2).padStart(12)+' РУБ.\n\n');
+  put('ВК - ВОЗВРАТ В МЕНЮ');
+  await waitKey();s2();
+}
+
+diskLoad().then(boot);
+})();
+</script>
+</body>
+</html>
