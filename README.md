@@ -1,36 +1,71 @@
 # Iskra-226
 
-Tools for reading the floppy images of the Iskra-226 (Искра 226), a Soviet
-desktop computer built at Schyotmash Kursk from 1980/81.
+The Iskra-226 (Искра 226) was a Soviet desktop computer, designed from
+1974/78 at the Leningrad ГСКТБ "Счётмаш" under chief designer
+V. E. Kuznetsov and built in series at Kursk from 1980/81. It is a Wang
+2200 work-alike on its own K589 bit-slice hardware, compatible at the
+BASIC level and not a hardware clone.
 
-Right now this reads sectors, decodes the catalog, extracts files and
-pulls text out of a disk image. The on-disk format is documented in
-`docs/on-disk-format.md` against the bytes. There is no emulator here
-and I am not promising one.
+No emulator for it existed. This is the work toward one, and everything I
+have had to find out on the way.
 
-## Use
+## What runs today
 
-    python3 emulator/iskra.py info    <images...>
-    python3 emulator/iskra.py cat     <image>
-    python3 emulator/iskra.py extract <image> [outdir]
-    python3 emulator/iskra.py text    <image>
+Not the machine. I am not going to write this as though something boots.
 
-## Firmware
+`emulator/iskra226_emu.py` is a research tool at the CPU level. It loads a
+firmware build, disassembles it, executes the instruction classes whose
+semantics are documented and traps precisely on the rest. Coverage is about
+12 % executable, 30 % class-known, 58 % unknown. It does not boot, and
+`findings/` says exactly why.
 
-A boot side is not one interpreter written four times. It is four
-slots, and the slots hold different builds. `emulator/firmware_extract.py`
-takes them apart. Eight distinct builds survive across the three boot
-sides, 1981 to 1986, each byte-identical wherever it repeats.
+`emulator/iskra.py` is the disk, sector and catalog toolkit.
+`emulator/firmware_extract.py` recovers the interpreter builds.
 
-One of them is BASIC 02 10.09.86, which is the revision the BAM suite
-on disk2side1 says it was written for.
+Tonight the question changed. What the boot sides carry is not microcode.
+It is machine code for a processor built out of the K589 slices, 67
+instructions, 16 bits wide, and the real microcode sits in the ПМК, which I
+do not have and no longer need. `findings/architecture.md` is that argument
+written out; `findings/path-to-full-emulation.md` is the route from here.
 
-## What this is not
+## Contents
 
-It is not a CPU emulator. The Iskra has no microprocessor; it has K589 bit
-slices, which are Intel 3000 clones. Nobody has written an emulator for this
-machine and I do not yet know whether I can.
+**disks/**, `880.rar`, the original archive, plus the six extracted sector
+images. 1001 logical sectors of 256 bytes per side.
 
-## Why
+**firmware/**, eight distinct interpreter builds, 1981 to 1986, recovered
+from the four slots each boot side carries. A boot side is not one
+interpreter written four times; the slots hold different builds, and
+majority-voting them produces a version that never existed. Each build is
+63,744 bytes and byte-identical wherever it repeats. Words are
+little-endian; word 0 is the cold-start vector `9006` for BASIC 02 and PL5,
+`AD43` for BASIC 01.
 
-I have a disk I cannot read. Everything here follows from that.
+    BASIC 01  15.12.81   BASIC 02  16.12.83
+    BASIC 01  12.07.82   BASIC 02  22.04.84
+    BASIC 01  27.12.82   BASIC 02  10.10.84
+    BASIC PL5 30.09.84   BASIC 02  10.09.86
+
+BASIC 02 10.09.86 is the revision the BAM suite on `disk2side1` declares it
+was written for.
+
+**findings/**, `isa-findings.md` is the main document: the reconstructed
+architecture and instruction set, with every falsified hypothesis and the
+criterion that killed it. `microcode-or-machine-code.md` is the question I
+got wrong for a month, kept because the wrong month is part of the record.
+`architecture.md` is the answer. `run-report.md` is what the research tool
+does when you point it at a build.
+
+**docs/**, the scanned Russian manuals, mirrored from Jim Battle's
+collection at wang2200.org, plus the independent on-disk format
+documentation.
+
+**wang-reference/**, Wang 2200 VP boot disk, CPU implementation and
+disassembler from WangEmu 3.0, as a behavioural reference for BASIC-2. The
+VP microcode is 24 bits wide and the Iskra runs 16-bit macro-instructions,
+so opcode-level alignment between them does not work.
+
+## Please mirror this
+
+The disk images survive nowhere else. Jim Battle at wang2200.org explicitly
+asks for Iskra-226 material.
