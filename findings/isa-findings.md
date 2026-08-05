@@ -167,3 +167,440 @@ unknown on the boot path. Under LE the coverage map reads:
 27.2% executable / 9.7% class-known / 63.1% unknown, with the
 E-block at 23.9% of the stream, the register-register forms of the
 49 ALU instructions most likely live there.
+
+## Addendum 2 (session of 2026-08-05, cont.)
+
+Code/data separation via a KOI-8/ASCII text mask marks 35.1% of the
+firmware as data (strings, tables). Class statistics over code-only
+words show classes 0-B and D with clean 4-bit register fields
+(field value 15 at 0.2-8%), class C with one special-value field,
+and classes E/F with genuinely F-heavy fields, the E block carries
+mode bits, so the earlier 4+4+4 sub-division is retired. The decoder
+now trusts only the three book-attested sub-blocks (E0/E5/E8 with
+register operands) and disassembles the rest.
+
+Cold-start path so far: vector `9006` -> 0x1006; three `E501`
+(indirect ОП reads, executable); halt at `E3F7` (E3 sub-op, mode
+fields open). Two competing hypotheses for E3xx-with-F: inline
+immediate consuming the following word, or a single-word mode
+variant; deciding between them is the first task of the next
+session, the wrong one desynchronises the instruction stream
+within two words, which is itself a usable test.
+
+## Addendum 3: instruction length settled; cold-start listing
+
+Recursive-descent exploration from the boot vectors under three
+length hypotheses is decisive: with **every instruction one word**,
+18,581 words are reached with **zero** operand/instruction conflicts;
+any rule that lets E-words with field 15 consume a following word
+produces 39 conflicts. The ISA is fixed-length, one 16-bit word per
+instruction, including the E3xF "inline constant" form, whose
+constant block must therefore be addressed (RS-indexed) rather than
+consumed by PC.
+
+The cold-start sequence (0x1006 ff.) is now a stable listing. Two
+observations for the next session:
+- F-class words appear with small second-byte operands
+  (F000/F100/FB00/FA00, F002/F003, F03B/F03C/F03D, F80F) -
+  the signature of an op+imm8 format, plausibly device/system
+  commands or byte immediates; likely home of part of the
+  49 ALU set and the КУ interface.
+- D-class shows the same shape (D591/D6F1/DD02/DE00) with a
+  near-perfect register field elsewhere (0.2% F), probably
+  reg+imm8 forms.
+Cracking F- and D-class semantics via the self-test path (the code
+that ends in the сбой ОЗУ / сбой УП messages) is the next work item.
+
+## Addendum 4: first semantic hypotheses from idiom analysis
+
+Evidence collected from the cold-start control-flow graph
+(18,504 reachable words) and repeated-idiom mining:
+
+1. **`E501` is used as NOP/delay.** It occurs in runs of four or
+   more identical words 34 times across the firmware (also E102,
+   E502 runs). No real code re-reads the same operand four times in
+   a row; these runs are padding/timing. Explains the three E501 at
+   the cold-start entry.
+2. **First identified I/O wait loop** at 01B7: call 03B3 / DEV read
+   RB12->RR3 / ARI.3 test imm 5 / conditional exit B->3D78 /
+   loop 8->01B7. A device-status poll (keyboard or floppy).
+3. **A shared wait-then-read idiom** appears verbatim twice
+   (0x6A5, 0x7EA): `D912 F51F D6F0 2402 D914 <branch-back> DD12`.
+   Reading: poll (D912) - mask (F51F) - test - poll again - on
+   ready fall through to the data access `DD12` on the same
+   low byte 0x12. Suggests **D-class = port/system I/O, op nibble +
+   port imm8** (D9=status?, DD=data?).
+4. **F-class = RS-op-imm8 ALU forms.** The book states arithmetic
+   works "between RS and constants held in the instruction itself";
+   the imm4 form is class 0 (007E documented), the imm8 form fits
+   F-class exactly (F51F = AND #1F in the mask position of the
+   idiom). This is where most of the 49 ALU instructions live.
+5. Jump-type usage: 8-type closes backward polls (conditional),
+   B-type exits forward (conditional, other sense/flag), A
+   unconditional (book), 9 opens the boot vector (call-like).
+
+Next session: encode hypotheses 3-5 as executable trial semantics,
+run the cold start, and let coherence (the path must reach the
+message-table printer at word 10AC, READY) confirm or kill them.
+
+## Addendum 5: message table and print routine located
+
+The system message table sits at word 0x10AE (byte 0x2158), entries
+separated by `:\x00`, KOI-8:
+`READY` / `СБОЙ СИСТЕМЫ` (system fault) / `СБОЙ ОЗУ` (RAM fault) /
+`СБОЙ УП` (control-store fault) / `СБОЙ МО` / `ERR 01` / `ERR 02` ...
+
+All six references to that region are jumps to word **0x00C3**, the
+central **string-print routine** (very low address = core service,
+consistent with the ROM-resident console driver). Call sites share a
+prologue: a `DD..`/`ED..` word (message-pointer setup, D/E class as
+predicted in Addendum 4) then `F7F4` or `F0xx` then `90C3` (jump to
+printer). Example: `DD41 E520 F7F4 90C3` and `DD41 ED27 F7F4 90C3`
+both print the message selected by pointer byte 0x41.
+
+This nails three things for the next session:
+- **0x00C3 = putstring**; emulating just this routine plus its DEV
+  writes to the display gives on-screen output.
+- **DDxx loads a message/table pointer** (D-class confirmed as
+  pointer/port ops).
+- The success path is now concrete: reach any `90C3` with a valid
+  pointer and the emulator prints a real Iskra message. The self-test
+  either prints `READY`-adjacent success or a `СБОЙ` fault, both are
+  authentic boot output.
+
+Remaining to run it: implement the ~20-instruction putstring loop at
+00C3 (needs D-class pointer load, F-class compare/AND, one
+conditional branch, and the DEV display write), then drive the
+self-test path into it.
+
+## Addendum 6: putstring is a call tree; selector convention spotted
+
+Annotating 0x00C3 shows putstring is not a leaf loop: it immediately
+fans out into service calls (`8E01`->0x0E01, `9328`->0x1328 twice,
+plus 0x0678, 0x019A, 0x26C3), a console driver built on putchar/
+cursor subroutines. Executing it therefore requires the call/return
+mechanism of the J8/J9 transfer types plus the F-class ALU ops; both
+remain the open core.
+
+New evidence from the call sites: the F-word before each `90C3`
+varies per site (`F7F4`, `F06B`, `F042`, `F7F4`) while `DD41`
+repeats, the **imm8 of that F-word is the message selector
+candidate** (not a byte offset into the table; ID-to-pointer mapping
+still unknown).
+
+Honest status of the attempted test run: execution reaches 0x00C3's
+first instruction and stops, output requires the two unknowns
+above. No screen output was produced and none is claimed.
+
+The two questions that unlock the boot screen, precisely:
+1. J8/J9 semantics incl. return (where is the return address kept -
+   RR14? a ОП stack via РБ14 as the book says for the *machine* level?)
+2. F-class op nibble map (AND/CMP/ADD/... per F0..FF).
+Both are answerable from the Wang-VP alignment (`Cpu2200vp.cpp`
+implements the exact same console architecture) or from any surviving
+процессор ТО. Everything else on the path is already in hand.
+
+## Addendum 7: transfer-type model narrowed by coherence search
+
+Brute-force coherence testing over call/return hypotheses (fitness:
+stack balance, no hot loops, address coverage) yields a consistent
+model:
+- **J9 = call** (supported: the cold-start vector is 9006; runs with
+  9-as-call behave sanely until switch tables, see below);
+- **J8 and JB = conditional branches** (8-as-pure-conditional runs
+  20,000 steps / 284 distinct addresses without crashing under an
+  alternating-branch policy);
+- **JA = unconditional** (book).
+The single failure mode of the 9-as-call model is instructive: it
+overflows at 0x13C6, inside the loop 13BE..13C6, whose body words
+13C1..13C4 hold the values 13C5/13C7/1444/13C9, **addresses near
+themselves**. This is an inline address table: the book's
+"switch on РС" computed-goto, with the constant block following the
+instruction exactly as documented for table commands. Class-1 words
+are (at least partly) inline address constants, not instructions -
+resolving their earlier anomalous profile.
+
+Consequence: the executor needs table-aware stepping (an ED/E3
+dispatch instruction that indexes the following address block and
+jumps), and the return mechanism is the last control-flow unknown.
+The Cx02 epilogue candidate (CD02/CE01 at putstring's tail) remains
+the prime suspect for return/restore.
+
+## Addendum 8: computed-goto decoded; transfer model stabilised
+
+The 0x13C6 bottleneck is fully explained. The sequence is a
+**computed-goto**:
+```
+13C0  F203         dispatch, 3-entry table follows
+13C1  13C5 \
+13C2  13C7  |      inline address table (targets near self)
+13C3  1444  |
+13C4  13C9 /
+13C5  5229         (entry 0 body)
+13C6  93BE         loop back (conditional)
+```
+So `F2xx` = table dispatch, imm8 = entry count; the executor must
+skip the following imm8 words. With that rule plus "J9-forward =
+call, J9-backward = conditional loop, J8/JB = conditional, JA =
+unconditional, Cx02 = return", the cold start now runs **36,401
+instructions over 413 distinct addresses** with a balanced stack
+(depth 8 at the stop) before hitting an unrelated hot loop at 0x2A24
+- two orders of magnitude past every earlier attempt.
+
+This is the deepest coherent execution achieved. The remaining
+crash at 2A24 is an ordinary ALU-semantics gap (a loop whose exit
+test is an unimplemented F/D compare), not a control-flow unknown.
+Control flow is now essentially solved; what stands between here and
+on-screen output is the arithmetic core (the F/D compare + counter
+ops that terminate delay/test loops), reachable by the same
+coherence method one loop at a time.
+
+## Addendum 9: limit of control-flow-only execution reached
+
+With loop-escape (forcing untaken conditionals in hot loops) and
+stack-unwind escapes for device wait routines, the explorer runs
+3,000,000 steps and maps **782 distinct addresses** of boot-path
+skeleton (55 wait-routine returns, stack never corrupted). It does
+not organically reach putstring (0x00C3) or any message call site.
+
+The reason is now precise: the paths to the console layer run
+through **data-dependent E-class dispatches** (EDxx pointer
+indirection through RB registers). Control flow alone cannot pick
+the right table entries when every register is zero. This is the
+genuine boundary of the coherence method: everything decidable from
+structure has been decided (byte order, vectors, one-word ISA,
+transfer types, computed-goto, return, dispatch skip, NOP idioms,
+wait loops); the residue, E/D/F data semantics, is exactly the
+part that requires an external oracle: the Wang-VP alignment of the
+console call trees, or the processor's техническое описание.
+
+State of the port: 36,401 coherent instructions from cold start
+under the stabilised model; 782-address boot skeleton mapped;
+console entry, message table, and success criterion located and
+verified. The machine is one document (or one focused alignment
+effort) away from printing its first word in forty years.
+
+## Addendum 10: correction, putstring/message-pointer thread retracted
+
+A constraint check invalidated the Addendum 5-6 identification.
+Counting real references: exactly **one** word jumps to 0x00C3
+(from 0x404F), not six; and **no word in the firmware holds the
+message-table address 0x10AE**. A routine that printed the message
+table would have to load that pointer somewhere, it never does.
+Therefore 0x00C3 is not the message printer, the "six call sites"
+were an artefact of an over-broad earlier scan, and the
+DD41-as-selector / scaling analysis was built on a false premise
+(which is why no linear selector->offset map hit the real entry
+boundaries). Retracted.
+
+What the same constraints established positively:
+- **DEV (E8xx) instructions are rare and localised: only 10 in the
+  whole interpreter.** Their most common target base register is
+  RB12 (4 of 10), at words 0x00CA, 0x01B8, 0x0358, 0x0368, 0x036C,
+  0x046A, 0x055B, 0x063B, 0x128E, 0x1652.
+- The device-poll loop at 0x01B7 (found in Addendum 4) uses
+  `E8C3` = DEV via RB12, a genuine port access to that same port.
+So the real output path runs through these ten DEV writes, not the
+message table. Next: read each DEV-via-RB12 site in context and find
+the one whose data comes from a character register loaded from a
+string, that is the display port.
+
+## Addendum 11: ML framing corrected, layer mismatch; behavioural path defined
+
+Format check on the Wang side is decisive: `Cpu2200vp.cpp` decodes a
+**24-bit** microword (`uop &= 0x00FFFFFF`; immediate split across
+bits [23:14]+[7:4]; 10-bit page-branch targets). The Iskra stream is
+**16-bit macro-instructions**. They implement the same BASIC-2 but at
+different machine layers, VP horizontal microcode vs. Iskra
+byte-code interpreter. Therefore field-by-field opcode alignment
+against the VP microcode is invalid (right language, wrong layer);
+the 0.92 keyword-Jaccard lives in the shared BASIC token data, not in
+the encodings. The "parallel corpus at the instruction level" framing
+is retracted.
+
+The identifiable ML formulation that survives is **behavioural
+supervision**, not encoding transfer:
+- Oracle = observable BASIC-2 I/O behaviour (bytes emitted for given
+  input), which the VP emulator can generate on demand. This is
+  layer-independent and well-defined (no loss-function ambiguity).
+- Search = the same coherence method that solved control flow, with a
+  behavioural fitness: candidate data-op semantics are scored by
+  whether loops terminate, string walks stay in KOI-8 text, and the
+  RB12 console writes emit byte sequences that match the known
+  message strings.
+- Prior = the shared token tables and the localised console kernel
+  (0x00C0-0x00D2) narrow the search to a few instruction classes.
+
+Concrete data captured toward this:
+- Console kernel uses D-class words with a recurring `#93`
+  (also #C3, #12), but `#93` occurs 82x firmware-wide as a D-imm8,
+  and the top D-imm8 values (#71 116x, #11 114x, #41 93x) look like a
+  **port/pointer address space**, not characters. So D-imm8 is an
+  operand address, consistent with the Rosetta poll-then-access idiom
+  on port #12. The console DEV writes target RB12 (4 of 10 DEV ops).
+- This means putchar reads the character indirectly (via a D-class
+  pointer op) and writes it through the RB12 DEV gateway; decoding it
+  needs the D-class addressing semantics, which behavioural search
+  can pin because a wrong choice fails to emit valid KOI-8.
+
+Status unchanged at the boundary: control flow fully solved; data
+semantics require either behavioural supervision (a real build, not a
+sandbox step) or the processor's техническое описание. No encoding
+oracle exists at the Iskra's layer among the files in hand.
+
+## Addendum 12: the keyword/descriptor table, located, decoded, and two hypotheses falsified
+
+Working on `firmware/basic02_220484.bin` (word addresses = byte/2 from
+file start; word 0 is the cold-start vector `9006`).
+
+### The table
+
+At **word 0x0B66** the interpreter holds two pointers, `0x19B6`
+(permutation array) and `0x1840` (keyword list), both byte offsets,
+matching the independent format analysis of the BASIC 02 on-disk
+encoding. Immediately after, at **word 0x0B67**, follows a table of
+**86 pairs** `[keyword byte-offset][16-bit value]`, ordered exactly
+like the alphabetical keyword list. 51 pairs cover the primary
+keywords; the remaining 35 point into the compound-keyword region at
+0x192F (RESTORE, PRINTUSING, DATALOAD DC …).
+
+### What the second column is NOT (two pre-registered tests, both negative)
+
+**Test 1, handler addresses with a constant load offset.** Criteria
+fixed before running: a single offset Δ must place ≥80 % of the 86
+targets in reachable non-text code, and beat the runner-up by ≥0.15.
+Result: best score 0.721 across three Δ values tied at the same
+score, i.e. no unique winner and no signal, 62 % of the image is
+reachable code anyway, so any plausible Δ scores ~0.7. **Rejected.**
+
+**Test 2, handler addresses at Δ = 0.** Of the 51 primary values,
+40 land on non-text words (random expectation 0.661; observed 0.784 -
+not significant). Decisively: **only 1 of 51 values is an actual jump
+target anywhere in the firmware.** Handler addresses would be jumped
+to. **Rejected.**
+
+### What the second column is
+
+Keywords sharing a value share a *syntax*, not an implementation:
+
+- `0x01DF`, `END`, `RETURN`, `TRACE` (no arguments)
+- `0x0532`, `GOSUB`, `GOTO` (one line number)
+- `0x08BD`, `AND(`, `OR(`, `XOR(` (identical function syntax)
+
+The column is therefore a **syntax/argument-class descriptor** used by
+the tokenizer-parser, not a code pointer. This also explains why no
+address interpretation could ever fit. Locating the actual statement
+handlers remains open; they are presumably reached through a third
+structure indexed by the token byte from the permutation array.
+
+### Full primary table
+
+
+## Addendum 12: the keyword/descriptor table, located, decoded, and two hypotheses falsified
+
+Working on `firmware/basic02_220484.bin` (word addresses = byte/2 from
+file start; word 0 is the cold-start vector `9006`).
+
+### The table
+
+At **word 0x0B66** the interpreter holds two pointers, `0x19B6`
+(permutation array) and `0x1840` (keyword list), both byte offsets,
+matching the independent format analysis of the BASIC 02 on-disk
+encoding. Immediately after, at **word 0x0B67**, follows a table of
+**86 pairs** `[keyword byte-offset][16-bit value]`, ordered exactly
+like the alphabetical keyword list. 51 pairs cover the primary
+keywords; the remaining 35 point into the compound-keyword region at
+0x192F (RESTORE, PRINTUSING, DATALOAD DC ...).
+
+### What the second column is NOT (two pre-registered tests, both negative)
+
+**Test 1 - handler addresses with a constant load offset.** Criteria
+fixed before running: a single offset must place >=80% of the 86
+targets in reachable non-text code, and beat the runner-up by >=0.15.
+Result: best score 0.721 across three offsets tied at the same score,
+i.e. no unique winner and no signal - 62% of the image is reachable
+code anyway, so any plausible offset scores ~0.7. **Rejected.**
+
+**Test 2 - handler addresses at offset 0.** Of the 51 primary values,
+40 land on non-text words (random expectation 0.661; observed 0.784 -
+not significant). Decisively: **only 1 of 51 values is an actual jump
+target anywhere in the firmware.** Handler addresses would be jumped
+to. **Rejected.**
+
+### What the second column is
+
+Keywords sharing a value share a *syntax*, not an implementation:
+
+- `0x01DF` - `END`, `RETURN`, `TRACE` (no arguments)
+- `0x0532` - `GOSUB`, `GOTO` (one line number)
+- `0x08BD` - `AND(`, `OR(`, `XOR(` (identical function syntax)
+
+The column is therefore a **syntax/argument-class descriptor** used by
+the tokenizer-parser, not a code pointer. This also explains why no
+address interpretation could ever fit. Locating the actual statement
+handlers remains open; they are presumably reached through a third
+structure indexed by the token byte from the permutation array.
+
+### Full primary table
+
+| keyword | kw offset | descriptor |
+|---|---|---|
+| `ADD` | 0x1840 | 0x090B |
+| `AND(` | 0x1843 | 0x08BD |
+| `BACKSPACE` | 0x1847 | 0x09E2 |
+| `BIN(` | 0x1850 | 0x08F2 |
+| `BOOL` | 0x1854 | 0x0903 |
+| `CLEAR` | 0x1858 | 0x069C |
+| `COM` | 0x185D | 0x054F |
+| `CONVERT` | 0x1860 | 0x0561 |
+| `COPY` | 0x1867 | 0x0BCD |
+| `DATA` | 0x186B | 0x0932 |
+| `DBACKSPACE` | 0x186F | 0x0A76 |
+| `DEFFN` | 0x1879 | 0x0675 |
+| `DIM` | 0x187E | 0x0553 |
+| `DSKIP` | 0x1881 | 0x0A8A |
+| `END` | 0x1886 | 0x01DF |
+| `FOR` | 0x1889 | 0x0640 |
+| `GOSUB` | 0x188C | 0x0532 |
+| `GOTO` | 0x1891 | 0x0532 |
+| `HEXPRINT` | 0x1895 | 0x047C |
+| `IF` | 0x189D | 0x05DB |
+| `INIT` | 0x189F | 0x017B |
+| `INPUT` | 0x18A3 | 0x084F |
+| `KEYIN` | 0x18A8 | 0x09F3 |
+| `LET` | 0x18AD | 0x05A0 |
+| `LIMITS` | 0x18B0 | 0x0C1C |
+| `LIST` | 0x18B6 | 0x0763 |
+| `LOAD` | 0x18BA | 0x0978 |
+| `MOVE` | 0x18BE | 0x0B1F |
+| `NEXT` | 0x18C2 | 0x0658 |
+| `ON` | 0x18C6 | 0x073F |
+| `OR(` | 0x18C8 | 0x08BD |
+| `PACK(` | 0x18CB | 0x091C |
+| `PRINT` | 0x18D0 | 0x043C |
+| `READ` | 0x18D5 | 0x06AD |
+| `REM` | 0x18D9 | 0x06AB |
+| `RENUMBER` | 0x18DC | 0x06BD |
+| `RES` | 0x18E4 | 0x06B3 |
+| `RETURN` | 0x18E7 | 0x01DF |
+| `REWIND` | 0x18ED | 0x06B9 |
+| `ROTATE` | 0x18F3 | 0x0C3E |
+| `RUN` | 0x18F9 | 0x010E |
+| `SAVE` | 0x18FC | 0x09A5 |
+| `SCRATCH` | 0x1900 | 0x0B95 |
+| `SELECT` | 0x1907 | 0x06DE |
+| `SKIP` | 0x190D | 0x09CA |
+| `STOP` | 0x1911 | 0x0735 |
+| `TRACE` | 0x1915 | 0x01DF |
+| `UNPACK(` | 0x191A | 0x0927 |
+| `VERIFY` | 0x1921 | 0x0BB4 |
+| `XOR(` | 0x1927 | 0x08BD |
+| `$GIO` | 0x192B | 0x09FD |
+
+Descriptor groups (>1 keyword):
+
+- `0x01DF`, `END`, `RETURN`, `TRACE`
+- `0x0532`, `GOSUB`, `GOTO`
+- `0x08BD`, `AND(`, `OR(`, `XOR(`
+
+Secondary-region entries: 35 (kw offsets 0x192F–0x19B6, i.e. the compound-keyword table at 0x192F)
