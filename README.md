@@ -11,7 +11,18 @@ have had to find out on the way.
 
 ## What runs today
 
-Not the machine. I am not going to write this as though something boots.
+`emulator/iskra_run.py` executes real 1988 software. It loads a disk image,
+decodes the tokenized BASIC 02 program and runs it on an 80x24 KOI-8
+screen. The dispatcher of the STIPENDIYA payroll system comes up and draws
+its menu; `findings/stipendiya-menu.png` is that screen, rendered from the
+disk bytes.
+
+```
+python3 emulator/iskra_run.py disks/disk3side0.dsk S0 --auto 1
+```
+
+**This runs the software, not the CPU.** The interpreter firmware is not
+executed. The distinction matters and I am not going to bury it.
 
 `emulator/iskra226_emu.py` is a research tool at the CPU level. It loads a
 firmware build, disassembles it, executes the instruction classes whose

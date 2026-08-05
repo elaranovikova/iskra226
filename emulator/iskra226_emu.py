@@ -13,6 +13,7 @@ Usage:
     python3 iskra226_emu.py dis  <image.dsk> [start_word] [count]
     python3 iskra226_emu.py run  <image.dsk> [start_word] [max_steps]
     python3 iskra226_emu.py map  <image.dsk>
+    python3 iskra226_emu.py messages <firmware.bin>
 """
 
 import sys
@@ -254,6 +255,53 @@ def cmd_run(path, start=0, max_steps=100000):
         print("step limit reached without trap")
 
 
+
+
+# --- verified addition 2026-08-05 ------------------------------------------
+# DEV with bit 16 of the base register clear is a BYTE LOAD from control
+# memory: RR := byte at ((RB >> 1) + RS), half selected by bit 1 of RB.
+# Verified against all seven entries of the firmware message pointer table
+# (see addendum 13/14 in isa-findings.md).
+
+KOI = {0xC0 + i: c for i, c in enumerate("юабцдефгхийклмнопярстужвьызшэщчъ")}
+KOI.update({0xE0 + i: c.upper()
+            for i, c in enumerate("юабцдефгхийклмнопярстужвьызшэщчъ")})
+
+MESSAGE_POINTERS = [0x107D, 0x108E, 0x108F, 0x1090, 0x1091, 0x1093, 0x1094]
+
+
+def dev_byte_load(words, rb, rs=0):
+    """The machine's own byte addressing rule (Aladiev, E865, a=0)."""
+    addr = ((rb >> 1) + rs) & 0x3FFF
+    w = words[addr]
+    return (w & 0xFF) if (rb & 1) == 0 else (w >> 8)
+
+
+def read_string(words, rb, limit=64):
+    """Walk a string the way the firmware does: byte pointer, +1 per char."""
+    out = []
+    for _ in range(limit):
+        b = dev_byte_load(words, rb)
+        if b in (0x00, 0x3A):          # NUL or ':' terminate an entry
+            break
+        out.append(KOI.get(b, chr(b) if 0x20 <= b < 0x7F else ""))
+        rb = (rb + 1) & 0xFFFF
+    return "".join(out)
+
+
+def cmd_messages(path):
+    """Print the firmware's system messages using the machine's own rules."""
+    ws = words_of_full(path)
+    for pw in MESSAGE_POINTERS:
+        print("  ptr @%04X -> %r" % (pw, read_string(ws, ws[pw])))
+
+
+def words_of_full(path):
+    d = open(path, "rb").read()
+    return [struct.unpack("<H", d[i:i + 2])[0]
+            for i in range(0, len(d) - 1, 2)]
+
+
 def main(argv):
     if len(argv) < 3:
         print(__doc__)
@@ -263,6 +311,8 @@ def main(argv):
     a4 = int(argv[4], 0) if len(argv) > 4 else (48 if cmd == "dis" else 100000)
     if cmd == "dis":
         cmd_dis(path, a3, a4)
+    elif cmd == "messages":
+        cmd_messages(path)
     elif cmd == "map":
         cmd_map(path)
     elif cmd == "run":

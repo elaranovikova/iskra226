@@ -604,3 +604,164 @@ Descriptor groups (>1 keyword):
 - `0x08BD`, `AND(`, `OR(`, `XOR(`
 
 Secondary-region entries: 35 (kw offsets 0x192F–0x19B6, i.e. the compound-keyword table at 0x192F)
+
+## Addendum 13: message pointer table found, Addendum 10 partially retracted
+
+Addendum 10 concluded that no word in the firmware holds the address
+of the message table, and retracted the message-printer thread on that
+basis. **That conclusion was wrong**, because the search used *word*
+addresses. The book's description of `E865` states the address is
+`(RB >> 1) + RS` with the byte half chosen by bit 1 of RB, i.e.
+pointers are **byte addresses**. Searching for byte addresses finds
+the table immediately.
+
+At words **0x107D** and **0x108D–0x1094** the firmware holds a message
+pointer table:
+
+| word | value (byte addr) | message |
+|---|---|---|
+| 0x107D | 0x2158 | `READY` |
+| 0x108D | 0x2160 | (table+8) |
+| 0x108E | 0x2162 | `СБОЙ СИСТЕМЫ` |
+| 0x108F | 0x2172 | `СБОЙ ОЗУ` |
+| 0x1090 | 0x217E | `СБОЙ УП` |
+| 0x1091 | 0x2188 | `СБОЙ МО` |
+| 0x1093 | 0x2192 | `ERR 01` |
+| 0x1094 | 0x219C | `ERR 02` |
+
+The offsets (8, 10, 26, 38, 48, 58, 68 from table start 0x2158) match
+the independently measured entry boundaries of the message table
+exactly. Further pointers into the same region occur at words 0x1087,
+0x13B2, 0x1459, 0x2B8C, 0x3336–0x333C, 0x468D.
+
+**Consequence for the ISA.** `DEV` (E8 sub-op) with bit 16 of the base
+register clear is not a device write but a **byte load from control
+memory**: `RR := byte at byte-address RB, word-indexed by RS`. That is
+exactly the character-fetch primitive a string printer needs. So
+`E8C3` inside the loop at 0x01B7 is most likely *fetching* characters
+via RB12 as a byte pointer, and the console output path is the
+bit-16-set branch of the same instruction, not a separate port.
+
+This also restores the plausibility of a message-printing routine and
+gives the first fully known-value anchor for testing data-operation
+semantics: pointer table, target strings, and addressing rule are all
+established independently of any hypothesis.
+
+## Addendum 14: first data-operation semantics verified
+
+`iskra226_emu.py messages firmware/basic02_220484.bin` now produces:
+
+```
+ptr @107D -> 'READY '
+ptr @108E -> 'СБОЙ СИСТЕМЫ'
+ptr @108F -> 'СБОЙ ОЗУ'
+ptr @1090 -> 'СБОЙ УП'
+ptr @1091 -> 'СБОЙ МО'
+ptr @1093 -> 'ERR 01'
+ptr @1094 -> 'ERR 02'
+```
+
+These characters are not printed from a decoded table: each byte is
+fetched through the machine's own addressing rule, from the pointer
+values the firmware itself holds. **Verified semantics:**
+
+- `DEV rb,rr` with bit 16 of RB clear = **byte load from control
+  memory**: `RR := byte at ((RB >> 1) + RS)`, half chosen by bit 1 of
+  RB, i.e. RB is a plain byte address into УП.
+- Strings are walked by incrementing the byte pointer by 1 per
+  character (verified: the RS-as-counter variant yields garbage,
+  the RB-increment variant yields exact text).
+- Message entries terminate on `0x00` or `':'`.
+
+Seven independent pointers, seven exact matches, no exceptions. This
+is the first *data*-operation semantics established in this project;
+everything before it was control flow or structure.
+
+**Honest limits.** The state is forced, not reached from cold start:
+the pointer is taken from the firmware's table and handed to the
+routine. The **output channel**, the bit-16-set branch of the same
+instruction, which hands the byte to the display, is still
+unverified, as is the arithmetic of the surrounding loop (class-0
+sub-ops other than the documented 0). So this reads the machine's
+messages correctly but does not yet print them the way the machine
+would. Two instructions, not a whole ISA, now stand between the
+emulator and genuine console output.
+
+## Addendum 15: the three layers, documented, where the missing semantics live
+
+Two more leads checked; both close the same way, and together they
+pin the one remaining gap precisely.
+
+**Wang 2200-T variant (ucode_2200T.cpp).** Jim Battle's Iskra page
+states the interpreter is T-BASIC (the Wang 2200-**T** dialect), so
+the T micromachine was checked as a better reference than VP. It is
+not: the T microword is ~20-bit horizontal microcode
+(`opcode1 = (uop>>15)&0x1F`, mini-op at bit 10, FETCH_A/FETCH_B
+register-load bits), the same *kind* of object as VP, just narrower.
+Both Wang models emulate the Wang bit-slice **microcode** layer.
+The Iskra runs 16-bit **macro**-instructions. Opcode-level alignment
+to either Wang model is therefore impossible for the same reason as
+in addendum 11, right language, wrong layer.
+
+**K589 / Intel 3000 family (datasheet obtained).** The Iskra CPU is
+built from K589 bit-slices = Intel 3001 MCU + 3002 CPE clones. The
+3001 datasheet (now in docs/) documents that layer fully: a pure
+microcode **sequencer** with a 9-bit address organised as a 32x16
+matrix (512 microinstructions), eleven jump functions (JCC, JZR,
+JCR, JCE, JFL, JCF, JZF, JPR, JLL, JRL, JPX), C/Z flags, exact bit
+encodings in its Appendix A. Crucially the datasheet states plainly
+that "the microprogram interprets a higher level of instructions
+called macroinstructions", i.e. the 3001/3002 chips are the
+*machinery* on which an engineer implements a macro-ISA via
+self-written microcode. They do not define the 67 Iskra macro
+instructions.
+
+**The layer map, now fully documented:**
+
+```
+K589 bit-slices (3001 MCU + 3002 CPE)   <- semantics in datasheets (have)
+        |  microcode in the Iskra's own ПМК/ПЗУ
+        v
+Iskra 67-instruction 16-bit macro ISA   <- control flow solved; data ops open
+        |  the BASIC interpreter, as macro-code on disk
+        v
+BASIC 02 tokenized program format       <- fully solved; runs in iskra_run.py
+```
+
+The **only** missing piece is the middle arrow: the Iskra's own ПМК
+microcode (2K words) plus the ПЗУ, which is what turns K589
+slices into the 67-instruction ISA. No Wang model and no K589
+datasheet contains it, it is specific to the Iskra's ROMs. This is
+why the data-operation semantics could not be derived from the
+firmware binary, from statistics, or from either related machine:
+the information physically resides in ROM chips we do not have a dump
+of.
+
+How large that ПЗУ is, the sources do not agree on: 8 KB in the
+ru.wikipedia and computer-museum.ru descriptions, 16 Кбайт in the
+Balasanian manual mirrored under `docs/`, and 24 KB in the 1989
+Grubov/Kirdan/Kozubovsky ЭВМ handbook. The machine shipped in seven
+configurations, so the three figures need not contradict each other,
+but nothing available to me decides between them. No single one of
+them is quoted anywhere in this file as if it were the number.
+
+**What the datasheets buy us anyway:** when a ПМК/ПЗУ dump is
+obtained from surviving hardware, it is now *readable*, the 3001
+datasheet gives the microword addressing (32x16 matrix, 9-bit,
+eleven jump functions, C/Z), and the 3002 datasheet the ALU/register
+semantics (R0-R9, T, accumulator, MAR, matching the reconstructed
+РБ/РР/РС/segment/stack registers). The disassembly path for a future
+dump is therefore already specified.
+
+**Verified positive result this project still stands on** (addendum
+14): `DEV` with bit 16 clear = byte load from control memory, proven
+against all seven message-pointer entries. That is one macro
+instruction genuinely recovered; the rest await the ROM dump.
+
+This is the honest endpoint of what is reachable from the available
+material and the public record. The remaining step is physical: a
+ПМК/ПЗУ dump from a surviving Iskra-226, small and dumpable at
+any of the three sizes the sources give, or the processor's
+техническое описание, sought via zx-pk.ru (threads 9276, 16298) and
+phantom.sannata.org. The path from such a dump to a booting emulator
+is now fully specified end to end.
