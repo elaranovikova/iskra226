@@ -89,9 +89,12 @@ in a Russian/English version. It is a re-implementation, not emulation; the
 Python is what executes bytes.
 
 **wang-reference/**, Wang 2200 VP boot disk, CPU implementation and
-disassembler from WangEmu 3.0, as a behavioural reference for BASIC-2. The
-VP microcode is 24 bits wide and the Iskra runs 16-bit macro-instructions,
-so opcode-level alignment between them does not work.
+disassembler from **WangEmu 3.0, by Jim Battle**, MIT licensed and as it
+came, kept as a behavioural reference for BASIC-2. The VP microcode is 24
+bits wide and the Iskra runs 16-bit macro-instructions, so opcode-level
+alignment between them does not work. `wang-reference/README.md` says whose
+the five files are and carries his license; nothing here is derived from
+them.
 
 ## Solved, and not
 
@@ -113,6 +116,22 @@ evidence. Closing it needs the processor's техническое описани
 and ПЗУ dump from surviving hardware.
 
 If you have either, I would like to hear from you.
+
+## Whose this is
+
+My code is MIT and my prose and the decoded listings are CC BY 4.0, in
+`LICENSE` and `LICENSE-DOCS`. Three parts of this repository are neither,
+and each of the three has a README that names the people:
+
+* `disks/`, the six sides, published by vazman and read off the hardware by
+  dk_spb.
+* `docs/`, the scanned manuals, mirrored from Jim Battle's collection at
+  wang2200.org.
+* `wang-reference/`, five files from WangEmu, MIT License, Copyright (c)
+  2019 Jim Battle, with the 2200T ROM image in `ucode_2200T.cpp`
+  contributed by Carl Coffman.
+
+I did not do the hard part of any of those three.
 
 ## Please mirror this
 

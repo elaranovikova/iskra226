@@ -11,3 +11,10 @@ before I found them.
 
 It does not cover the disk images in disks/ either. Those are other people's
 recovery work, and the note in disks/README.md says whose.
+
+One boundary runs the other way, and it belongs here because otherwise the
+code license is the one that gets it wrong. The five Wang 2200 files in
+wang-reference/ are not mine. They are WangEmu, MIT License, Copyright (c)
+2019 Jim Battle, and his license text sits next to them in
+wang-reference/LICENSE-WANGEMU. The MIT License in LICENSE is mine and does
+not cover them.
