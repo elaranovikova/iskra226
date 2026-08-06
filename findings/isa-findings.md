@@ -794,3 +794,63 @@ zero-padded amounts and executing the original suppression routine
 edge case that a zero immediately before the decimal point is kept
 ("0000.75" -> "   0.75"). First full run of original computational
 logic, field-verified.
+
+## Addendum 17: the application layer runs, end-to-end session verified
+
+Working the STIPENDIYA suite as an operator would have in 1988 closed
+the remaining gaps in the BASIC 02 format. Each item below is
+corpus-derived, not assumed.
+
+### Newly decoded encodings
+
+- **Array access with a literal index**: `<arr> E8 <bcd> D0`
+  (previously only the slot-index form `<arr> <slot> D0` was handled).
+  This is what builds the hard-coded group directory.
+- **`D5` is context-dependent**: the full `D5 E8 rr DE E8 cc D0`
+  sequence is `AT(row,col)`; anywhere else `D5` is the **`<>`
+  relation**. A too-loose AT pattern had silently swallowed
+  `IF V56 <> 0` as `AT(0,0)`.
+- **`E9 E8 <bcd>`** = negative literal (the `-1` end-of-correction
+  code); `E9` between operands is binary minus.
+- **`EA` = addition**, proven by 16 accumulator patterns
+  `X = X EA …`, four of them `X = X EA 1`, against a single `E9`.
+- **Variable slots extend to 0x7F**, not 0x5F (slot 0x66 is the loop
+  variable of the print branch's group search).
+- **`SELECT PRINT <dev> [( width )]`**: device 005 = console, 80
+  columns; device 012 = line printer, 132 columns. The payroll form
+  is emitted to device 012, which is why it never appeared on the
+  console screen.
+- **`CONVERT <src> TO <dst>, '<image>'`** (token 06) formats a number
+  through a picture string.
+- **Disk positioning**: `DSKIP END` appends; `DBACKSPACE BEG` plus
+  `DSKIP (index-1)*28+5` seeks a group by its directory position.
+  Groups must therefore be entered in directory order, which is how
+  the operator workflow was organised.
+
+### The group directory
+
+Hard-coded in both S1 (line 1500) and S2 (line 8000): groups
+11, 12, 111, 112, 113, 115, 116, 117, 201, 202, 203, 204, 205, 206,
+391, 392, 395, 396, 397, the real classes of vocational school
+SPTU-132. A group number outside this list is rejected with
+"НЕСУЩЕСТВУЮЩАЯ ГРУППА".
+
+### Verified end-to-end session
+
+Boot S0 → block 1 → S1 → ЗАПИСЬ НА ДИСК → enter three students into
+one group from the directory → 99 → 999 → write-protect ceremony
+(STOP/CONTINUE) → record written; then КОРРЕКТИРОВКА → the same
+group → per-student element edits (salary, practice days, compensation) → -1 → record rewritten
+with names *and* edited values intact; then S2 → ПЕЧАТЬ ВЕДОМОСТИ →
+parameters accepted → group located via the directory → record
+reloaded → **the per-student filter passes and the payroll
+computation runs**: `A25(i) = A28(i) - A30(i)`,
+`V75 = V75 + A25(i)`.
+
+**Honest limit.** The printed form is not emitted because the payout
+total evaluates to zero: the students' stipend rate never reaches the
+record (the entry statement at S1 line 320 takes three array fields
+while the prompt names four), so the upstream components of A28 stay
+empty. The chain itself, entry, storage, correction, rewrite,
+reload, filtering, computation, printer channel, is verified; only
+this one input path remains unresolved.

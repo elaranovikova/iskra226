@@ -105,6 +105,22 @@ def parse_expr(pl, tokens):
             n = pl[i + 1]
             items.append(("str", koi8(pl[i + 2:i + 2 + n])))
             i += 2 + n
+        elif b in (0xEA, 0xEE, 0xEB, 0xE4) and items and items[-1][0] in (
+                "num", "str", "var", "aref", "arefl", "rpar", "strfn"):
+            # arithmetic operators in operand position.
+            #   EA = +   (16 accumulator patterns "X = X EA ...", 4 of
+            #             them "X = X EA 1"; E9 appears once)
+            #   EE, EB, E4 are the remaining high-frequency binary
+            #   operators; mapped by frequency to * , - , / , tentative,
+            #   only EA is corpus-proven.
+            items.append(("op", {0xEA: "+", 0xEE: "*",
+                                 0xEB: "-", 0xE4: "/"}[b]))
+            i += 1
+        elif b == 0xE9 and items and items[-1][0] in (
+                "num", "str", "var", "aref", "arefl", "rpar", "strfn") \
+                and not (i + 2 < len(pl) and pl[i + 1] == 0xE8
+                         and (i + 3 >= len(pl) or pl[i + 3] != 0xD0)):
+            items.append(("op", "-")); i += 1
         elif b == 0xE9 and i + 2 < len(pl) and pl[i + 1] == 0xE8:
             # unary minus:  E9 E8 <bcd>  ->  negative numeric literal
             v = pl[i + 2]
@@ -117,12 +133,17 @@ def parse_expr(pl, tokens):
         elif b == 0xE2 and i + 2 < len(pl):
             items.append(("at", pl[i + 1], pl[i + 2]))
             i += 3
-        elif b == 0xD5 and i + 5 < len(pl) and pl[i + 1] == 0xE8:
-            r = pl[i + 2]
-            c = pl[i + 5] if pl[i + 4] == 0xE8 else 0
+        elif b == 0xD5 and i + 6 < len(pl) and pl[i + 1] == 0xE8 \
+                and pl[i + 3] == 0xDE and pl[i + 4] == 0xE8 \
+                and pl[i + 6] == 0xD0:
+            # full AT( row , col ) form:  D5 E8 rr DE E8 cc D0
+            r = pl[i + 2]; c = pl[i + 5]
             items.append(("at", (r >> 4) * 10 + (r & 0xF),
                           (c >> 4) * 10 + (c & 0xF)))
-            i += 6
+            i += 7
+        elif b == 0xD5:
+            # outside the AT form, D5 is the "not equal" relation
+            items.append(("op", "<>")); i += 1
         elif b == 0xDF and i + 2 < len(pl) and pl[i + 1] == 0xE8:
             nn = pl[i + 2]
             items.append(("tab", (nn >> 4) * 10 + (nn & 0xF)))
@@ -523,6 +544,8 @@ class Interp:
                 cond = left > right
             elif op == "<":
                 cond = left < right
+            elif op == "<>":
+                cond = left != right
             else:
                 cond = False
         except TypeError:
