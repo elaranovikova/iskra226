@@ -1,68 +1,61 @@
 #!/usr/bin/env python3
 """
-iskra_run - execution layer for Iskra-226 BASIC 02 programs.
+iskra_run - a working Iskra-226 BASIC 02 interpreter.
 
-Builds on iskra_basic.py (disk + catalog + format). This module parses
-the tokenized statements into an executable form and runs them on an
-80x24 KOI-8 text screen, supporting the statement set the surviving
-programs actually use: PRINT (with AT, TAB, ; separators, string and
-numeric literals, variables), INPUT, LET / implicit assignment, IF
-with a relation and GOTO, GOTO, ON..GOTO, FOR/NEXT, REM, STOP, END.
+Not a reconstruction of the CPU firmware: an independent, clean
+implementation of the same BASIC-2 dialect, built to run the original
+programs correctly. Loads a disk image, decodes the tokenized BASIC 02
+program, and executes it on an 80x24 KOI-8 screen.
 
-This runs the software, not the CPU. Disk chain-load statements (LOAD
-segment) are honoured by loading and continuing the named program, so
-the STIPENDIYA dispatcher and its S1/S2 segments run as a whole.
+Ground truth for iteration: the 4,189 decoded source lines of the
+STIPENDIYA payroll system and BAM database suite. When output is wrong
+the responsible statement is directly visible, so the interpreter can
+be debugged against real software.
+
+Supported: PRINT (AT, TAB, ;/, separators, string/number/variable,
+arithmetic), INPUT, LET and implicit assignment, IF/THEN relations,
+GOTO, GOSUB/RETURN, ON..GOTO, REM, STOP/END, numeric and string
+variables, and chain-loading between program segments.
 
 Usage:
-    python3 iskra_run.py <image.dsk> <FILENAME> [--auto INPUTS]
-    python3 iskra_run.py <image.dsk> <FILENAME> --screenshot out.png
-
---auto feeds comma-separated INPUT answers (for non-interactive runs).
+    python3 iskra_run.py <image.dsk> <FILE> [--auto a,b,c] [--trace]
+    python3 iskra_run.py <image.dsk> <FILE> --screenshot out.png
 """
 
 import sys
-import struct
-
 from iskra_basic import Disk, load_token_map, koi8, bcd2, find
 
-# --- 80x24 screen --------------------------------------------------------
 
 class Screen:
     W, H = 80, 24
 
     def __init__(self):
+        self.clear()
+
+    def clear(self):
         self.buf = [[" "] * self.W for _ in range(self.H)]
-        self.cx = 0
-        self.cy = 0
+        self.cx = self.cy = 0
 
     def _scroll(self):
         self.buf.pop(0)
         self.buf.append([" "] * self.W)
         self.cy = self.H - 1
 
-    def clear(self):
-        self.buf = [[" "] * self.W for _ in range(self.H)]
-        self.cx = 0
-        self.cy = 0
-
     def at(self, row, col):
-        # BASIC AT is 1-based
         self.cy = max(0, min(self.H - 1, row - 1))
         self.cx = max(0, min(self.W - 1, col - 1))
+
+    def tab(self, col):
+        self.cx = max(0, min(self.W - 1, col))
 
     def put(self, ch):
         if ch == "\r":
             self.cx = 0
         elif ch == "\n":
-            self.cy += 1
-            if self.cy >= self.H:
-                self._scroll()
+            self.newline()
         else:
             if self.cx >= self.W:
-                self.cx = 0
-                self.cy += 1
-            if self.cy >= self.H:
-                self._scroll()
+                self.newline()
             self.buf[self.cy][self.cx] = ch
             self.cx += 1
 
@@ -70,25 +63,25 @@ class Screen:
         for ch in s:
             self.put(ch)
 
+    def newline(self):
+        self.cx = 0
+        self.cy += 1
+        if self.cy >= self.H:
+            self._scroll()
+
     def render_text(self):
-        return "\n".join("".join(row).rstrip() for row in self.buf)
+        return "\n".join("".join(r).rstrip() for r in self.buf)
 
-
-# --- statement parser ----------------------------------------------------
-# Turns one statement payload (token + bytes) into a small tuple form the
-# interpreter can execute. Only the constructs the corpus uses are handled;
-# anything else becomes ('raw', text) and is printed verbatim if in PRINT.
 
 def parse_expr(pl, tokens):
-    """Parse a payload into a list of expression items."""
     items = []
     i = 0
     while i < len(pl):
         b = pl[i]
         if b == 0xE3 and i + 1 < len(pl):
-            nlen = pl[i + 1]
-            items.append(("str", koi8(pl[i + 2:i + 2 + nlen])))
-            i += 2 + nlen
+            n = pl[i + 1]
+            items.append(("str", koi8(pl[i + 2:i + 2 + n])))
+            i += 2 + n
         elif b == 0xE8 and i + 1 < len(pl):
             v = pl[i + 1]
             items.append(("num", (v >> 4) * 10 + (v & 0xF)))
@@ -102,51 +95,53 @@ def parse_expr(pl, tokens):
             items.append(("at", (r >> 4) * 10 + (r & 0xF),
                           (c >> 4) * 10 + (c & 0xF)))
             i += 6
-        elif b == 0xDF and i + 3 < len(pl) and pl[i + 1] == 0xE8:
-            # TAB( n ) encoded as DF E8 nn D0
+        elif b == 0xDF and i + 2 < len(pl) and pl[i + 1] == 0xE8:
             nn = pl[i + 2]
             items.append(("tab", (nn >> 4) * 10 + (nn & 0xF)))
             i += 4 if (i + 3 < len(pl) and pl[i + 3] == 0xD0) else 3
         elif b == 0xD3 and i + 2 < len(pl):
-            ln = bcd2(pl[i + 1], pl[i + 2])
-            items.append(("goto", ln))
+            items.append(("goto", bcd2(pl[i + 1], pl[i + 2])))
             i += 3
+        elif b == 0xCD:
+            i += 1
+            tl = []
+            while i + 1 < len(pl):
+                ln = bcd2(pl[i], pl[i + 1])
+                if ln is None:
+                    break
+                tl.append(ln)
+                i += 2
+            items.append(("gotolist", tl))
         elif b == 0xD9:
-            items.append(("op", "="))
-            i += 1
+            items.append(("op", "=")); i += 1
         elif b == 0xD4:
-            items.append(("op", ">"))
-            i += 1
+            items.append(("op", ">")); i += 1
+        elif b == 0xCF:
+            items.append(("op", "<")); i += 1
+        elif b in (0x2B, 0x2D, 0x2A, 0x2F):
+            items.append(("op", chr(b))); i += 1
         elif b == 0xDD:
-            items.append(("semi",))
-            i += 1
+            items.append(("semi",)); i += 1
         elif b == 0xDE:
-            items.append(("comma",))
-            i += 1
+            items.append(("comma",)); i += 1
         elif b == 0xEB:
-            items.append(("lpar",))
-            i += 1
+            items.append(("lpar",)); i += 1
         elif b == 0xD0:
-            items.append(("rpar",))
-            i += 1
+            items.append(("rpar",)); i += 1
         elif b < 0x20:
-            items.append(("var", b))
-            i += 1
+            items.append(("var", b)); i += 1
         elif 0x20 <= b < 0x7F:
-            # gather a run of ascii
             j = i
             while j < len(pl) and 0x20 <= pl[j] < 0x7F:
                 j += 1
             items.append(("asc", "".join(chr(x) for x in pl[i:j])))
             i = j
         else:
-            items.append(("byte", b))
-            i += 1
+            items.append(("byte", b)); i += 1
     return items
 
 
 def parse_line(rec, tokens):
-    """rec = payload bytes without the trailing FE. Returns [statements]."""
     stmts = []
     j = 0
     while j + 1 < len(rec):
@@ -164,195 +159,241 @@ def parse_line(rec, tokens):
     return stmts
 
 
-# --- interpreter ---------------------------------------------------------
-
 class Interp:
-    def __init__(self, disk, tokens, auto=None):
+    def __init__(self, disk, tokens, auto=None, trace=False):
         self.disk = disk
         self.tokens = tokens
         self.scr = Screen()
-        self.vars = {}
+        self.nvars = {}
+        self.svars = {}
         self.auto = list(auto) if auto else None
         self.auto_i = 0
-        self.forstack = []
+        self.trace = trace
+        self.gosub = []
         self.halted = False
         self.load_request = None
 
-    # -- program loading --
     def load_program(self, name):
         e = find(self.disk, name)
         if not e:
             return None
         body = self.disk.body(e)
-        from iskra_basic import best_decode  # reuse the robust line scanner
-        raw = best_decode(body, self.tokens)  # [(lineno, text)], not enough
-        # We need statement structure, so re-scan the body directly:
-        lines = {}
-        order = []
+        lines, order = {}, []
+        # Find the first valid line header, then parse strictly sequentially.
+        # (A find()-based or best-run scanner mis-synchronises on S2's long
+        #  data-bearing lines, where embedded bytes look like BCD headers.)
         i = 0
         while i + 3 < len(body):
             ln = bcd2(body[i], body[i + 1])
             length = body[i + 2]
-            if ln is None or length == 0 or i + 3 + length > len(body):
+            if ln is not None and length and i + 3 + length <= len(body) \
+                    and body[i + 2 + length] == 0xFE:
+                break
+            i += 1
+        while i + 3 < len(body):
+            ln = bcd2(body[i], body[i + 1])
+            length = body[i + 2]
+            if ln is None or length == 0 or i + 3 + length > len(body) \
+                    or body[i + 2 + length] != 0xFE:
                 i += 1
                 continue
-            recbytes = body[i + 3:i + 3 + length]
-            if recbytes[-1] != 0xFE:
-                i += 1
-                continue
+            rec = body[i + 3:i + 2 + length]
             if ln not in lines:
-                lines[ln] = parse_line(recbytes[:-1], self.tokens)
+                lines[ln] = parse_line(rec, self.tokens)
                 order.append(ln)
             i += 3 + length
         order.sort()
         return lines, order
 
-    # -- expression evaluation (only what the corpus needs) --
-    def val(self, item):
-        t = item[0]
-        if t == "num":
-            return item[1]
-        if t == "str":
-            return item[1]
-        if t == "asc":
-            return item[1]
-        if t == "var":
-            return self.vars.get(item[1], 0)
-        return None
+    def eval_value(self, items, idx):
+        it = items[idx]
+        k = it[0]
+        if k == "num":
+            return it[1], idx + 1
+        if k == "str":
+            return it[1], idx + 1
+        if k == "asc":
+            s = it[1].strip()
+            try:
+                return int(s), idx + 1
+            except ValueError:
+                return it[1], idx + 1
+        if k == "var":
+            slot = it[1]
+            if slot in self.svars:
+                return self.svars[slot], idx + 1
+            return self.nvars.get(slot, 0), idx + 1
+        return 0, idx + 1
 
-    def get_input(self, prompt=""):
+    def eval_expr(self, items, idx):
+        val, idx = self.eval_value(items, idx)
+        while idx < len(items) and items[idx][0] == "op" \
+                and items[idx][1] in "+-*/":
+            op = items[idx][1]
+            rhs, idx = self.eval_value(items, idx + 1)
+            try:
+                if op == "+":
+                    val = val + rhs
+                elif op == "-":
+                    val = val - rhs
+                elif op == "*":
+                    val = val * rhs
+                elif op == "/":
+                    val = val / rhs if rhs else 0
+            except TypeError:
+                val = str(val) + str(rhs)
+        return val, idx
+
+    def _fmt(self, v):
+        if isinstance(v, float):
+            return "%g" % v
+        return str(v)
+
+    def exec_print(self, items):
+        i = 0
+        trailing = False
+        while i < len(items):
+            k = items[i][0]
+            if k == "at":
+                self.scr.at(items[i][1], items[i][2]); i += 1; trailing = True
+            elif k == "tab":
+                self.scr.tab(items[i][1]); i += 1; trailing = True
+            elif k in ("semi", "comma"):
+                i += 1; trailing = True
+            elif k in ("str", "asc"):
+                self.scr.puts(items[i][1]); i += 1; trailing = False
+            elif k in ("num", "var"):
+                val, i = self.eval_expr(items, i)
+                self.scr.puts(self._fmt(val)); trailing = False
+            elif k in ("lpar", "rpar"):
+                i += 1
+            else:
+                i += 1
+        if not trailing:
+            self.scr.newline()
+
+    def exec_assign(self, items):
+        if not items or items[0][0] != "var":
+            return
+        slot = items[0][1]
+        j = 1
+        while j < len(items) and not (items[j][0] == "op"
+                                      and items[j][1] == "="):
+            j += 1
+        if j >= len(items):
+            return
+        val, _ = self.eval_expr(items, j + 1)
+        if isinstance(val, str):
+            self.svars[slot] = val
+        else:
+            self.nvars[slot] = val
+
+    def eval_relation(self, items):
+        left, j = self.eval_value(items, 0)
+        if j >= len(items) or items[j][0] != "op":
+            return None, None
+        op = items[j][1]
+        right, j = self.eval_value(items, j + 1)
+        target = None
+        for it in items[j:]:
+            if it[0] == "goto":
+                target = it[1]
+            elif it[0] == "num" and target is None:
+                target = it[1]
+        try:
+            if op == "=":
+                cond = left == right
+            elif op == ">":
+                cond = left > right
+            elif op == "<":
+                cond = left < right
+            else:
+                cond = False
+        except TypeError:
+            cond = False
+        return cond, target
+
+    def get_input(self):
         if self.auto is not None:
             v = self.auto[self.auto_i] if self.auto_i < len(self.auto) else "0"
             self.auto_i += 1
             return v
         try:
-            return input(prompt)
+            return input("? ")
         except EOFError:
             return "0"
 
-    # -- statement execution --
-    def exec_print(self, items):
-        i = 0
-        trailing = False
-        while i < len(items):
-            it = items[i]
-            k = it[0]
-            trailing = False
-            if k == "at":
-                self.scr.at(it[1], it[2])
-            elif k == "tab":
-                self.scr.cx = min(self.scr.W - 1, it[1])
-            elif k == "str" or k == "asc":
-                self.scr.puts(it[1])
-            elif k == "num":
-                self.scr.puts(str(it[1]))
-            elif k == "var":
-                self.scr.puts(str(self.vars.get(it[1], 0)))
-            elif k == "semi":
-                trailing = True
-            elif k == "comma":
-                trailing = True
-            i += 1
-        if not trailing:
-            self.scr.puts("\r\n")
-
-    def exec_assign(self, name, items):
-        # forms: LET V = expr   or implicit  V = expr  (token 0x36)
-        var = None
-        val = None
-        seen_eq = False
-        for it in items:
-            if it[0] == "var" and var is None and not seen_eq:
-                var = it[1]
-            elif it[0] == "op" and it[1] == "=":
-                seen_eq = True
-            elif seen_eq and it[0] in ("num", "var"):
-                val = self.val(it)
-        if var is not None and val is not None:
-            self.vars[var] = val
-
-    def exec_if(self, items):
-        # form: <var> <op> <value> GOTO <line>
-        left = right = op = target = None
-        for it in items:
-            if it[0] == "var" and left is None:
-                left = self.vars.get(it[1], 0)
-            elif it[0] == "op":
-                op = it[1]
-            elif it[0] in ("num",) and op and right is None:
-                right = it[1]
-            elif it[0] == "goto":
-                target = it[1]
-        if op is None or target is None:
-            return None
-        cond = (left == right) if op == "=" else (left > right)
-        return target if cond else None
-
-    def exec_on(self, items):
-        # ON <var> GOTO n1,n2,...  encoded with CD marker + BCD pairs
-        var = None
-        targets = []
-        for it in items:
-            if it[0] == "var" and var is None:
-                var = self.vars.get(it[1], 0)
-            elif it[0] == "num":
-                targets.append(it[1])
-            elif it[0] == "goto":
-                targets.append(it[1])
-        if var and 1 <= var <= len(targets):
-            return targets[var - 1]
-        return None
-
-    def run(self, name, max_steps=100000):
+    def run(self, name, max_steps=200000):
         loaded = self.load_program(name)
         if not loaded:
-            self.scr.puts("NO PROGRAM %s\r\n" % name)
+            self.scr.puts("NO PROGRAM %s" % name); self.scr.newline()
             return
         lines, order = loaded
+        idx = {ln: k for k, ln in enumerate(order)}
         pos = 0
         steps = 0
         while pos < len(order) and steps < max_steps and not self.halted:
             ln = order[pos]
             jump = None
             for st in lines[ln]:
-                name0 = st[0]
-                if name0 == "REM":
+                nm = st[0]
+                if nm == "REM":
                     continue
                 items = st[1]
-                if name0 == "PRINT":
+                if self.trace:
+                    sys.stderr.write("%4d %s %r\n" % (ln, nm, items))
+                if nm == "PRINT":
                     self.exec_print(items)
-                elif name0 in ("LET", "", "S36"):
-                    self.exec_assign(name0, items)
-                elif name0 == "INPUT":
+                elif nm in ("LET", "", "S36"):
+                    self.exec_assign(items)
+                elif nm == "INPUT":
                     ans = self.get_input()
-                    # first variable in the statement receives it
                     for it in items:
                         if it[0] == "var":
                             try:
-                                self.vars[it[1]] = int(ans)
+                                self.nvars[it[1]] = int(ans)
                             except ValueError:
-                                self.vars[it[1]] = ans
+                                self.svars[it[1]] = ans
                             break
-                elif name0 == "IF":
-                    jump = self.exec_if(items)
-                    if jump is not None:
+                elif nm == "IF":
+                    cond, target = self.eval_relation(items)
+                    if cond and target is not None:
+                        jump = target
                         break
-                elif name0 == "GOTO":
+                elif nm == "GOTO":
                     for it in items:
                         if it[0] in ("goto", "num"):
-                            jump = it[1] if it[0] == "goto" else it[1]
-                    # bare GOTO with var target: not resolvable here
+                            jump = it[1]
                     if jump is not None:
                         break
-                elif name0 in ("ON",):
-                    jump = self.exec_on(items)
+                elif nm == "GOSUB":
+                    for it in items:
+                        if it[0] in ("goto", "num"):
+                            self.gosub.append(pos)
+                            jump = it[1]
                     if jump is not None:
                         break
-                elif name0 == "STOP" or name0 == "END":
+                elif nm == "RETURN":
+                    if self.gosub:
+                        pos = self.gosub.pop()
+                    break
+                elif nm == "ON":
+                    sel = None
+                    targets = []
+                    for it in items:
+                        if it[0] == "var" and sel is None:
+                            sel = self.nvars.get(it[1], 0)
+                        elif it[0] == "gotolist":
+                            targets = it[1]
+                        elif it[0] in ("num", "goto"):
+                            targets.append(it[1])
+                    if sel and 1 <= sel <= len(targets):
+                        jump = targets[sel - 1]
+                        break
+                elif nm in ("STOP", "END"):
                     self.halted = True
                     break
-                elif name0 in ("S7D", "LOAD"):
-                    # chain-load: find quoted segment name and switch
+                elif nm in ("S7D", "LOAD", "S2D"):
                     seg = None
                     for it in items:
                         if it[0] == "str":
@@ -362,31 +403,38 @@ class Interp:
                         self.halted = True
                         break
             steps += 1
-            if jump is not None and jump in lines:
-                pos = order.index(jump)
+            if jump is not None and jump in idx:
+                pos = idx[jump]
             else:
                 pos += 1
 
 
-# --- rendering -----------------------------------------------------------
-
-def to_png(scr, path):
+def to_png(scr, path, label=""):
     from PIL import Image, ImageDraw, ImageFont
-    CW, CH, PAD = 11, 20, 18
-    img = Image.new("RGB", (scr.W * CW + 2 * PAD, scr.H * CH + 2 * PAD),
-                    (18, 20, 18))
+    CW, CH, PAD = 11, 22, 24
+    extra = 30 if label else 0
+    img = Image.new("RGB",
+                    (scr.W * CW + 2 * PAD, scr.H * CH + 2 * PAD + extra),
+                    (10, 12, 10))
     dr = ImageDraw.Draw(img)
     try:
         f = ImageFont.truetype(
             "/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf", 16)
+        fs = ImageFont.truetype(
+            "/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf", 12)
     except OSError:
-        f = ImageFont.load_default()
+        f = fs = ImageFont.load_default()
+    dr.rectangle([PAD - 6, PAD - 6, scr.W * CW + PAD + 6,
+                  scr.H * CH + PAD + 6], outline=(60, 90, 60), width=2)
     for y in range(scr.H):
         for x in range(scr.W):
             ch = scr.buf[y][x]
             if ch != " ":
                 dr.text((PAD + x * CW, PAD + y * CH), ch, font=f,
                         fill=(150, 240, 150))
+    if label:
+        dr.text((PAD, scr.H * CH + PAD + 10), label, font=fs,
+                fill=(120, 160, 120))
     img.save(path)
 
 
@@ -395,19 +443,18 @@ def main(argv):
         print(__doc__)
         return 1
     path, name = argv[1], argv[2]
-    auto = None
-    shot = None
-    if "--auto" in argv:
-        auto = argv[argv.index("--auto") + 1].split(",")
-    if "--screenshot" in argv:
-        shot = argv[argv.index("--screenshot") + 1]
+    auto = argv[argv.index("--auto") + 1].split(",") if "--auto" in argv \
+        else None
+    shot = argv[argv.index("--screenshot") + 1] if "--screenshot" in argv \
+        else None
+    trace = "--trace" in argv
 
     disk = Disk(path)
     tokens = load_token_map()
-    it = Interp(disk, tokens, auto=auto)
+    it = Interp(disk, tokens, auto=auto, trace=trace)
 
     seg = name
-    for _ in range(4):  # follow up to a few chain-loads
+    for _ in range(6):
         it.load_request = None
         it.halted = False
         it.run(seg)
@@ -417,7 +464,8 @@ def main(argv):
             break
 
     if shot:
-        to_png(it.scr, shot)
+        to_png(it.scr, shot,
+               "Iskra-226 BASIC 02  |  %s  |  iskra_run.py" % name)
         print("wrote %s" % shot)
     else:
         print(it.scr.render_text())
