@@ -92,13 +92,29 @@ def parse_expr(pl, tokens):
             elif pl[j] < 0x80:
                 opnd = ("var", pl[j]); j += 1
             def _arg(a, off):
-                # a position/length argument: E8 <bcd> literal or a slot
+                # a position/length argument: E8 <bcd>, E7 <bcd><bcd>,
+                # or a variable slot
                 if off < len(pl) and pl[off] == 0xE8 and off + 1 < len(pl):
                     v0 = pl[off + 1]
                     return ("num", (v0 >> 4) * 10 + (v0 & 0xF)), off + 2
+                if off < len(pl) and pl[off] == 0xE7 and off + 2 < len(pl):
+                    return ("num", bcd2(pl[off + 1], pl[off + 2])), off + 3
                 if off < len(pl) and pl[off] < 0x80:
                     return ("var", pl[off]), off + 1
                 return None, off
+            if opnd == ("var", 0x31):
+                # E1 is a generic function atom; id 0x31 = AT(rows, col):
+                # on the printer a line-feed count plus column (this is
+                # the definitive reading of the long-debated E1-31 -
+                # the STR() reading applies to the aref form only)
+                a1, j2 = _arg(pl, j)
+                if a1 is not None and j2 < len(pl) and pl[j2] == 0xDE:
+                    a2, j3 = _arg(pl, j2 + 1)
+                    if a2 is not None and j3 < len(pl) \
+                            and pl[j3] == 0xD0:
+                        items.append(("at2", a1, a2))
+                        i = j3 + 1
+                        continue
             if opnd is not None:
                 a1, j2 = _arg(pl, j)
                 if a1 is not None and j2 < len(pl) and pl[j2] == 0xDE:
@@ -290,6 +306,9 @@ class Interp:
         self.print_width = 80    #  12 = line printer (132 columns)
         self.printer = []        # captured printer output, line by line
         self._pline = ""
+        self._pg = {}            # printer page grid: row -> {col: char}
+        self._prow = 0
+        self._pcol = 0
         self.auto = list(auto) if auto else None
         self.auto_i = 0
         self.trace = trace
@@ -424,31 +443,58 @@ class Interp:
         return str(v)
 
     def _pr(self, s):
-        """Emit to the currently selected device."""
+        """Emit to the currently selected device. The printer keeps a
+        2-D page (the form is laid out with AT(row,col)), flushed to
+        self.printer line by line via _pr_flush."""
         if self.print_device == 12:
-            self._pline += s
+            row = self._pg.setdefault(self._prow, {})
+            for ch in str(s):
+                row[self._pcol] = ch
+                self._pcol += 1
         else:
             self.scr.puts(s)
 
     def _pr_nl(self):
         if self.print_device == 12:
-            self.printer.append(self._pline.rstrip())
-            self._pline = ""
+            self._prow += 1
+            self._pcol = 0
         else:
             self.scr.newline()
 
     def _pr_tab(self, col):
         if self.print_device == 12:
-            if len(self._pline) < col:
-                self._pline += " " * (col - len(self._pline))
+            self._pcol = max(self._pcol, col)
         else:
             self.scr.tab(col)
 
     def _pr_at(self, row, col):
         if self.print_device == 12:
-            self._pr_tab(col)
+            # On the line printer AT(n, col) cannot seek: the first
+            # argument is a LINE-FEED count (always 1 in the corpus -
+            # resolving the long-open question of its role), the second
+            # the column on the new line.
+            self._prow += max(1, row)
+            self._pcol = max(0, col)
         else:
             self.scr.at(row, col)
+
+    def _pr_flush(self):
+        """Convert the accumulated printer page into text lines."""
+        if not self._pg:
+            return
+        top = min(self._pg)
+        bottom = max(self._pg)
+        for r in range(top, bottom + 1):
+            row = self._pg.get(r, {})
+            if row:
+                w = max(row) + 1
+                line = "".join(row.get(c, " ") for c in range(w))
+            else:
+                line = ""
+            self.printer.append(line.rstrip())
+        self._pg = {}
+        self._prow = 0
+        self._pcol = 0
 
     def exec_print(self, items):
         i = 0
@@ -457,6 +503,11 @@ class Interp:
             k = items[i][0]
             if k == "at":
                 self._pr_at(items[i][1], items[i][2]); i += 1; trailing = True
+            elif k == "at2":
+                r2, _ = self.eval_value([items[i][1]], 0)
+                c2, _ = self.eval_value([items[i][2]], 0)
+                self._pr_at(int(r2 or 1), int(c2 or 0))
+                i += 1; trailing = True
             elif k == "tab":
                 self._pr_tab(items[i][1]); i += 1; trailing = True
             elif k in ("semi", "comma"):
@@ -471,22 +522,22 @@ class Interp:
             else:
                 i += 1
         if not trailing:
-            self.scr.newline()
+            self._pr_nl()
 
     def exec_printusing(self, items, lines):
         """Formatted print through a % image line (E7 line reference)."""
         ref = None
         vals = []
-        after_sep = False
+        seen_ref = False
         for it in items:
             if it[0] == "lineref":
                 ref = it[1]
-            elif it[0] == "semi":
-                after_sep = True
-            elif after_sep and it[0] in ("aref", "var", "num"):
-                # arguments are the DD-separated items AFTER the reference
-                # block (E7 ref DE <spec> DD arg DD arg ...); the bare byte
-                # before the first separator is a spec, not an argument
+                seen_ref = True
+            elif seen_ref and it[0] in ("aref", "arefl", "var", "num",
+                                        "strfn"):
+                # every value item after the image reference is an
+                # argument; the first (before the first semicolon) is
+                # simply arg 1, e.g. the row counter V69
                 v, _ = self.eval_value([it], 0)
                 vals.append(v)
         mask = ""
@@ -507,6 +558,14 @@ class Interp:
                 field = mask[i:j]
                 v = vals[vi] if vi < len(vals) else 0
                 vi += 1
+                if isinstance(v, str) and v.strip() \
+                        and not v.strip().replace(".", "").replace(
+                            "-", "").isdigit():
+                    # string value (e.g. the name) in a # field:
+                    # left-aligned, clipped to the field width
+                    out.append(v.ljust(len(field))[:len(field)])
+                    i = j
+                    continue
                 try:
                     fv = float(v)
                 except (TypeError, ValueError):
@@ -857,6 +916,20 @@ class Interp:
                                     n2 = 0
                                 break
                         self.recptr += max(0, n2)
+                elif nm == "INIT":
+                    # INIT ,<char> <var> : fill the string variable with
+                    # the character (ruler lines of '-' or '*')
+                    ch = None
+                    tgt = None
+                    for it in items:
+                        if it[0] in ("var", "byte") and ch is None \
+                                and it[0] != "comma":
+                            ch = it[1]
+                        elif it[0] == "var" and ch is not None \
+                                and tgt is None:
+                            tgt = it[1]
+                    if ch is not None and tgt is not None:
+                        self.svars[tgt] = chr(ch) * self.print_width
                 elif nm == "CONVERT":
                     # CONVERT <src> TO <dst> , '<picture>' : format the
                     # numeric source through the # picture into a string
@@ -956,6 +1029,7 @@ class Interp:
                 pos = new_pos
             else:
                 pos += 1
+        self._pr_flush()
 
 
 def to_png(scr, path, label=""):

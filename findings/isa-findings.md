@@ -886,3 +886,34 @@ Known cosmetic remainders: the first student's detail row is skipped
 by an off-by-one in the print loop entry (their amounts are included
 in all totals); the number-to-words routine still emits garbled
 words; dates in the header are partially malformed.
+
+## Addendum 19: the complete printed form, cosmetics round
+
+The remaining layout fixes turned the printer capture into the full
+authentic form. Findings along the way:
+
+- **`E1` is a generic function atom.** Id `0x31` = AT; the aref form
+  = STR(). This settles the twice-revised E1-31 question for good:
+  the original "tab" reading and the later STR() correction were each
+  half right, two functions share the atom.
+- **On the line printer AT(n, col) cannot seek backwards**: the first
+  argument (always 1 in the corpus, the long-open question) is a
+  line-feed count. The printed page is therefore laid out through a
+  2-D page buffer, not a character stream.
+- **`INIT ,<char> <var>`** fills a string variable with the character
+ , the ruler lines of '-' and '*'.
+- The first PRINTUSING value before the first semicolon is an
+  ordinary argument (the row counter), not a device spec, retracting
+  the earlier "spec byte" note; this also restored the first
+  student's detail row.
+- String values in `#` image fields print left-aligned (names, the
+  '!' column separators, the ИТОГО label).
+
+Resulting page: form header, В КАССУ block, ВЕДОМОСТЬ title, period,
+page number, the full three-line column header, one detail row per
+student with name and asterisk flag, dashed dividers, the computed
+totals row (144.50 / 105.00 / 249.50 / 37.20 / 212.30), and the
+signature block. Remaining known blemishes: the month word in the
+header prints garbled ("ЛИКТ"), the amount-in-words line is empty,
+and pagination continues through the empty slots of the 40-row
+group block.
