@@ -451,11 +451,15 @@ class Interp:
                 field = mask[i:j]
                 v = vals[vi] if vi < len(vals) else 0
                 vi += 1
+                try:
+                    fv = float(v)
+                except (TypeError, ValueError):
+                    fv = 0.0
                 if "." in field:
                     dec = len(field) - field.index(".") - 1
-                    s = ("%%.%df" % dec) % float(v)
+                    s = ("%%.%df" % dec) % fv
                 else:
-                    s = "%d" % int(v)
+                    s = "%d" % int(fv)
                 out.append(s.rjust(len(field))[:len(field)])
                 i = j
             else:
@@ -647,13 +651,21 @@ class Interp:
                 elif nm == "GOSUB":
                     for it in items:
                         if it[0] in ("goto", "num"):
-                            self.gosub.append(pos)
+                            # resume at the NEXT STATEMENT after the GOSUB,
+                            # not at the next line (a line may continue
+                            # with e.g. ": GOTO nnnn" after the call)
+                            self.gosub.append((pos, si))
                             jump = it[1]
                     if jump is not None:
                         break
                 elif nm == "RETURN":
                     if self.gosub:
-                        pos = self.gosub.pop()
+                        rpos, rsi = self.gosub.pop()
+                        pos = rpos
+                        start_si = rsi + 1
+                        jump = None
+                        si = None
+                        break
                     break
                 elif nm == "ON":
                     sel = None
@@ -708,7 +720,11 @@ class Interp:
                     if frame is not None:
                         fvar, limit, fpos, fsi = frame
                         self.nvars[fvar] = self.nvars.get(fvar, 0) + 1
-                        if self.nvars[fvar] <= limit:
+                        try:
+                            lim2 = float(limit)
+                        except (TypeError, ValueError):
+                            lim2 = 0
+                        if self.nvars[fvar] <= lim2:
                             pos = fpos
                             start_si = fsi + 1
                             jump = None
@@ -722,23 +738,29 @@ class Interp:
                             and items[1][0] == "var":
                         self.eof_goto = bcd2(items[0][1], items[1][1])
                 elif nm == "S74":            # DATALOAD-family: read record
+                    # Records are POSITIONAL byte streams on the real disk:
+                    # values are read back in argument order (S1 writes
+                    # A01..A16; S2 reads the same record into A02..A17).
                     slots = [it[1] for it in items if it[0] == "whole"]
                     if self.recptr < len(self.diskrecs):
                         rec = self.diskrecs[self.recptr]
                         self.recptr += 1
-                        for s2 in slots:
-                            if s2 in rec:
-                                self.arrays[s2] = dict(rec[s2])
+                        vals = rec.get("_seq", [])
+                        for i2, s2 in enumerate(slots):
+                            if i2 < len(vals):
+                                self.arrays[s2] = dict(vals[i2])
                     elif self.eof_goto is not None:
                         jump = self.eof_goto
                         break
                 elif nm == "S76":            # DATASAVE-family: write record
                     slots = [it[1] for it in items if it[0] == "whole"]
-                    rec = {s2: dict(self.arrays.get(s2, {})) for s2 in slots}
-                    if self.recptr < len(self.diskrecs):
-                        self.diskrecs[self.recptr] = rec
-                    else:
-                        self.diskrecs.append(rec)
+                    if not slots:
+                        slots = sorted(self.arrays.keys())
+                    rec = {"_seq": [dict(self.arrays.get(s2, {}))
+                                    for s2 in slots]}
+                    while len(self.diskrecs) <= self.recptr:
+                        self.diskrecs.append({"_seq": []})
+                    self.diskrecs[self.recptr] = rec
                     self.recptr += 1
                 elif nm == "DBACKSPACE":
                     if any(it[0] == "byte" and it[1] == 0xD6
@@ -760,17 +782,53 @@ class Interp:
                         # number relative to the preceding DBACKSPACE BEG
                         n2 = 0
                         for k, it in enumerate(items):
-                            if it[0] in ("var", "aref", "arefl"):
-                                v, _ = self.eval_value([it], 0)
+                            if it[0] in ("var", "aref", "arefl", "num"):
+                                v, _ = self.eval_expr(items, k)
                                 try:
                                     n2 = int(v)
                                 except (TypeError, ValueError):
                                     n2 = 0
-                                if k + 1 < len(items) \
-                                        and items[k + 1] == ("num", -1):
-                                    n2 -= 1
                                 break
                         self.recptr += max(0, n2)
+                elif nm == "CONVERT":
+                    # CONVERT <src> TO <dst> , '<picture>' : format the
+                    # numeric source through the # picture into a string
+                    src_it = None
+                    dst_it = None
+                    pic = None
+                    seen_to = False
+                    for it in items:
+                        if it[0] == "to":
+                            seen_to = True
+                        elif it[0] == "str":
+                            pic = it[1]
+                        elif it[0] in ("var", "aref", "arefl"):
+                            if not seen_to and src_it is None:
+                                src_it = it
+                            elif seen_to and dst_it is None:
+                                dst_it = it
+                    if src_it is not None and dst_it is not None:
+                        v, _ = self.eval_value([src_it], 0)
+                        try:
+                            fv = float(v)
+                        except (TypeError, ValueError):
+                            fv = 0.0
+                        if pic and "." in pic:
+                            dec = len(pic) - pic.index(".") - 1
+                            s2 = ("%%0%d.%df" % (len(pic), dec)) % fv
+                        elif pic:
+                            s2 = ("%%0%dd" % len(pic)) % int(fv)
+                        else:
+                            s2 = str(v)
+                        s2 = s2[:len(pic)] if pic else s2
+                        if dst_it[0] == "var":
+                            self.svars[dst_it[1]] = s2
+                        elif dst_it[0] == "aref":
+                            idx2 = int(self.nvars.get(dst_it[2], 0))
+                            self.arrays.setdefault(dst_it[1], {})[idx2] = s2
+                        else:
+                            self.arrays.setdefault(dst_it[1],
+                                                   {})[dst_it[2]] = s2
                 elif nm == "SELECT":
                     # SELECT PRINT <device> [ ( width ) ]
                     #   device 005 = console (80 col), 012 = printer (132)
