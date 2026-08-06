@@ -86,10 +86,10 @@ def parse_expr(pl, tokens):
             #   E1 <arr> <idx> D0 (pos,len)    -> STR(Aarr(Vidx), pos, len)
             opnd = None
             j = i + 1
-            if j + 2 < len(pl) and pl[j] < 0x60 and pl[j + 1] < 0x60 \
+            if j + 2 < len(pl) and pl[j] < 0x80 and pl[j + 1] < 0x80 \
                     and pl[j + 2] == 0xD0:
                 opnd = ("aref", pl[j], pl[j + 1]); j += 3
-            elif pl[j] < 0x60:
+            elif pl[j] < 0x80:
                 opnd = ("var", pl[j]); j += 1
             if opnd is not None and j + 5 < len(pl) and pl[j] == 0xE8 \
                     and pl[j + 2] == 0xDE and pl[j + 3] == 0xE8 \
@@ -105,6 +105,11 @@ def parse_expr(pl, tokens):
             n = pl[i + 1]
             items.append(("str", koi8(pl[i + 2:i + 2 + n])))
             i += 2 + n
+        elif b == 0xE9 and i + 2 < len(pl) and pl[i + 1] == 0xE8:
+            # unary minus:  E9 E8 <bcd>  ->  negative numeric literal
+            v = pl[i + 2]
+            items.append(("num", -((v >> 4) * 10 + (v & 0xF))))
+            i += 3
         elif b == 0xE8 and i + 1 < len(pl):
             v = pl[i + 1]
             items.append(("num", (v >> 4) * 10 + (v & 0xF)))
@@ -149,13 +154,21 @@ def parse_expr(pl, tokens):
             if prev in ("num", "str", "var", "aref", "rpar"):
                 items.append(("op", chr(b)))
                 i += 1
-            elif i + 2 < len(pl) and pl[i + 1] < 0x60 \
+            elif i + 3 < len(pl) and pl[i + 1] == 0xE8 \
+                    and pl[i + 3] == 0xD0:
+                v = pl[i + 2]
+                items.append(("arefl", b, (v >> 4) * 10 + (v & 0xF)))
+                i += 4
+            elif i + 2 < len(pl) and pl[i + 1] < 0x80 \
                     and pl[i + 2] == 0xD0:
                 items.append(("aref", b, pl[i + 1]))
                 i += 3
             else:
                 items.append(("var", b))
                 i += 1
+        elif b == 0xE0 and i + 1 < len(pl) and pl[i + 1] < 0x80:
+            # whole-array reference in disk-I/O argument lists
+            items.append(("whole", pl[i + 1])); i += 2
         elif b == 0xE7 and i + 2 < len(pl):
             # line-number reference (e.g. PRINTUSING image line)
             ref = bcd2(pl[i + 1], pl[i + 2])
@@ -170,11 +183,17 @@ def parse_expr(pl, tokens):
             items.append(("rpar",)); i += 1
         elif b == 0xD1:
             items.append(("to",)); i += 1
-        elif b < 0x60 and i + 2 < len(pl) and pl[i + 1] < 0x60 \
+        elif b < 0x80 and i + 3 < len(pl) and pl[i + 1] == 0xE8 \
+                and pl[i + 3] == 0xD0:
+            # array access with a literal index:  <arr> E8 <bcd> ')'
+            v = pl[i + 2]
+            items.append(("arefl", b, (v >> 4) * 10 + (v & 0xF)))
+            i += 4
+        elif b < 0x80 and i + 2 < len(pl) and pl[i + 1] < 0x80 \
                 and pl[i + 2] == 0xD0:
             # array access  <arr> <idx> ')'  ->  A_arr(V_idx)
             items.append(("aref", b, pl[i + 1])); i += 3
-        elif b < 0x60:
+        elif b < 0x80:
             # Outside E3 strings every non-marker byte is a variable slot,
             # not ASCII text (digit bytes 0x30-0x39 are slots 48-57, not
             # the characters '0'-'9').
@@ -216,6 +235,13 @@ class Interp:
         self.svars = {}
         self.arrays = {}         # array slot -> {index: value}
         self.forstack = []       # (var, limit, line_pos, stmt_index)
+        self.diskrecs = []       # virtual record store (persists across
+        self.recptr = 0          #  segment chain-loads, like the real disk)
+        self.eof_goto = None     # target set by the 1E on-end statement
+        self.print_device = 5    # SELECT PRINT device: 5 = console (80),
+        self.print_width = 80    #  12 = line printer (132 columns)
+        self.printer = []        # captured printer output, line by line
+        self._pline = ""
         self.auto = list(auto) if auto else None
         self.auto_i = 0
         self.trace = trace
@@ -283,6 +309,12 @@ class Interp:
             arr, ivar = it[1], it[2]
             index = int(self.nvars.get(ivar, 0))
             return self.arrays.get(arr, {}).get(index, 0), idx + 1
+        if k == "arefl":
+            return self.arrays.get(it[1], {}).get(it[2], 0), idx + 1
+        if k == "lineref":
+            # E7 <bcd><bcd> is a 4-digit numeric literal in expressions;
+            # the same encoding serves as a line reference in PRINTUSING
+            return it[1], idx + 1
         if k == "strfn":
             base, _ = self.eval_value([it[1]], 0)
             s = str(base)
@@ -314,22 +346,49 @@ class Interp:
             return "%g" % v
         return str(v)
 
+    def _pr(self, s):
+        """Emit to the currently selected device."""
+        if self.print_device == 12:
+            self._pline += s
+        else:
+            self.scr.puts(s)
+
+    def _pr_nl(self):
+        if self.print_device == 12:
+            self.printer.append(self._pline.rstrip())
+            self._pline = ""
+        else:
+            self.scr.newline()
+
+    def _pr_tab(self, col):
+        if self.print_device == 12:
+            if len(self._pline) < col:
+                self._pline += " " * (col - len(self._pline))
+        else:
+            self.scr.tab(col)
+
+    def _pr_at(self, row, col):
+        if self.print_device == 12:
+            self._pr_tab(col)
+        else:
+            self.scr.at(row, col)
+
     def exec_print(self, items):
         i = 0
         trailing = False
         while i < len(items):
             k = items[i][0]
             if k == "at":
-                self.scr.at(items[i][1], items[i][2]); i += 1; trailing = True
+                self._pr_at(items[i][1], items[i][2]); i += 1; trailing = True
             elif k == "tab":
-                self.scr.tab(items[i][1]); i += 1; trailing = True
+                self._pr_tab(items[i][1]); i += 1; trailing = True
             elif k in ("semi", "comma"):
                 i += 1; trailing = True
             elif k in ("str", "asc"):
-                self.scr.puts(items[i][1]); i += 1; trailing = False
-            elif k in ("num", "var"):
+                self._pr(items[i][1]); i += 1; trailing = False
+            elif k in ("num", "var", "aref", "arefl"):
                 val, i = self.eval_expr(items, i)
-                self.scr.puts(self._fmt(val)); trailing = False
+                self._pr(self._fmt(val)); trailing = False
             elif k in ("lpar", "rpar"):
                 i += 1
             else:
@@ -357,8 +416,8 @@ class Interp:
         if ref in lines and lines[ref] and lines[ref][0][0] == "IMAGE":
             mask = lines[ref][0][1]
         if not mask:
-            self.scr.puts(" ".join(str(v) for v in vals))
-            self.scr.newline()
+            self._pr(" ".join(str(v) for v in vals))
+            self._pr_nl()
             return
         out = []
         vi = 0
@@ -381,8 +440,8 @@ class Interp:
             else:
                 out.append(mask[i])
                 i += 1
-        self.scr.puts("".join(out))
-        self.scr.newline()
+        self._pr("".join(out))
+        self._pr_nl()
 
     def exec_assign(self, items):
         if items and items[0][0] == "strfn":
@@ -406,6 +465,17 @@ class Interp:
                 arr, ivar = opnd[1], opnd[2]
                 index = int(self.nvars.get(ivar, 0))
                 self.arrays.setdefault(arr, {})[index] = s
+            return
+        if items and items[0][0] == "arefl":
+            arr, index = items[0][1], items[0][2]
+            j = 1
+            while j < len(items) and not (items[j][0] == "op"
+                                          and items[j][1] == "="):
+                j += 1
+            if j >= len(items):
+                return
+            val, _ = self.eval_expr(items, j + 1)
+            self.arrays.setdefault(arr, {})[index] = val
             return
         if items and items[0][0] == "aref":
             arr, ivar = items[0][1], items[0][2]
@@ -502,7 +572,11 @@ class Interp:
                     sys.stderr.write("%4d %s %r\n" % (ln, nm, items))
                 if nm == "PRINT":
                     self.exec_print(items)
-                elif any(it[0] == "lineref" for it in items):
+                elif nm == "GOSUB'" and any(it[0] == "lineref"
+                                            for it in items):
+                    # PRINTUSING: token 0x28 with an E7 image-line reference.
+                    # Must not catch ordinary assignments whose right-hand
+                    # side happens to be an E7 numeric literal.
                     self.exec_printusing(items, lines)
                 elif nm in ("LET", "", "S36"):
                     self.exec_assign(items)
@@ -619,7 +693,94 @@ class Interp:
                             break
                         else:
                             self.forstack.remove(frame)
-                elif nm in ("STOP", "END"):
+                elif nm == "S1E":
+                    # on end-of-data GOTO: payload is a raw BCD line pair
+                    if len(items) >= 2 and items[0][0] == "var" \
+                            and items[1][0] == "var":
+                        self.eof_goto = bcd2(items[0][1], items[1][1])
+                elif nm == "S74":            # DATALOAD-family: read record
+                    slots = [it[1] for it in items if it[0] == "whole"]
+                    if self.recptr < len(self.diskrecs):
+                        rec = self.diskrecs[self.recptr]
+                        self.recptr += 1
+                        for s2 in slots:
+                            if s2 in rec:
+                                self.arrays[s2] = dict(rec[s2])
+                    elif self.eof_goto is not None:
+                        jump = self.eof_goto
+                        break
+                elif nm == "S76":            # DATASAVE-family: write record
+                    slots = [it[1] for it in items if it[0] == "whole"]
+                    rec = {s2: dict(self.arrays.get(s2, {})) for s2 in slots}
+                    if self.recptr < len(self.diskrecs):
+                        self.diskrecs[self.recptr] = rec
+                    else:
+                        self.diskrecs.append(rec)
+                    self.recptr += 1
+                elif nm == "DBACKSPACE":
+                    if any(it[0] == "byte" and it[1] == 0xD6
+                           for it in items):
+                        self.recptr = 0                    # DBACKSPACE BEG
+                    else:
+                        n2 = 1
+                        for it in items:
+                            if it[0] == "num":
+                                n2 = it[1]
+                        self.recptr = max(0, self.recptr - n2)
+                elif nm == "DSKIP":
+                    if any(it[0] == "byte" and it[1] == 0xD7
+                           for it in items):
+                        self.recptr = len(self.diskrecs)   # DSKIP END
+                    else:
+                        # DSKIP (index-1)*blocksize+hdr : one group occupies
+                        # one block, so the leading (index-1) is the block
+                        # number relative to the preceding DBACKSPACE BEG
+                        n2 = 0
+                        for k, it in enumerate(items):
+                            if it[0] in ("var", "aref", "arefl"):
+                                v, _ = self.eval_value([it], 0)
+                                try:
+                                    n2 = int(v)
+                                except (TypeError, ValueError):
+                                    n2 = 0
+                                if k + 1 < len(items) \
+                                        and items[k + 1] == ("num", -1):
+                                    n2 -= 1
+                                break
+                        self.recptr += max(0, n2)
+                elif nm == "SELECT":
+                    # SELECT PRINT <device> [ ( width ) ]
+                    #   device 005 = console (80 col), 012 = printer (132)
+                    nums = [x[1] for x in items if x[0] in ("var", "byte",
+                                                            "num")]
+                    if len(nums) >= 2 and nums[0] == 7:
+                        self.print_device = nums[1]
+                        for x in items:
+                            if x[0] == "byte" and x[1] > 100:
+                                self.print_width = x[1]
+                            elif x[0] == "num" and x[1] in (80, 132):
+                                self.print_width = x[1]
+                elif nm == "LIMITS":
+                    # disk-catalog query: LIMITS T <file>, start, end, free.
+                    # Virtual disk: report a valid range so the write path
+                    # proceeds (real sectors are not used by this layer).
+                    tv = [it[1] for it in items if it[0] == "var"]
+                    if len(tv) >= 4:
+                        self.nvars[tv[-3]] = 1
+                        self.nvars[tv[-2]] = 100
+                        self.nvars[tv[-1]] = 99
+                elif nm == "STOP":
+                    # Wang semantics: STOP is a resumable pause, the user
+                    # presses CONTINUE and the program resumes at the next
+                    # statement. CONTINUE is a bare keypress, not data, so
+                    # in scripted mode it must not consume an answer.
+                    if self.auto is None:
+                        try:
+                            input("[STOP, press Enter to CONTINUE] ")
+                        except EOFError:
+                            self.halted = True
+                            break
+                elif nm == "END":
                     self.halted = True
                     break
                 elif nm in ("S7D", "LOAD", "S2D"):
