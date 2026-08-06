@@ -78,7 +78,17 @@ def parse_expr(pl, tokens):
     i = 0
     while i < len(pl):
         b = pl[i]
-        if b == 0xE3 and i + 1 < len(pl):
+        if b == 0xE1 and i + 7 < len(pl) and pl[i + 1] == 0x31 \
+                and pl[i + 2] == 0xE8 and pl[i + 4] == 0xDE \
+                and pl[i + 5] == 0xE8 and pl[i + 7] == 0xD0:
+            # positioning atom  E1 31 (a, col):  observed only with a=1 in
+            # the corpus (15 calls); role of the first argument unresolved.
+            # Treated as tab-to-column; column values 11..80 match the
+            # printed form layout (SELECT P routes to a 132-col printer).
+            cc = pl[i + 6]
+            items.append(("tab", (cc >> 4) * 10 + (cc & 0xF)))
+            i += 8
+        elif b == 0xE3 and i + 1 < len(pl):
             n = pl[i + 1]
             items.append(("str", koi8(pl[i + 2:i + 2 + n])))
             i += 2 + n
@@ -119,7 +129,24 @@ def parse_expr(pl, tokens):
         elif b == 0xCF:
             items.append(("op", "<")); i += 1
         elif b in (0x2B, 0x2D, 0x2A, 0x2F):
-            items.append(("op", chr(b))); i += 1
+            # context-sensitive: an operator only AFTER an operand;
+            # otherwise these byte values are variable slots (0x2A-0x2F).
+            # An array access  <slot> <idx> ')'  takes precedence.
+            prev = items[-1][0] if items else None
+            if prev in ("num", "str", "var", "aref", "rpar"):
+                items.append(("op", chr(b)))
+                i += 1
+            elif i + 2 < len(pl) and pl[i + 1] < 0x60 \
+                    and pl[i + 2] == 0xD0:
+                items.append(("aref", b, pl[i + 1]))
+                i += 3
+            else:
+                items.append(("var", b))
+                i += 1
+        elif b == 0xE7 and i + 2 < len(pl):
+            # line-number reference (e.g. PRINTUSING image line)
+            ref = bcd2(pl[i + 1], pl[i + 2])
+            items.append(("lineref", ref)); i += 3
         elif b == 0xDD:
             items.append(("semi",)); i += 1
         elif b == 0xDE:
@@ -128,14 +155,17 @@ def parse_expr(pl, tokens):
             items.append(("lpar",)); i += 1
         elif b == 0xD0:
             items.append(("rpar",)); i += 1
-        elif b < 0x20:
+        elif b == 0xD1:
+            items.append(("to",)); i += 1
+        elif b < 0x60 and i + 2 < len(pl) and pl[i + 1] < 0x60 \
+                and pl[i + 2] == 0xD0:
+            # array access  <arr> <idx> ')'  ->  A_arr(V_idx)
+            items.append(("aref", b, pl[i + 1])); i += 3
+        elif b < 0x60:
+            # Outside E3 strings every non-marker byte is a variable slot,
+            # not ASCII text (digit bytes 0x30-0x39 are slots 48-57, not
+            # the characters '0'-'9').
             items.append(("var", b)); i += 1
-        elif 0x20 <= b < 0x7F:
-            j = i
-            while j < len(pl) and 0x20 <= pl[j] < 0x7F:
-                j += 1
-            items.append(("asc", "".join(chr(x) for x in pl[i:j])))
-            i = j
         else:
             items.append(("byte", b)); i += 1
     return items
@@ -166,6 +196,8 @@ class Interp:
         self.scr = Screen()
         self.nvars = {}
         self.svars = {}
+        self.arrays = {}         # array slot -> {index: value}
+        self.forstack = []       # (var, limit, line_pos, stmt_index)
         self.auto = list(auto) if auto else None
         self.auto_i = 0
         self.trace = trace
@@ -199,7 +231,13 @@ class Interp:
                 continue
             rec = body[i + 3:i + 2 + length]
             if ln not in lines:
-                lines[ln] = parse_line(rec, self.tokens)
+                if rec[:1] == b"\x3f":
+                    # % image line: keep the raw mask text for PRINTUSING
+                    mask = "".join(chr(c) if 0x20 <= c < 0x7F else " "
+                                   for c in rec[2:])
+                    lines[ln] = [("IMAGE", mask)]
+                else:
+                    lines[ln] = parse_line(rec, self.tokens)
                 order.append(ln)
             i += 3 + length
         order.sort()
@@ -223,6 +261,10 @@ class Interp:
             if slot in self.svars:
                 return self.svars[slot], idx + 1
             return self.nvars.get(slot, 0), idx + 1
+        if k == "aref":
+            arr, ivar = it[1], it[2]
+            index = int(self.nvars.get(ivar, 0))
+            return self.arrays.get(arr, {}).get(index, 0), idx + 1
         return 0, idx + 1
 
     def eval_expr(self, items, idx):
@@ -272,7 +314,66 @@ class Interp:
         if not trailing:
             self.scr.newline()
 
+    def exec_printusing(self, items, lines):
+        """Formatted print through a % image line (E7 line reference)."""
+        ref = None
+        vals = []
+        after_sep = False
+        for it in items:
+            if it[0] == "lineref":
+                ref = it[1]
+            elif it[0] == "semi":
+                after_sep = True
+            elif after_sep and it[0] in ("aref", "var", "num"):
+                # arguments are the DD-separated items AFTER the reference
+                # block (E7 ref DE <spec> DD arg DD arg ...); the bare byte
+                # before the first separator is a spec, not an argument
+                v, _ = self.eval_value([it], 0)
+                vals.append(v)
+        mask = ""
+        if ref in lines and lines[ref] and lines[ref][0][0] == "IMAGE":
+            mask = lines[ref][0][1]
+        if not mask:
+            self.scr.puts(" ".join(str(v) for v in vals))
+            self.scr.newline()
+            return
+        out = []
+        vi = 0
+        i = 0
+        while i < len(mask):
+            if mask[i] == "#":
+                j = i
+                while j < len(mask) and mask[j] in "#.":
+                    j += 1
+                field = mask[i:j]
+                v = vals[vi] if vi < len(vals) else 0
+                vi += 1
+                if "." in field:
+                    dec = len(field) - field.index(".") - 1
+                    s = ("%%.%df" % dec) % float(v)
+                else:
+                    s = "%d" % int(v)
+                out.append(s.rjust(len(field))[:len(field)])
+                i = j
+            else:
+                out.append(mask[i])
+                i += 1
+        self.scr.puts("".join(out))
+        self.scr.newline()
+
     def exec_assign(self, items):
+        if items and items[0][0] == "aref":
+            arr, ivar = items[0][1], items[0][2]
+            j = 1
+            while j < len(items) and not (items[j][0] == "op"
+                                          and items[j][1] == "="):
+                j += 1
+            if j >= len(items):
+                return
+            val, _ = self.eval_expr(items, j + 1)
+            index = int(self.nvars.get(ivar, 0))
+            self.arrays.setdefault(arr, {})[index] = val
+            return
         if not items or items[0][0] != "var":
             return
         slot = items[0][1]
@@ -315,13 +416,19 @@ class Interp:
 
     def get_input(self):
         if self.auto is not None:
-            v = self.auto[self.auto_i] if self.auto_i < len(self.auto) else "0"
+            if self.auto_i >= len(self.auto):
+                # scripted input exhausted: stop cleanly instead of feeding
+                # a default that would take branches the user never chose
+                self.halted = True
+                return ""
+            v = self.auto[self.auto_i]
             self.auto_i += 1
             return v
         try:
             return input("? ")
         except EOFError:
-            return "0"
+            self.halted = True
+            return ""
 
     def run(self, name, max_steps=200000):
         loaded = self.load_program(name)
@@ -332,29 +439,58 @@ class Interp:
         idx = {ln: k for k, ln in enumerate(order)}
         pos = 0
         steps = 0
+        start_si = 0
         while pos < len(order) and steps < max_steps and not self.halted:
             ln = order[pos]
             jump = None
-            for st in lines[ln]:
+            stmts = lines[ln]
+            si = start_si
+            start_si = 0
+            while si < len(stmts):
+                st = stmts[si]
                 nm = st[0]
                 if nm == "REM":
+                    si += 1
                     continue
                 items = st[1]
                 if self.trace:
                     sys.stderr.write("%4d %s %r\n" % (ln, nm, items))
                 if nm == "PRINT":
                     self.exec_print(items)
+                elif any(it[0] == "lineref" for it in items):
+                    self.exec_printusing(items, lines)
                 elif nm in ("LET", "", "S36"):
                     self.exec_assign(items)
                 elif nm == "INPUT":
                     ans = self.get_input()
-                    for it in items:
-                        if it[0] == "var":
-                            try:
-                                self.nvars[it[1]] = int(ans)
-                            except ValueError:
-                                self.svars[it[1]] = ans
+                    if self.halted:
+                        break
+                    # comma-separated answers fill the variables in order
+                    # ("ЧЕРЕЗ ЗАПЯТУЮ: НОМЕР ГРУППЫ, ПОИМЕННЫЙ НОМЕР, ...")
+                    parts = [p.strip() for p in str(ans).split(",")]
+                    vslots = [it[1] for it in items if it[0] == "var"]
+                    arefs = [it for it in items if it[0] == "aref"]
+                    pi = 0
+                    for slot in vslots:
+                        if pi >= len(parts):
                             break
+                        p = parts[pi]
+                        pi += 1
+                        try:
+                            self.nvars[slot] = int(p)
+                        except ValueError:
+                            self.svars[slot] = p
+                    for it in arefs:
+                        if pi >= len(parts):
+                            break
+                        p = parts[pi]
+                        pi += 1
+                        arr, ivar = it[1], it[2]
+                        index = int(self.nvars.get(ivar, 0))
+                        try:
+                            self.arrays.setdefault(arr, {})[index] = int(p)
+                        except ValueError:
+                            self.arrays.setdefault(arr, {})[index] = p
                 elif nm == "IF":
                     cond, target = self.eval_relation(items)
                     if cond and target is not None:
@@ -390,6 +526,54 @@ class Interp:
                     if sel and 1 <= sel <= len(targets):
                         jump = targets[sel - 1]
                         break
+                elif nm == "FOR":
+                    # 57 <len> <var> E8 <start> D1 <limit>
+                    var = None
+                    start = 1
+                    limit = 0
+                    seen_to = False
+                    k = 0
+                    while k < len(items):
+                        it = items[k]
+                        if it[0] == "var" and var is None:
+                            var = it[1]
+                            k += 1
+                        elif it[0] == "to":
+                            seen_to = True
+                            k += 1
+                        elif it[0] in ("num", "var", "aref"):
+                            v, k = self.eval_value(items, k)
+                            if seen_to:
+                                limit = v
+                            else:
+                                start = v
+                        else:
+                            k += 1
+                    if var is not None:
+                        self.nvars[var] = start
+                        # loop home: statement AFTER this FOR
+                        self.forstack.append((var, limit, pos, si))
+                elif nm == "NEXT":
+                    var = None
+                    for it in items:
+                        if it[0] == "var":
+                            var = it[1]
+                    frame = None
+                    for f in reversed(self.forstack):
+                        if f[0] == var:
+                            frame = f
+                            break
+                    if frame is not None:
+                        fvar, limit, fpos, fsi = frame
+                        self.nvars[fvar] = self.nvars.get(fvar, 0) + 1
+                        if self.nvars[fvar] <= limit:
+                            pos = fpos
+                            start_si = fsi + 1
+                            jump = None
+                            si = None  # signal: position set manually
+                            break
+                        else:
+                            self.forstack.remove(frame)
                 elif nm in ("STOP", "END"):
                     self.halted = True
                     break
@@ -402,9 +586,20 @@ class Interp:
                         self.load_request = seg
                         self.halted = True
                         break
+                si += 1
             steps += 1
+            if si is None:
+                continue        # NEXT set pos/start_si directly
             if jump is not None and jump in idx:
-                pos = idx[jump]
+                new_pos = idx[jump]
+                # A backward jump to a low line number is a full-screen
+                # menu rebuild on the real 24-line terminal; clear so the
+                # redraw does not overlay the previous frame. (Verified
+                # against the known menu screenshots; not an invented
+                # control byte.)
+                if new_pos < pos and jump <= 100:
+                    self.scr.clear()
+                pos = new_pos
             else:
                 pos += 1
 
@@ -443,8 +638,11 @@ def main(argv):
         print(__doc__)
         return 1
     path, name = argv[1], argv[2]
-    auto = argv[argv.index("--auto") + 1].split(",") if "--auto" in argv \
-        else None
+    auto = None
+    if "--auto" in argv:
+        raw = argv[argv.index("--auto") + 1]
+        # ';' separates answers when a single answer itself contains commas
+        auto = raw.split(";") if ";" in raw else raw.split(",")
     shot = argv[argv.index("--screenshot") + 1] if "--screenshot" in argv \
         else None
     trace = "--trace" in argv
@@ -460,6 +658,7 @@ def main(argv):
         it.run(seg)
         if it.load_request:
             seg = it.load_request
+            it.scr.clear()      # a loaded segment starts on a fresh screen
         else:
             break
 
