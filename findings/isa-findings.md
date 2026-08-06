@@ -765,3 +765,32 @@ any of the three sizes the sources give, or the processor's
 техническое описание, sought via zx-pk.ru (threads 9276, 16298) and
 phantom.sannata.org. The path from such a dump to a booting emulator
 is now fully specified end to end.
+
+## Addendum 16: BASIC 02 format, three corrections and a verified computation
+
+Interpreter iteration against the STIPENDIYA suite established, with
+corpus evidence:
+
+- **`E1` is the STR() substring atom, not positioning** (retracting
+  the tab-to-column reading given one addendum earlier). Forms:
+  `E1 <slot> (pos,len)` and `E1 <arr> <idx> D0 (pos,len)`, usable as
+  value AND as assignment target. Proof: the routine at lines
+  4000-4197 ("ПОДПРОГРАММА ПОДАВЛЕНИЯ ВЕДУЩИХ НУЛЕЙ") compares
+  `STR(A(i),k,1)` against "0"/"." and assigns " " through it -
+  unambiguous substring semantics.
+- **Standalone GOTO/GOSUB carry raw BCD targets** (`21 02 40 06` =
+  GOTO 4006), unlike IF-embedded branches which use the D3 marker.
+- **Operators 2A/2B/2D/2F are context-sensitive**: operator only
+  after an operand, otherwise variable slots; the array pattern
+  `<slot><idx>D0` takes precedence. (DIM lists and REM text had
+  produced false "formula" hits.)
+- Also decoded: `E7 <bcd><bcd>` = line-number reference; token `3F`
+  = % image line; token-28 statement with an E7 reference = formatted
+  print through the image (PRINTUSING semantics).
+
+**Verified computation:** seeding the ten payroll columns with
+zero-padded amounts and executing the original suppression routine
+(4001-4197) yields 10/10 correct results, including the deliberate
+edge case that a zero immediately before the decimal point is kept
+("0000.75" -> "   0.75"). First full run of original computational
+logic, field-verified.

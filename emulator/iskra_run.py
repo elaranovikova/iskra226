@@ -78,16 +78,29 @@ def parse_expr(pl, tokens):
     i = 0
     while i < len(pl):
         b = pl[i]
-        if b == 0xE1 and i + 7 < len(pl) and pl[i + 1] == 0x31 \
-                and pl[i + 2] == 0xE8 and pl[i + 4] == 0xDE \
-                and pl[i + 5] == 0xE8 and pl[i + 7] == 0xD0:
-            # positioning atom  E1 31 (a, col):  observed only with a=1 in
-            # the corpus (15 calls); role of the first argument unresolved.
-            # Treated as tab-to-column; column values 11..80 match the
-            # printed form layout (SELECT P routes to a 132-col printer).
-            cc = pl[i + 6]
-            items.append(("tab", (cc >> 4) * 10 + (cc & 0xF)))
-            i += 8
+        if b == 0xE1 and i + 3 < len(pl):
+            # STR() substring atom (CORRECTED from the earlier tab reading:
+            # the zero-suppression routine at 4000+ compares and ASSIGNS
+            # through this atom, which is unambiguous substring semantics).
+            #   E1 <slot> (pos,len)            -> STR(Vslot, pos, len)
+            #   E1 <arr> <idx> D0 (pos,len)    -> STR(Aarr(Vidx), pos, len)
+            opnd = None
+            j = i + 1
+            if j + 2 < len(pl) and pl[j] < 0x60 and pl[j + 1] < 0x60 \
+                    and pl[j + 2] == 0xD0:
+                opnd = ("aref", pl[j], pl[j + 1]); j += 3
+            elif pl[j] < 0x60:
+                opnd = ("var", pl[j]); j += 1
+            if opnd is not None and j + 5 < len(pl) and pl[j] == 0xE8 \
+                    and pl[j + 2] == 0xDE and pl[j + 3] == 0xE8 \
+                    and pl[j + 5] == 0xD0:
+                p1 = pl[j + 1]; p2 = pl[j + 4]
+                pos = (p1 >> 4) * 10 + (p1 & 0xF)
+                ln2 = (p2 >> 4) * 10 + (p2 & 0xF)
+                items.append(("strfn", opnd, pos, ln2))
+                i = j + 6
+                continue
+            items.append(("byte", b)); i += 1
         elif b == 0xE3 and i + 1 < len(pl):
             n = pl[i + 1]
             items.append(("str", koi8(pl[i + 2:i + 2 + n])))
@@ -183,6 +196,11 @@ def parse_line(rec, tokens):
         name = tokens.get(tok, "S%02X" % tok)
         if name == "REM":
             stmts.append(("REM", koi8(pl)))
+        elif name in ("GOTO", "GOSUB") and plen == 2:
+            # standalone GOTO/GOSUB carry the target as a raw BCD pair
+            # (no D3 marker, unlike branch targets embedded in IF)
+            tgt = bcd2(pl[0], pl[1])
+            stmts.append((name, [("goto", tgt)]))
         else:
             stmts.append((name, parse_expr(pl, tokens)))
         j += 2 + plen
@@ -265,6 +283,11 @@ class Interp:
             arr, ivar = it[1], it[2]
             index = int(self.nvars.get(ivar, 0))
             return self.arrays.get(arr, {}).get(index, 0), idx + 1
+        if k == "strfn":
+            base, _ = self.eval_value([it[1]], 0)
+            s = str(base)
+            pos, ln2 = it[2], it[3]
+            return s[pos - 1:pos - 1 + ln2], idx + 1
         return 0, idx + 1
 
     def eval_expr(self, items, idx):
@@ -362,6 +385,28 @@ class Interp:
         self.scr.newline()
 
     def exec_assign(self, items):
+        if items and items[0][0] == "strfn":
+            opnd, pos, ln2 = items[0][1], items[0][2], items[0][3]
+            j = 1
+            while j < len(items) and not (items[j][0] == "op"
+                                          and items[j][1] == "="):
+                j += 1
+            if j >= len(items):
+                return
+            val, _ = self.eval_expr(items, j + 1)
+            repl = str(val).ljust(ln2)[:ln2]
+            base, _ = self.eval_value([opnd], 0)
+            s = str(base)
+            if len(s) < pos - 1 + ln2:
+                s = s.ljust(pos - 1 + ln2)
+            s = s[:pos - 1] + repl + s[pos - 1 + ln2:]
+            if opnd[0] == "var":
+                self.svars[opnd[1]] = s
+            else:
+                arr, ivar = opnd[1], opnd[2]
+                index = int(self.nvars.get(ivar, 0))
+                self.arrays.setdefault(arr, {})[index] = s
+            return
         if items and items[0][0] == "aref":
             arr, ivar = items[0][1], items[0][2]
             j = 1
