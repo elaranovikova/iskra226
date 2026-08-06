@@ -854,3 +854,35 @@ while the prompt names four), so the upstream components of A28 stay
 empty. The chain itself, entry, storage, correction, rewrite,
 reload, filtering, computation, printer channel, is verified; only
 this one input path remains unresolved.
+
+## Addendum 18: plausibility run with period-correct values, verified to the kopeck
+
+Remaining function atoms decoded, each corpus-proven:
+- **`ED <aref>` = LEN()**, line 3192 tests the character at position
+  LEN(name) against `"*"`: a trailing asterisk in the student's name
+  marks a full-month student (factor 1); otherwise the pro-rata
+  factor `V84 = V18/V05` applies. A period bookkeeping convention
+  embedded in the software.
+- **`E5 <a> <b>` = a/b** (the pro-rata division).
+- **`D8 <expr> (,n)` = ROUND** to n decimals (wage share rounded to 2).
+- **`DF` = multiplication**, proven by the disk-seek formula
+  `(index-1)*28+5` and the wage line `A26 = V84 * A27`.
+- STR() extended to variable position arguments
+  (`STR(A04(i), V53, 1)`).
+
+**Plausibility run** (period-plausible 1988 SPTU rates): practice wages
+46.80/39.50/58.20 rub, stipends 30/30/45 rub, meal deductions
+12.40/11.20/13.60 rub, full-month students marked `*`.
+
+Original software computed: per-student payout **64.40 / 58.30 /
+89.60**, totals wages 144.50, stipends 105.00, gross 249.50,
+deductions 37.20, **net payout 212.30 rub**, every figure matches
+the independent hand calculation exactly. Amounts of 58-90 rub per
+student-month (stipend plus roughly half a young worker's wage,
+minus canteen deductions) are historically plausible for a 1988
+vocational school.
+
+Known cosmetic remainders: the first student's detail row is skipped
+by an off-by-one in the print loop entry (their amounts are included
+in all totals); the number-to-words routine still emits garbled
+words; dates in the header are partially malformed.

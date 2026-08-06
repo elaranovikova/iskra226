@@ -91,21 +91,30 @@ def parse_expr(pl, tokens):
                 opnd = ("aref", pl[j], pl[j + 1]); j += 3
             elif pl[j] < 0x80:
                 opnd = ("var", pl[j]); j += 1
-            if opnd is not None and j + 5 < len(pl) and pl[j] == 0xE8 \
-                    and pl[j + 2] == 0xDE and pl[j + 3] == 0xE8 \
-                    and pl[j + 5] == 0xD0:
-                p1 = pl[j + 1]; p2 = pl[j + 4]
-                pos = (p1 >> 4) * 10 + (p1 & 0xF)
-                ln2 = (p2 >> 4) * 10 + (p2 & 0xF)
-                items.append(("strfn", opnd, pos, ln2))
-                i = j + 6
-                continue
+            def _arg(a, off):
+                # a position/length argument: E8 <bcd> literal or a slot
+                if off < len(pl) and pl[off] == 0xE8 and off + 1 < len(pl):
+                    v0 = pl[off + 1]
+                    return ("num", (v0 >> 4) * 10 + (v0 & 0xF)), off + 2
+                if off < len(pl) and pl[off] < 0x80:
+                    return ("var", pl[off]), off + 1
+                return None, off
+            if opnd is not None:
+                a1, j2 = _arg(pl, j)
+                if a1 is not None and j2 < len(pl) and pl[j2] == 0xDE:
+                    a2, j3 = _arg(pl, j2 + 1)
+                    if a2 is not None and j3 < len(pl) \
+                            and pl[j3] == 0xD0:
+                        items.append(("strfn", opnd, a1, a2))
+                        i = j3 + 1
+                        continue
             items.append(("byte", b)); i += 1
         elif b == 0xE3 and i + 1 < len(pl):
             n = pl[i + 1]
             items.append(("str", koi8(pl[i + 2:i + 2 + n])))
             i += 2 + n
-        elif b in (0xEA, 0xEE, 0xEB, 0xE4) and items and items[-1][0] in (
+        elif b in (0xEA, 0xEE, 0xEB, 0xE4, 0xDF) and items \
+                and items[-1][0] in (
                 "num", "str", "var", "aref", "arefl", "rpar", "strfn"):
             # arithmetic operators in operand position.
             #   EA = +   (16 accumulator patterns "X = X EA ...", 4 of
@@ -114,7 +123,8 @@ def parse_expr(pl, tokens):
             #   operators; mapped by frequency to * , - , / , tentative,
             #   only EA is corpus-proven.
             items.append(("op", {0xEA: "+", 0xEE: "*",
-                                 0xEB: "-", 0xE4: "/"}[b]))
+                                 0xEB: "-", 0xE4: "/",
+                                 0xDF: "*"}[b]))
             i += 1
         elif b == 0xE9 and items and items[-1][0] in (
                 "num", "str", "var", "aref", "arefl", "rpar", "strfn") \
@@ -187,6 +197,23 @@ def parse_expr(pl, tokens):
             else:
                 items.append(("var", b))
                 i += 1
+        elif b == 0xED and i + 3 < len(pl) and pl[i + 1] < 0x80 \
+                and pl[i + 2] < 0x80 and pl[i + 3] == 0xD0:
+            # ED <aref> = LEN(), proven by line 3192: the last character
+            # of the name (position LEN, length 1) is tested against "*"
+            items.append(("lenfn", ("aref", pl[i + 1], pl[i + 2])))
+            i += 4
+        elif b == 0xE5 and i + 2 < len(pl) and pl[i + 1] < 0x80 \
+                and pl[i + 2] < 0x80:
+            # E5 <a> <b> = a / b, the pro-rata factor (worked days over
+            # month days) at line 3194; full-month students carry a "*"
+            items.append(("divfn", pl[i + 1], pl[i + 2]))
+            i += 3
+        elif b == 0xD8 and i + 1 < len(pl):
+            # D8 <expr> ( , n ) = ROUND to n decimals (line 3200 rounds
+            # the pro-rated wage to 2 places)
+            items.append(("roundfn",))
+            i += 1
         elif b == 0xE0 and i + 1 < len(pl) and pl[i + 1] < 0x80:
             # whole-array reference in disk-I/O argument lists
             items.append(("whole", pl[i + 1])); i += 2
@@ -332,6 +359,32 @@ class Interp:
             return self.arrays.get(arr, {}).get(index, 0), idx + 1
         if k == "arefl":
             return self.arrays.get(it[1], {}).get(it[2], 0), idx + 1
+        if k == "lenfn":
+            base, _ = self.eval_value([it[1]], 0)
+            return len(str(base).rstrip()), idx + 1
+        if k == "divfn":
+            a = self.nvars.get(it[1], 0)
+            b = self.nvars.get(it[2], 0)
+            try:
+                return (float(a) / float(b)) if float(b) else 0, idx + 1
+            except (TypeError, ValueError):
+                return 0, idx + 1
+        if k == "roundfn":
+            # ROUND(x, n): evaluate the inner expression, then read the
+            # decimal count from the following ( , n ) group
+            v, j = self.eval_value(items, idx + 1)
+            n2 = 2
+            while j < len(items):
+                if items[j][0] == "num":
+                    n2 = items[j][1]; j += 1
+                elif items[j][0] in ("comma", "rpar", "lpar"):
+                    j += 1
+                else:
+                    break
+            try:
+                return round(float(v), int(n2)), j
+            except (TypeError, ValueError):
+                return 0, j
         if k == "lineref":
             # E7 <bcd><bcd> is a 4-digit numeric literal in expressions;
             # the same encoding serves as a line reference in PRINTUSING
@@ -339,7 +392,10 @@ class Interp:
         if k == "strfn":
             base, _ = self.eval_value([it[1]], 0)
             s = str(base)
-            pos, ln2 = it[2], it[3]
+            pos, _ = self.eval_value([it[2]], 0)
+            ln2, _ = self.eval_value([it[3]], 0)
+            pos = int(pos) if pos else 1
+            ln2 = int(ln2) if ln2 else 1
             return s[pos - 1:pos - 1 + ln2], idx + 1
         return 0, idx + 1
 
@@ -470,7 +526,11 @@ class Interp:
 
     def exec_assign(self, items):
         if items and items[0][0] == "strfn":
-            opnd, pos, ln2 = items[0][1], items[0][2], items[0][3]
+            opnd = items[0][1]
+            pos, _ = self.eval_value([items[0][2]], 0)
+            ln2, _ = self.eval_value([items[0][3]], 0)
+            pos = int(pos) if pos else 1
+            ln2 = int(ln2) if ln2 else 1
             j = 1
             while j < len(items) and not (items[j][0] == "op"
                                           and items[j][1] == "="):
@@ -625,7 +685,10 @@ class Interp:
                         try:
                             self.nvars[slot] = int(p)
                         except ValueError:
-                            self.svars[slot] = p
+                            try:
+                                self.nvars[slot] = float(p)
+                            except ValueError:
+                                self.svars[slot] = p
                     for it in arefs:
                         if pi >= len(parts):
                             break
@@ -636,7 +699,11 @@ class Interp:
                         try:
                             self.arrays.setdefault(arr, {})[index] = int(p)
                         except ValueError:
-                            self.arrays.setdefault(arr, {})[index] = p
+                            try:
+                                self.arrays.setdefault(arr,
+                                                       {})[index] = float(p)
+                            except ValueError:
+                                self.arrays.setdefault(arr, {})[index] = p
                 elif nm == "IF":
                     cond, target = self.eval_relation(items)
                     if cond and target is not None:
