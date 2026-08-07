@@ -462,54 +462,6 @@ encoding. Immediately after, at **word 0x0B67**, follows a table of
 **86 pairs** `[keyword byte-offset][16-bit value]`, ordered exactly
 like the alphabetical keyword list. 51 pairs cover the primary
 keywords; the remaining 35 point into the compound-keyword region at
-0x192F (RESTORE, PRINTUSING, DATALOAD DC …).
-
-### What the second column is NOT (two pre-registered tests, both negative)
-
-**Test 1, handler addresses with a constant load offset.** Criteria
-fixed before running: a single offset Δ must place ≥80 % of the 86
-targets in reachable non-text code, and beat the runner-up by ≥0.15.
-Result: best score 0.721 across three Δ values tied at the same
-score, i.e. no unique winner and no signal, 62 % of the image is
-reachable code anyway, so any plausible Δ scores ~0.7. **Rejected.**
-
-**Test 2, handler addresses at Δ = 0.** Of the 51 primary values,
-40 land on non-text words (random expectation 0.661; observed 0.784 -
-not significant). Decisively: **only 1 of 51 values is an actual jump
-target anywhere in the firmware.** Handler addresses would be jumped
-to. **Rejected.**
-
-### What the second column is
-
-Keywords sharing a value share a *syntax*, not an implementation:
-
-- `0x01DF`, `END`, `RETURN`, `TRACE` (no arguments)
-- `0x0532`, `GOSUB`, `GOTO` (one line number)
-- `0x08BD`, `AND(`, `OR(`, `XOR(` (identical function syntax)
-
-The column is therefore a **syntax/argument-class descriptor** used by
-the tokenizer-parser, not a code pointer. This also explains why no
-address interpretation could ever fit. Locating the actual statement
-handlers remains open; they are presumably reached through a third
-structure indexed by the token byte from the permutation array.
-
-### Full primary table
-
-
-## Addendum 12: the keyword/descriptor table, located, decoded, and two hypotheses falsified
-
-Working on `firmware/basic02_220484.bin` (word addresses = byte/2 from
-file start; word 0 is the cold-start vector `9006`).
-
-### The table
-
-At **word 0x0B66** the interpreter holds two pointers, `0x19B6`
-(permutation array) and `0x1840` (keyword list), both byte offsets,
-matching the independent format analysis of the BASIC 02 on-disk
-encoding. Immediately after, at **word 0x0B67**, follows a table of
-**86 pairs** `[keyword byte-offset][16-bit value]`, ordered exactly
-like the alphabetical keyword list. 51 pairs cover the primary
-keywords; the remaining 35 point into the compound-keyword region at
 0x192F (RESTORE, PRINTUSING, DATALOAD DC ...).
 
 ### What the second column is NOT (two pre-registered tests, both negative)

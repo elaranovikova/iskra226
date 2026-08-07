@@ -23,13 +23,17 @@ python3 emulator/iskra_run.py disks/disk3side0.dsk S0 --screenshot menu.png
 ```
 
 `findings/stipendiya-menu.png` is the SPTU-132 dispatcher menu, rendered
-from the disk bytes. `findings/vedomost-printed.png` is payment sheet No. 2,
-computed by the original software: 144.50 and 105.00 gross, 249.50
+from the disk bytes. `findings/vedomost-printed.png` is a payment sheet
+the original software printed for me. It is not a surviving document: the
+program is the one from 1989, the three students I typed in are not. What
+the machine did with them is its own: 144.50 and 105.00 gross, 249.50
 accrued, 37.20 withheld, 212.30 net. I checked those against a hand
 calculation before I believed them.
 
-All 24 findable programs on the two application sides load and run without
-a crash.
+All 23 programs on the two application sides load and run without a crash.
+Twenty-three is the count of catalog entries whose second byte is 0x80.
+The two entries with 0x00 are data, one of them the file `132`, and an
+earlier version of this README counted them as programs.
 
 **This runs the software, not the CPU.** The interpreter firmware is not
 executed. The distinction matters and I am not going to bury it.
@@ -68,14 +72,16 @@ little-endian; word 0 is the cold-start vector `9006` for BASIC 02 and PL5,
 BASIC 02 10.09.86 is the revision the BAM suite on `disk2side1` declares it
 was written for.
 
-**listings/**, 4,189 decoded BASIC source lines from 19 programs: the
-STIPENDIYA payroll system of vocational school SPTU-132, 1988/89, authors
-Gorenburgov, Vintskevich and Muchkina, and the BAM database suite. Decoded
-straight from the disks by `iskra_basic.py`.
+**listings/**, 5,842 decoded BASIC source lines from 23 programs: the four
+segments of the STIPENDIYA payroll system of vocational school SPTU-132,
+1988/89, authors Gorenburgov, Vintskevich and Muchkina, and the nineteen
+programs of the BAM database suite. Decoded straight from the disks by
+`iskra_basic.py`. The count moved on 6 August, when the lister turned out
+to be dropping four BAM programs the survey had already counted.
 
 **findings/**, `isa-findings.md` is the main document: the reconstructed
-architecture and instruction set with twelve dated addenda, including every
-falsified hypothesis and the criterion that killed it.
+architecture and instruction set with nineteen dated addenda, including
+every falsified hypothesis and the criterion that killed it.
 `microcode-or-machine-code.md` is the question I got wrong for a month, kept
 because the wrong month is part of the record. `architecture.md` is the
 answer.
