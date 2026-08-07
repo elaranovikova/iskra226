@@ -161,3 +161,54 @@ placements that are too wide.
 
 93 source lines, 92 assembled program lines. The largest program written for
 this machine so far.
+
+## Addendum 2: TETRIS2, real time on character cells
+
+With `KEYIN` decoded, in addendum 20, the input limit falls. Real bitmap
+graphics stay impossible, because the machine has none. What becomes
+possible is **character cell graphics with cursor positioning**, which is
+exactly the kind of Tetris that ran on terminals of that era.
+
+`TETRIS2`, 179 lines, draws a 10x12 playfield with a frame, moves the
+falling piece by overwriting individual cells (erase at the old position,
+draw at the new) and polls the keyboard without blocking in step with the
+fall loop.
+
+Assembler extensions needed:
+
+- `PRINT AT(row,col)`, the full literal form `D5 E8 rr DE E8 cc D0`, which
+  the interpreter needs in order to tell AT from the `<>` relation.
+- `PRINT ATV(v1,v2)`, because for **variable** coordinates the literal form
+  does not work. Here the generic function atom `E1 31 <arg> DE <arg> D0`
+  carries it, and its arguments may be slots. Without this second form,
+  moving character graphics would not be possible at all.
+- `KEYIN <var>, <target1>, <target2>`.
+
+Verified:
+
+- Pieces fall on their own, stack on each other, game over on overflow.
+- Steering left and right stacks the pieces against the respective wall, so
+  the key branches take effect during play.
+- Deliberately filling the bottom row clears **two lines, 20 points**,
+  including the rows above shifting down.
+
+### Two errors only this program revealed
+
+1. **The key code landed in both variable spaces.** `KEYIN` wrote the
+   character *and* the code; on comparison, `IF V07 = 52`, the string won
+   and the condition always failed. The corpus compares numerically, BAM3
+   line 1160 opens with `ON V21+1`, so the slot holds the code only.
+2. **The screen-clearing heuristic fired inside the game loop.** The
+   interpreter clears on backward jumps to lines at or below 100, which is
+   meant for the menu redraws of the original programs. In TETRIS2 that
+   wiped the playfield on every new piece. The heuristic stays, because it
+   is verified against the original screenshots; the game puts its main loop
+   on line 300 instead. **Anyone writing their own programs should choose
+   backward jump targets above 100.**
+
+### What is still missing
+
+A time atom. Fall speed hangs on a counter over keyboard polls, `V06`, not
+on a clock, so on the original machine the game would run at the pace of its
+own interpreter. For a program of that period, though, that is the normal
+way to build it.
