@@ -20,8 +20,7 @@ looked.
 | `iskra226-tablit.dsk` | TABLIT | Таблица умножения | 13 | 1 |
 | `iskra226-plan.dsk` | PLAN | Плановое хозяйство | 26 | 2 |
 | `iskra226-artil.dsk` | ARTIL | Артиллерийская дуэль | 31 | 2 |
-| `iskra226-tetris.dsk` | TETRIS | Падающие блоки | 92 | 5 |
-| `iskra226-tetris2.dsk` | TETRIS2 | Падающие блоки, в реальном времени | 179 | 9 |
+| `iskra226-tetris3.dsk` | TETRIS3 | Падающие блоки | 432 | 30 |
 | `iskra226-snake.dsk` | SNAKE | Змейка | 56 | 3 |
 | `iskra226-chat.dsk` | CHAT | Терминал связи | 25 | 3 |
 
@@ -48,7 +47,7 @@ it.run('WUMPUS')
 The program name is in the catalog of each disk and in the *Program* column
 above, limited to eight characters as the original format requires.
 
-For the two real-time programs, TETRIS2 and SNAKE, supply keystrokes through
+For the two real-time programs, TETRIS3 and SNAKE, supply keystrokes through
 `it.key_source`, a callable returning a key code or None:
 
 ```python

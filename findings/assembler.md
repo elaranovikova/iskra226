@@ -212,3 +212,23 @@ A time atom. Fall speed hangs on a counter over keyboard polls, `V06`, not
 on a clock, so on the original machine the game would run at the pace of its
 own interpreter. For a program of that period, though, that is the normal
 way to build it.
+
+## Addendum 3: TETRIS3 replaces both of them
+
+The two above are gone from the disk set. `TETRIS3` does what they were each
+reaching for and did not get to: all seven tetrominoes, a bordered field, and
+real-time key polling, in 432 lines across 30 sectors. That is more than the
+turn-based version and the real-time one put together, and it is the largest
+program on any of the disks I wrote.
+
+The two addenda above stay because the findings in them are not about the
+games. The turn-based version is where the interpreter's numeric literal
+limit first showed up, and the real-time one is where the redraw cost of a
+character cell screen got measured. Both of those still hold. What changed is
+which disk ships.
+
+One honest gap: `games-src/` has no `TETRIS3.bas`. Every other disk here was
+assembled from a source in that directory and the source is the proof that
+the format works in both directions. For this one I have the image and not
+the source, so the proof for TETRIS3 is narrower: it is that an independent
+parser loads and runs it.
