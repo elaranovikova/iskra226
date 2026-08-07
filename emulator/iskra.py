@@ -4,7 +4,10 @@ iskra - toolkit for Iskra-226 (Искра 226) floppy images.
 
 The Iskra 226 loads its interpreter from disk at power-on.
 
-  * disk geometry (IBM 3740: 77 tracks x 26 sectors x 128 bytes)
+  * disk geometry: IBM 3740 formats the media as 77 tracks x 26 physical
+    sectors x 128 bytes, but the file system pairs them. Every catalog
+    number, extent and length on these disks counts LOGICAL sectors of
+    256 bytes, 1001 per side.
   * Wang-2200-style catalog (16-byte entries)
   * KOI-8 character set
   * detection and extraction of boot images
@@ -25,10 +28,16 @@ import struct
 import math
 from collections import Counter
 
-SECTOR_SIZE = 128
-SECTORS_PER_TRACK = 26
+PHYS_SECTOR = 128       # what the IBM 3740 format writes
+PHYS_PER_TRACK = 26
 TRACKS = 77
-IMAGE_SIZE = TRACKS * SECTORS_PER_TRACK * SECTOR_SIZE   # 256256
+IMAGE_SIZE = TRACKS * PHYS_PER_TRACK * PHYS_SECTOR      # 256256
+
+# The file system addresses pairs of physical sectors. Every number in a
+# catalog entry refers to one of these, so this is the unit the rest of
+# the module works in.
+SECTOR = 2 * PHYS_SECTOR                                # 256
+SECTORS = IMAGE_SIZE // SECTOR                          # 1001
 BOOT_HEADER_LEN = 32    # magic + version string + test pattern
 
 # --------------------------------------------------------------------------
@@ -74,18 +83,19 @@ class Disk:
                   % (self.name, len(self.data), IMAGE_SIZE), file=sys.stderr)
 
     def __len__(self):
-        return len(self.data) // SECTOR_SIZE
+        return len(self.data) // SECTOR
 
     def sector(self, n):
-        return self.data[n * SECTOR_SIZE:(n + 1) * SECTOR_SIZE]
+        return self.data[n * SECTOR:(n + 1) * SECTOR]
 
     def sectors(self, first, last):
-        """Sectors first..last, inclusive."""
-        return self.data[first * SECTOR_SIZE:(last + 1) * SECTOR_SIZE]
+        """Logical sectors first..last, inclusive."""
+        return self.data[first * SECTOR:(last + 1) * SECTOR]
 
     def chs(self, n):
-        """Sector number -> (track, sector), for error messages."""
-        return n // SECTORS_PER_TRACK, n % SECTORS_PER_TRACK + 1
+        """Logical sector -> (track, first physical sector), for messages."""
+        p = n * 2
+        return p // PHYS_PER_TRACK, p % PHYS_PER_TRACK + 1
 
     # -- content detection ------------------------------------------------
 
@@ -141,26 +151,30 @@ class Disk:
             return None
 
         entries = []
-        prev_end = 0
         # The index can run longer than the header field claims, so keep
-        # reading while the entries stay monotone and plausible.
+        # reading while entries keep turning up.
+        #
+        # An entry is real when byte 0 says so: 0x10 active, 0x11 scratched.
+        # Nothing else identifies one. An earlier version of this method
+        # instead required the extents to ascend, which held on the BAM
+        # side by luck and lost four of the five files on disk3side0,
+        # where the catalog lists 132 (178-738) before S2 (83-177).
         for sec in range(0, max_index_sectors):
             block = self.sector(sec)
             start_off = 16 if sec == 0 else 0
             found_any = False
-            for off in range(start_off, SECTOR_SIZE, 16):
+            for off in range(start_off, SECTOR, 16):
                 raw = block[off:off + 16]
                 status, flags = raw[0], raw[1]
-                first, last = struct.unpack(">HH", raw[2:6])
-                if status == 0 and flags == 0:
+                if status not in (0x10, 0x11):
                     continue
-                if not (prev_end <= first <= last <= len(self)):
+                first, last = struct.unpack(">HH", raw[2:6])
+                if not (0 <= first <= last < len(self)):
                     continue
                 name = decode(raw[8:16]).rstrip()
                 if not name:
                     continue
                 entries.append(CatalogEntry(name, status, flags, first, last))
-                prev_end = last
                 found_any = True
             if sec >= index_sectors and not found_any:
                 break
@@ -181,7 +195,7 @@ class CatalogEntry:
 
     @property
     def size(self):
-        return self.sector_count * SECTOR_SIZE
+        return self.sector_count * SECTOR
 
     def safe_name(self):
         return "".join(c if c.isalnum() else "_" for c in self.name) or "unnamed"
