@@ -1,629 +1,629 @@
-BAM9, 627 lines decoded
+BAM9, 627 lines
 
- 200 ‹S3F›   * * *   B A M 9   * * *   ( ( ‹EF› ‹F2› ‹F2› ‹E5› ( ‹F4› ‹E9› ‹F2› ‹EF› ‹F7› ( A   0 8 . 0 5 . 8 7   -   1 6 . 0 0 )   * * * AT(229,234) ‹F3› ‹E9› (   0 2     1 0 . 0 9 . 8 6
- 210 V00 = "210 DIM     Y%(Q6),Z%( Q7),J$( Q4)Q3,X%( W8), S$(Q6),U$(Q6),W$( W8)1,X$(256)Q5,Y2$(256)Q8,Z$( Q0),Y3$(256)Q8,      Y$(256)Q5,E$( Q7)4,U1$(256)Q8,U2$(Q9, W4)W2,E1%( W8,2),W%( W8)"
- 220 CONVERT V01 ‹D1› ‹E1› V00 16 , 2 ) "##" : CONVERT V02 ‹D1› ‹E1› V00 23 , 3 ) "###" : CONVERT V03 ‹D1› ‹E1› V00 31 , 3 ) "###" : CONVERT V04 ‹D1› ‹E1› V00 35 , 2 ) "##" : CONVERT V05 ‹D1› ‹E1› V00 41 , 3 ) "###" : CONVERT V01 ‹D1› ‹E1› V00 50 , 2 ) "##"
- 225 CONVERT V01 ‹D1› ‹E1› V00 57 , 2 ) "##" : CONVERT V05 ‹D1› ‹E1› V00 64 , 3 ) "###" : CONVERT V06 ‹D1› ‹E1› V00 77 , 2 ) "##" : CONVERT V07 ‹D1› ‹E1› V00 88 , 2 ) "##" : CONVERT V08 ‹D1› ‹E1› V00 94 , 3 ) "###" : CONVERT V07 ‹D1› ‹E1› V00 ‹E7› V01 V07 , 2 ) "##"
- 230 CONVERT V06 ‹D1› ‹E1› V00 ‹E7› V01 # , 2 ) "##" : CONVERT V02 ‹D1› ‹E1› V00 ‹E7› V01 ) , 3 ) "###" : CONVERT V07 ‹D1› ‹E1› V00 ‹E7› V01 C , 2 ) "##"
- 235 CONVERT V09 ‹D1› ‹E1› V00 ‹E7› V01 P , 2 ) "##" : CONVERT V0A ‹EA› 1 ‹D1› ‹E1› V00 ‹E7› V01 S , 3 ) "###" : CONVERT V0B ‹D1› ‹E1› V00 ‹E7› V01 W , 2 ) "##" : CONVERT V05 ‹D1› ‹E1› V00 ‹E7› V01 d , 3 ) "###" : CONVERT V05 ‹D1› ‹E1› V00 ‹E7› V01 t , 3 ) "###" : ‹E1› V00 ‹E7› V01 x , 1 ) = AT(1,133) : LOAD ; V00 V02 V10 , V02 5
- 240 DIM V0C V0D V0E V0F V10 V11 V12 V13 V14 V15 V16 V17 V18 V19 V1A
- 245 GOSUB @ V00 : LOAD ; V0C V02 E , V02 E
- 330 ‹S06› V04 : ‹SE0› = ‹EF› d V04 , V00 ‹E0› V1B 6 V07 V13 18 ) = 1 6 V18
- 340 V1C = " " : ‹S23› 1 : ‹E1› V1C 26 ) = "( ВВОД С МАГНИТНОГО НОСИТЕЛЯ )" : PRINT V1C : V1C = " " : V00 = AT(1,3) : PRINT AT(6,30) : PRINT "ВВОД С УСТРОЙСТВА:" : PRINT AT(9,1) : PRINT ‹DF› 28 ) ; "МАГНИТНАЯ ЛЕНТА.......1"
- 350 PRINT ‹DF› 28 ) ; "ГИБКИЙ ДИСК  18F......2" : PRINT ‹DF› 28 ) ; "ГИБКИЙ ДИСК  18R......3" : PRINT ‹DF› 28 ) ; "ЖЕСТКИЙ ДИСК 1CF......4" : PRINT ‹DF› 28 ) ; "ЖЕСТКИЙ ДИСК 1CR......5"
- 360 ‹S23› ; 16 , 25 : V1D = ‹EF› V1E ‹E9› 48 : IF V1D = 0 GOTO 670 : ON V1D ‹CD› V03 p V03 ‹80› V03 ‹90› V04 V00 V04 V10 : GOTO V03 e
- 365 PRINT AT(1,7) ; : GOTO V03 0
- 370 ‹E1› V1C 27 ) = "( ВВОД С МАГНИТНОЙ ЛЕНТЫ )" : V0F 3 ) = "МЛ" : GOTO V04 P
- 380 V0F 3 ) = "18F" : SELECT V00 V01 V18 V00 : GOTO V04
- 390 V0F 3 ) = "18R" : SELECT V00 V01 V18 V01 : GOTO V04
- 400 V0F 3 ) = "1CF" : SELECT V00 V01 V1C V00 : GOTO V04
- 410 V0F 3 ) = "1CR" : SELECT V00 V01 V1C V01
- 420 IF V1D = 6 GOTO 16 : ‹E1› V1C 24 ) = "( ВВОД С МАГНИТНОГО ДИСКА XXX )" : ‹E1› V1C 50 , 3 ) = V0F 3 )
- 450 ‹S23› 1 : PRINT V1C : PRINT AT(6,30) : PRINT "ВОЗМОЖНЫЕ РАБОТЫ" : PRINT AT(9,26) : PRINT "ВВОД В МАССИВ............1" : PRINT AT(11,26) : PRINT "ВВОД В КЛAССИФИКАТОР.....2"
- 460 ‹S23› ; 14 , 26 : V13 1 ) = ‹EF› V1E ‹E9› 48 : IF V13 1 ) = 0 GOTO 330 : ON V13 1 ) ‹CD› V04 p ! V00 : PRINT AT(1,7) ; : GOTO V04 `
- 470 ‹S23› 1 : PRINT V1C : PRINT AT(5,30) : PRINT "РЕЖИМЫ ВВОДА В МАССИВ" : V1F = ‹F3› 80 ‹E9› ‹ED›   ‹EA› 2 ) ‹DC› 2 : PRINT ‹DF› V1F ‹E9› 2 ) ; "/" ; ‹E1›   1 , ‹ED›   ) ; "/" : PRINT AT(9,27) : PRINT ‹E1› V19 1 ) 1 , ‹ED› V19 1 ) ) ; "........1"
- 475 PRINT AT(11,27) : PRINT ‹E1› V19 2 ) 1 , ‹ED› V19 2 ) ) ; "...2" : PRINT AT(13,27) : PRINT ‹E1› V19 3 ) 1 , ‹ED› V19 3 ) ) ; ".....3"
- 480 ‹S23› ; 16 , 28 : ! = ‹EF› V1E ‹E9› 48 : IF ! = 0 GOTO 450 : ON ! ‹CD› V05   V05   V05 : PRINT AT(1,7) ; : GOTO V04 ‹80›
- 520 V13 1 ) = 1 : " # = 0 : ‹S06› V04 : ‹SE0› = ‹EF› W V05 V1F 1 ‹D1› V05 # V02 " V1F $ V07 % = 0 GOTO 522 6 V06 " = " ‹EA› 1 6 V08 & V1F , ‹E8›
- 522 IF ' ‹D7› 1 GOTO 525 : # = # ‹EA› 1 : $ # ) = V1F
- 525 NEXT V1F
- 530 IF ! = 1 GOTO 1010 : GOTO V05 `
- 540 ( = 0 : V13 14 ) ) = 0
- 550 ‹S23›   "ПОКАЗАТЕЛИ ПОИСКА ЗАПИСИ" , 1 , V05 , 2 : IF * = ‹E5› V12 V09 GOTO 600 : IF * = ‹E5› V12 V11 GOTO 560 : IF * = 0 GOTO 630 : GOTO V05 b
- 551 PRINT "КОЛИЧЕСТВО ОТМЕЧЕННЫХ ПОКАЗАТЕЛЕЙ БОЛЬШЕ ДОПУСТИМОГО! ДЛЯ ПРОДОЛЖЕНИЯ - RETURN" ;
- 552 KEYIN + V05 ` V05 ` : GOTO V05 R
- 560 # = 0 : ‹S06› V04
- 562 IF - * ) = 0 GOTO 575 : FOR V1F - * ) ‹EA› 1 ‹D1› # : , V1F ‹E9› 1 ) = , V1F ) : NEXT V1F : , # ) = 0 : - * ) = 0 : . * ) = " " : # = # ‹E9› 1 : IF # = 0 GOTO 540 : FOR V1F 1 ‹D1› # : - , V1F ) ) = V1F : NEXT V1F : GOTO V05 P
- 575 # = # ‹EA› 1 : IF # > V01 GOTO 551 : , # ) = * : - * ) = # : GOTO V05 P
- 580 PRINT "БУДЕТЕ КОРРЕКТИРОВАТЬ СПИСОК (ДА -1, НЕТ -0)" ; : + = " "
- 582 KEYIN + V05 ‹84› V05 ‹84› : GOTO V05 ‹82›
- 584 * = ‹EF› + ‹E9› 48 : ON * ‹EA› 1 ‹CD› V05 ‹90› V05 ‹90› : PRINT AT(1,7) ; : GOTO V05 ‹82›
- 590 RETURN
- 600 PRINT AT(1,7) : GOTO V05 @
- 630 PRINT "СПИСОК ПОКАЗАТЕЛЕЙ ДЛЯ ПОИСКА : " ; : FOR / 1 ‹D1› # : IF , / ) = 0 GOTO 650 : IF . , / ) ) ‹D5› "*" GOTO 640 : PRINT , / ) ; : GOTO V06 P
- 640 FOR * / ‹EA› 1 ‹D1› # : , * ‹E9› 1 ) = , * ) : NEXT * : , # ) = 0 : # = # ‹E9› 1 : / = / ‹E9› 1
- 650 NEXT / : PRINT : GOSUB V05 ‹80› : IF * = 1 GOTO 540 : IF # = 0 GOTO 450 : GOTO V07
- 670 V1D = 6 : GOTO V04
- 720 GOTO V10 V10
- 820 GOSUB 0 R : PRINT 0 : PRINT : IF V13 1 ) = 2 GOTO 830 : V0C = "ПРОТОКОЛ ВВОДА В МАССИВ /" : 1 = ‹F3› ( 80 ‹E9› ( ‹ED› V0C ‹EA› ‹ED›   ‹EA› 6 ) ) ‹DC› 2 ) : GOTO V08 @
- 830 V0C = "ПРОТОКОЛ ВВОДА В КЛАССИФИКАТОР /" : 1 = ‹F3› ( 80 ‹E9› ( ‹ED› V0C ‹EA› ‹ED› 2 ‹EA› 7 ) ) ‹DC› 2 ) : PRINT ‹DF› 1 ) ; ‹E1› V0C 1 , ‹ED› V0C ) ; ‹E1› 2 1 , ‹ED› 2 ) ; : GOTO V08 P
- 840 PRINT ‹DF› 1 ) ; ‹E1› V0C 1 , ‹ED› V0C ) ; ‹E1›   1 , ‹ED›   ) ;
- 850 PRINT "/ C " ; V0F 3 ) : IF V13 1 ) = 2 GOTO 870 : 3 = V19 ! ) : PRINT : GOSUB V08 ‹90› : PRINT : PRINT ‹DF› 10 ) ; "ТЕКУЩЕЕ ЧИСЛО ЗАПИСЕЙ:" ; 4 ‹E9› 5 ; ‹DF› 42 ) ; "ПОКАЗАТЕЛЕЙ ПРЯМОГО ДОСТУПА:" ; V0A
- 855 PRINT ‹DF› 20 ) ; "ПОКАЗАТЕЛИ ПОИСКА: " ; : FOR V1F 1 ‹D1› V01 : IF , V1F ) = 0 GOTO 860 : PRINT , V1F ) ;
- 860 NEXT V1F : PRINT
- 870 IF V13 3 ) = 1 GOTO 880 : ‹S23› ? "МАКЕТ ЗАГРУЗКИ N "
- 880 V0C = " " : GOSUB 0 @ : RETURN
- 890 PRINT ‹DF› 18 ) ; "Р Е Ж И М   В В О Д А  -  '" ; ‹E1› V19 ! ) 1 , ‹ED› V19 ! ) ) ; "'" : RETURN
- 900 ‹S23› 1 : PRINT V1C : PRINT AT(1,5) : PRINT AT(5,30) : PRINT "ВВОД В " ; : IF V13 1 ) = 2 GOTO 902 : PRINT "МАССИВ" ; : GOTO V09 V05
- 902 PRINT "КЛАССИФИКАТОР" ;
- 905 PRINT AT(8,25) : PRINT "СОГЛАСНО ФАЙЛУ ОПИСАНИЯ.....1" : PRINT AT(10,25) : PRINT "СОГЛАСНО МАКЕТУ ЗАГРУЗКИ....2" : PRINT AT(24,1) , 79 : PRINT ‹DF› 27 ) ; "!!! ВКЛЮЧИТЕ  АЦПУ !!!" ;
- 910 ‹S23› ; 13 , 26 : V13 3 ) = ‹EF› V1E ‹E9› 48 : IF V13 3 ) = 0 GOTO 926 : PRINT AT(24,1) , 79 : ON V13 3 ) ‹CD› V10 V00 V09 : PRINT AT(1,7) ; : GOTO V09 V00
- 920 PRINT AT(15,1) , 80 : PRINT "УКАЖИТЕ НОМЕР МАКЕТА ЗАГРУЗКИ (НЕ БОЛЕЕ 1000)" ; : INPUT V13 2 ) : IF V13 2 ) ‹D7› 0 ‹E6› V13 2 ) > ‹E7› V10 V00 ‹E6› V13 2 ) ‹D5› ‹F3› V13 2 ) ) GOTO 925 : GOTO V09 0
- 925 PRINT AT(1,7) ; : GOTO V09
- 926 ‹S30› : GOTO V03 0
- 930 ‹E1› 6 10 ) 1 , 1 ) = "М" : CONVERT 7 ‹D1› ‹E1› 6 10 ) 2 , 2 ) "##" : CONVERT V13 2 ) ‹D1› ‹E1› 6 10 ) 4 , 3 ) "###" : PRINT AT(22,2) : PRINT "МАКЕТ ЗАГРУЗКИ ДОЛЖЕН НАХОДИТЬСЯ НА ОДНОМ УСТРОЙСТВЕ С ФОРМАМИ ВВОДА-ВЫВОДА !"
- 935 ‹S34› 8 9 ‹CD› V09 P : LIMITS V02 ‹DB› 7 , 6 10 ) ) : : : ‹S34› : ‹S75› V02 ‹DB› 7 , 6 10 ) : ‹S74› ‹DB› 7 , V13 8 ) ; < ‹E0› V1B
- 940 PRINT AT(17,1) , ‹E7› V05 ` : PRINT "БУДЕТЕ КОРРЕКТИРОВАТЬ МАКЕТ ЗАГРУЗКИ (ДА -1, НЕТ - 0)" ; : INPUT V13 5 ) : IF V13 5 ) = 0 ‹E6› V13 5 ) = 1 GOTO 955 : PRINT AT(1,7) ; : GOTO V09 @
- 950 ‹S34› : PRINT AT(15,1) , 80 : PRINT "БУДЕТЕ СОЗДАВАТЬ МАКЕТ ЗАГРУЗКИ (ДА - 1, НЕТ - 0)" ; : INPUT V13 3 ) : IF V13 3 ) = 0 GOTO 900 : IF V13 3 ) = 1 GOTO 960 : PRINT AT(1,7) ; : GOTO V09 P
- 955 IF V13 1 ) = 2 GOTO 960 : INIT ,   ‹E0› . : ‹S06› V04
- 957 FOR / 1 ‹D1› V13 8 ) : = / ) = ‹EF› V1B / ) : IF = / ) AT(0,0) : # = / ‹E9› 1 : / = V13 8 ) : NEXT / : GOTO V09 Y
- 958 . = / ) ) = "*" : - = / ) ) = / : NEXT / : # = V13 8 )
- 959 IF V13 5 ) = 0 GOTO 988 : GOTO V09 f
- 960 IF V13 1 ) = 1 GOTO 964 : = 1 ) = * : = 2 ) = * : # = 2 : GOTO V09 ‹80›
- 961 ( = 0 : INIT , V00 ‹E0› V1B
- 962 ‹S23›   "ВВОДИМЫЕ ПОКАЗАТЕЛИ" , 1 , V05 , 2 : IF * = ‹E5› V12 V11 GOTO 964 : IF * = 0 GOTO 966 : IF * = ‹E5› V12 V09 GOTO 974 : IF - * ) = 0 GOTO 963 : GOTO V09 e
- 963 # = # ‹EA› 1 : IF # > V02 GOTO 977 : = # ) = * : - * ) = # : GOTO V09 b
- 964 # = 0 : ‹S06› V04
- 965 FOR V1F - * ) ‹EA› 1 ‹D1› # : = V1F ‹E9› 1 ) = = V1F ) : NEXT V1F : = # ) = 0 : . * ) = " " : - * ) = 0 : # = # ‹E9› 1 : IF # = 0 GOTO 961 : FOR V1F 1 ‹D1› # : - = V1F ) ) = V1F : NEXT V1F : INIT , V00 ‹E0› V1B : GOTO V09 b
- 966 PRINT "СПИСОК ПОКАЗАТЕЛЕЙ ДЛЯ ВВОДА: " ; : FOR / 1 ‹D1› # : IF = / ) = 0 GOTO 970 : IF . = / ) ) ‹D5› "*" GOTO 968 : PRINT = / ) ; : GOTO V09 p
- 968 FOR * / ‹EA› 1 ‹D1› # : = * ‹E9› 1 ) = = * ) : NEXT * : = # ) = 0 : # = # ‹E9› 1 : / = / ‹E9› 1
- 970 NEXT / : PRINT : GOSUB V05 ‹80› : ( = 0 : IF * = 1 GOTO 962 : IF # = 0 GOTO 961 : GOTO V09 v
- 974 INIT , * ‹E0› . : ‹S06› V04
- 976 IF # ‹D7› V02 GOTO 980
- 977 PRINT "КОЛИЧЕСТВО ОТМЕЧЕННЫХ ПОКАЗАТЕЛЕЙ БОЛЬШЕ ДОПУСТИМОГО! ДЛЯ ПРОДОЛЖЕНИЯ - RETURN " ;
- 978 KEYIN + V09 d V09 d : GOTO V09 x
- 980 IF V13 3 ) = 1 GOTO 982 : IF V13 5 ) = 1 GOTO 984 : IF V13 5 ) = 0 GOTO 988
- 982 ‹S23› D 1 : GOTO V09 ‹88›
- 984 PRINT AT(23,1) , 79 : PRINT "КОРРЕКТИРОВКА МАКЕТА (ВЫБОРОЧНО - 1, ПОСЛЕДОВАТЕЛЬНО -0)" ; : + = " "
- 985 KEYIN + V09 ‹86› V09 ‹86› : GOTO V09 ‹85›
- 986 IF + = "1" GOTO 987 : IF + = "0" GOTO 982 : PRINT AT(1,7) ; : GOTO V09 ‹84›
- 987 ‹S23› D 2
- 988 PRINT AT(23,1) , 79 : PRINT "ПЕЧАТАТЬ МАКЕТ ЗАГРУЗКИ (ДА - 1, НЕТ - 0)" ; : + = " "
- 990 KEYIN + V09 ‹92› V09 ‹92› : GOTO V09 ‹90›
- 992 IF + = "1" GOTO 994 : IF + = "0" GOTO 996 : PRINT AT(1,7) ; : GOTO V09 ‹88›
- 994 GOSUB 0 R : ‹S23› D 0 : GOSUB 0 @
- 996 IF V13 3 ) = 1 GOTO 997 : IF V13 5 ) = 0 GOTO 1000 : IF V13 5 ) = 1 GOTO 998
- 997 ‹S78› V02 ‹DB› 7 , ( ‹F3› ( V02 ‹DF› 6 ‹EA› 24 ) ‹DC› ‹E7› V02 U ) ‹EA› 3 ) 6 10 )
- 998 ‹S75› V02 ‹DB› 7 , 6 10 ) : ‹S76› ‹DB› 7 , V13 8 ) , ; , < , ‹E0› V1B : ‹S76› ‹DB› 7 , ‹D7› : IF V13 3 ) = 1 GOTO 999 : GOTO V10 V00
- 999 PRINT AT(24,1) , 79 : SELECT V05 V09 : PRINT "МАКЕТ ЗАГРУЗКИ СОЗДАН И ЗАПИСАН НА ДИСК" ; : SELECT V05 V00 : GOTO V09 V00
-1000 RETURN
-1010 V13 5 ) = 0 : V0C = "МАССИВ" : GOSUB V09 V00 : GOSUB V08 : ‹S23› 1 : PRINT V1C : PRINT AT(5,1) : GOSUB V08 ‹90› : IF V13 3 ) = 2 GOTO 1020
-1015 ( = 8 : IF V13 3 ) = 2 GOTO 1020 : 6 10 ) = "Л" : ‹S23› E "ОПИСАНИЯ" : IF V13 2 ) = 0 GOTO 450 : GOTO V10 %
-1020 V13 5 ) = 0 : ( = 10 : 6 10 ) = "Д" : ‹S23› E "ДАННЫХ" : IF V13 2 ) = 0 GOTO 450
-1025 ‹S23› ' 0 , 0 : > = 1
-1030 ? = 0 : GOSUB V10 e : ‹S23› = : REM * : ON V13 4 ) ‹CD› V10 @ V10 P V10 ` V10 p V10 ‹80› V10 ‹90› V04 P V10 ‹92› V10 ‹94› : IF ! = 1 GOTO 3590 : GOTO V14 P
-1035 PRINT AT(1,7) ; : GOTO V10 V15
-1040 V0C = "ОПИСАНИЯ" : GOSUB c B : GOTO V10 5
-1050 PRINT AT(24,1) , 79 : SELECT V05 V09 : PRINT "В СТРОКЕ" ; V13 5 ) ; " ФАЙЛА ОПИСАНИЯ НОМЕР" ; @ ; " ЧИСЛОВОЙ РЕКВИЗИТ СОДЕРЖИТ НЕ ЦИФРЫ" ; : SELECT V05 V00 : GOTO V10 5
-1060 V0C = "КОЛИЧЕСТВО СТРОК ФАЙЛА ОПИСАНИЯ МЕНЬШЕ УКАЗАННОГО В 1 - СТРОКЕ" : GOSUB c D : GOTO V10 5
-1065 IF V13 3 ) = 1 GOTO 1066 : IF V13 5 ) AT(0,0) : V13 6 ) = 0
-1066 RETURN
-1070 V0C = "ДАННЫХ" : GOSUB c B : GOTO V10 5
-1080 IF V13 5 ) > 0 GOTO 1095 : GOTO V10 p
-1090 V0C = "СПИСОК ПОИСКОВЫХ ПОКАЗАТЕЛЕЙ НЕ СООТВЕТСТВУEТ ПОКАЗАТЕЛЯМ ФАЙЛА ОПИСАНИЯ" : GOSUB c D : GOTO V05 `
-1092 PRINT AT(24,1) : SELECT V05 V09 : PRINT "ОШИБКА ПРИ ЗАДАНИИ НАЧАЛА И ДЛИНЫ ДЛЯ ПОКАЗАТЕЛЯ N " ; A ; : PRINT AT(1,7) ; : SELECT V05 V00 : GOTO V05 `
-1094 V0C = "ВВОДИМЫЕ ПОКАЗАТЕЛИ НЕ ОПИСАНЫ В МАССИВЕ" : GOSUB c D : GOTO V10 5
-1095 IF V0A = 0 GOTO 1100 : GOSUB 2 V00
-1100 IF V13 1 ) = 1 GOTO 1102 : GOTO V14 V10
-1102 ‹S23› ' 1 , 0
-1105 GOSUB 0 @ : ‹S23› 1 : PRINT V1C : PRINT AT(11,31) : PRINT "!!! ВВОД  ЗАКОНЧЕН !!!" : V13 18 ) = 1 : PRINT : INIT "=" ‹E0› V15 : ‹S23› A : GOSUB 0 R : PRINT
-1110 PRINT "ВСЕГО СТРОК ДАННЫХ, ПРОЧИТАННЫХ С " ; V0F 3 ) ; ": " ; V13 5 ) ; " / " ; "ИЗ НИХ ОТВЕРГНУТО ОШИБОЧНЫХ :" ; V13 6 ) : PRINT "ВСЕГО ВВЕДЕНО В " ; : IF V13 1 ) = 2 GOTO 1120 : PRINT "МАССИВ:" ; : B = 0 : ‹S23› 0 1 : GOTO V11 0
-1120 PRINT "КЛАССИФИКАТОР:" ;
-1130 PRINT V13 9 ) ‹EA› V13 7 ) ; " / " ; "ЗАМЕЩЕНО: " ; V13 7 ) ; " / " ; "ДОБАВЛЕНО: " ; V13 9 ) : GOSUB 6 V10 : IF C = " " GOTO 330 : D = 9 : E = 8 : F = 0 : 2 = "BAM8" : GOTO V00 S
-1140 G = H ‹EA› 1 : IF I = 0 GOTO 1145 : G = ‹EF› ‹E1› V11 2 ‹DF› I ‹E9› 1 , 2 ) : I = I ‹E9› 1 : INIT , V00 ‹E1› V11 2 ‹DF› I ‹EA› 1 , 2 ) : GOTO V11 E
-1145 ) = ) ‹EA› 1 : IF G > V16 1 ) GOTO 1390 : ‹S23› % 0 , G : ‹E1› ‹E0› V0E V16 10 ) , J ) = K : GOSUB V12 p : IF V13 9 ) ‹EA› V13 7 ) = 0 GOTO 1146 : IF V13 16 ) = 1 GOTO 1146 : GOTO V11 G
-1146 V13 16 ) = 0 : PRINT AT(14,40) , 40 : PRINT "В КЛАССИФИКАТОР ДОБАВЛЕНА ЗАПИСЬ " ;
-1147 PRINT AT(14,73) : PRINT AT(1,18) ; G ; AT(1,17) ; : V13 9 ) = V13 9 ) ‹EA› 1 : IF H > G GOTO 1150 : H = G
-1150 BIN( ‹E1› L ) ) 1 ) G ‹DC› ‹E7› V02 V : BIN( ‹E1› L ) ) 2 ) G ‹E9› ‹E7› V02 V ‹DF› ‹F3› G ‹DC› ‹E7› V02 V ) : ‹E1› L ) ) 3 ) = + : M = G : GOTO V12 e
-1190 B = 1
-1200 IF B > N GOTO 1370 : IF V0D B ) ‹D8› + GOTO 1210 : B = B ‹EA› 1 : GOTO V12 V00
-1210 ‹S23› & 0 , B : IF O = 0 GOTO 1370 : P = 1 : M = O : GOTO V12 0
-1220 P = Q
-1230 IF M ‹E9› P > 1 GOTO 1240 : IF + = ‹E1› R P ) 3 ) GOTO 1260 : IF + ‹D5› ‹E1› R M ) 3 ) GOTO 1370 : P = M : GOTO V12 `
-1240 Q = ‹F3› ( P ‹EA› M ) ‹DC› 2 ) : IF + > ‹E1› R Q ) 3 ) GOTO 1220 : IF + = ‹E1› R Q ) 3 ) GOTO 1250 : M = Q : GOTO V12 0
-1250 P = Q
-1260 M = ‹EF› ‹E1› R P ) 1 ) , ‹DB› : ‹S23› % 0 , M : Q = S : T = 0 : GOSUB V12 p : IF V13 7 ) ‹EA› V13 9 ) = 0 GOTO 1262 : IF V13 16 ) = 0 GOTO 1262 : GOTO V12 d
-1262 V13 16 ) = 1 : PRINT AT(14,40) , 40 : PRINT "В КЛАССИФИКАТОРЕ ЗАМЕНЕНА ЗАПИСЬ " ;
-1264 V13 7 ) = V13 7 ) ‹EA› 1 : PRINT AT(14,73) : PRINT AT(1,18) ; M ; AT(1,17) ;
-1265 ‹E1› ‹E0› V0E V16 10 ) ‹EA› J , S ) = V12 : ‹S23› % 1 , M : RETURN
-1270 ‹S23› U 0 , 2 : V12 = ‹E1› ‹E0› V15 U ‹EA› V , W ) : ‹S23› - : RETURN
-1370 IF H = V16 1 ) GOTO 1390 : IF ) ‹D7› V16 9 ) GOTO 1140 : X = + : GOSUB $ V10 : + = X : ) = 0 : INIT , V00 ‹E0› L : GOTO V11 @
-1390 ‹S30› : ) = ) ‹E9› 1 : PRINT AT(1,7) ; "ВАШ КЛАССИФИКАТОР ПЕРЕПОЛНЕН ! ДЛЯ ПРОДОЛЖЕНИЯ - CR/LF " ;
-1400 KEYIN + V14 V10 V14 V10 : GOTO V14 V00
-1410 IF ) = 0 GOTO 1430
-1420 GOSUB $ V10
-1430 ‹E1› V1A 17 ) = ‹E1› 0 73 ) : ‹S6F› V02 ‹DB› 5 , ( Y , A ) 2 , V1A , Z , [ , J , \ , S , ] , V16 8 ) , V16 1 ) , V16 2 ) , V16 3 ) , V16 4 ) , V16 6 ) , V16 7 ) , V16 9 ) , H , I , ‹E1› V11 1 , 48 )
-1440 ‹S6F› V02 ‹DB› 5 , ( Y ‹EA› 1 , A ) N , ‹E0› V0D : IF ^ = 0 GOTO 330 : GOTO V11 V05
-1450 * 1 = 0 : _ = 1
-1460 * = * ‹EA› 1 : IF * > V01 GOTO 1780 : / = , * ) : IF / = 0 GOTO 1780 : ‹S23› " / : B = 1 : IF ' = 1 GOTO 1780 : IF % = 0 GOTO 1460 : IF B = 2 GOTO 1460 : IF B = 5 GOTO 1460 : IF B = 6 GOTO 1460 : IF B ‹D6› 8 GOTO 1462
-1462 ‹S23› * / : ` a = 1
-1470 ‹S06› V03 ‹E0› b ‹DF› 6 V0B V0C = ‹E1› c * ) 1 , d ) " V02 V18 V10 $ V07 e = 0 GOTO 3590 6 V0F ` = ‹F3› ( e
-1480 ‹S23› , 0 , ` : IF # = 0 GOTO 3590 : GOSUB V15 @ : IF e = 0 GOTO 3590 : 1 = ‹F3› e ‹DC› ( d ‹EA› 2 ) ) ‹EA› 1 : GOTO V16 0
-1540 ‹S06› 8 ‹E1› ‹E0› f ( _ ‹E9› 1 )
-1560 ‹S06› 8 ‹E1› ‹E0› f ( _ ‹E9› 1 )
-1570 e = ‹EF› ‹E0› V18 , ‹DB› : RETURN
-1630 GOSUB V18 : IF e = 0 GOTO 1640 : a = ‹F3› ( e ‹E9› 1 ) ‹DC› d ) ‹EA› 1 : IF ` = a GOTO 1655 : IF a ‹D6› g GOTO 1650
-1640 a = g : ‹S23› , 0 , a : h = # : GOTO V17 V10
-1650 ‹S23› , 0 , a
-1655 GOSUB V15 ` : h = # : IF e = 0 GOTO 1710 : h = ‹F3› e ‹DC› ( d ‹EA› 2 ) ) ‹EA› 1
-1710 g = 0 : IF ` = a GOTO 1732
-1720 IF ` > a GOTO 3590 : ‹S23› , 0 , `
-1730 IF ` ‹D5› a GOTO 1732 : IF 1 > h GOTO 3590
-1732 i = / : j = ‹EF› f 1 ) , ‹DB› : GOSUB V18 @ : IF ! = 3 ‹E7› ? = 1 GOTO 1030 : GOSUB V17 P : 1 = 1 ‹EA› 1 : IF 1 ‹D6› % GOTO 1730 : 1 = 1 : ` = ` ‹EA› 1 : GOTO V17
-1750 IF ! AT(2,0) : / = i : ‹S23› " / : ‹S23› * / : ‹S23› , 0 , `
-1755 RETURN
-1780 1 = 1 : h = 4 : FOR e 1 ‹D1› V01 : IF , e ) = 0 GOTO 1790 : ‹S23› " , e ) : IF ' AT(1,0) : * = 1 : IF * = 2 GOTO 1790 : IF * = 6 GOTO 1790 : ‹S06› V0A ( V02 = [ ) c e ) ‹D1› 1 $ V07 1
-1782 IF * = 8 GOTO 1783 : IF * = 5 GOTO 1783 : ‹S06› V0A ( V02 = [ ) k e ) ‹D1› h $ V06 h
-1783 h = 4 : IF * AT(5,0) : 1 = 1
-1784 e = V01
-1790 NEXT e : g = 0
-1800 IF 1 > h GOTO 3590 : j = 1 : GOSUB V18 @ : IF ! = 3 GOTO 1030 : 1 = 1 ‹EA› 1 : GOTO V18 V00
-1810 ‹S06› V18 ‹E1› ‹E0› l 1 , g ‹DF› d
-1820 ‹S06› V18 ‹E1› ‹E0› l 1 , g ‹DF› d
-1840 ‹S23› + 0 , j : / = 1
-1880 B = , / ) : IF B = 0 GOTO 2020 : ‹S23› " B : ‹S23› ! 0 : IF m ‹D5› n GOTO 1882 : ‹S23› #
-1882 IF + = c / ) GOTO 1980 : RETURN
-1980 / = / ‹EA› 1 : IF / ‹D6› V01 GOTO 1880
-2020 ? = ? ‹EA› 1 : V13 17 ) = 1 : ‹S23› @ : IF V13 4 ) = 8 GOTO 1030 : IF V13 9 ) ‹EA› V13 7 ) = 0 GOTO 2022 : IF V13 16 ) AT(1,0) : GOTO   $
-2022 V13 16 ) = 1 : PRINT AT(14,40) , 40 : PRINT "В МАССИВЕ ЗАМЕНЕНА ЗАПИСЬ N " ;
-2024 GOSUB 3 ‹80› : V13 7 ) = V13 7 ) ‹EA› 1 : RETURN
-2090 ‹S06› 0 ‹E0›
-2100 ( = 0 : INIT ,   ‹E0› . : V13 1 ) = 2 : V13 14 ) = 0
-2110 ‹S23›   "КЛАССИФИКАТОР ДЛЯ ПОКАЗАТЕЛЯ" , 1 , V05 , 2 : IF * = 0 GOTO 330 : ‹S23› " * : IF V1E = "К" GOTO 2120 : PRINT AT(1,7) : GOTO ! V00
-2120 / = \ : IF / AT(0,0) : / = * ‹EA› ‹E7› V10 V00 ‹DF› 7
-2130 CONVERT / ‹D1› ‹E1› 6 5 ) 2 ) "#####" : ‹S34› 8 9 ‹CD› ! 7 : LIMITS V02 ‹DB› 5 , 6 5 ) Y e / : GOSUB ! 5 : ‹S34› : + V0C = " " : GOSUB   ‹90› : GOTO ! P
-2135 ‹S71› V02 ‹DB› 5 , ( Y , / ) 2 V1A Z [ J \ S ] V16 8 ) V16 1 ) V16 2 ) V16 3 ) V16 4 ) V16 6 ) V16 7 ) V16 9 ) H I V11 : RETURN
-2137 SELECT V05 V09 : PRINT AT(23,1) , 80 : PRINT AT(1,7) ; : IF 8 = "73" GOTO 2138 : PRINT "ОШИБКА ВВОДА/ВВОДА" ; : GOTO ! 9
-2138 PRINT "ОТСУТСТВУЕТ КЛАССИФИКАТОР ДЛЯ ПОКАЗАТЕЛЯ  '" ; ‹E1› 2 1 , ‹ED› 2 ) ; "'" ;
-2139 SELECT V05 V00 : ‹S34› : GOTO ! V00
-2140 ‹S34› : V1E = "0" : PRINT AT(3,1) , ‹E7› V17 `
-2150 + = " " : IF ] = " " GOTO 2200 : PRINT AT(23,1) : PRINT "УКАЖИТЕ ПАРОЛЬ ДОСТУПА " ; : FOR A 1 ‹D1› 4
-2160 KEYIN V0C ! p ! p : GOTO ! `
-2170 IF V0C = AT(1,133) GOTO 2180 : ‹E1› + A , 1 ) = V0C : NEXT A
-2180 IF + = ] GOTO 2200 : IF + = AT(1,223) GOTO 2200 : IF + = " " GOTO 2100 : PRINT ‹DF› 40 ) ; AT(2,7) V12 ; "ЗАЩИТА ПАРОЛЕМ" : PRINT AT(2,17) V0C ; : GOTO ! P
-2200 V0C = "КЛАССИФИКАТОР" : GOSUB V09 V00 : GOSUB V08 : ‹S23› 1 : ! = 3 : PRINT V1C : PRINT AT(5,1) : GOSUB V08 ‹90›
-2210 V13 5 ) = 0 : IF V13 3 ) = 2 GOTO 2220 : ( = 8 : 6 10 ) = "Л" : ‹S23› E "ОПИСАНИЯ КЛАССИФИКАТОРА" : IF V13 2 ) = 0 GOTO 450 : GOTO " 0
-2220 ( = 10 : 6 10 ) = "Д" : ‹S23› E "КЛАССИФИКАТОРА" : IF V13 2 ) = 0 GOTO 450
-2230 ) = 0 : INIT , V00 ‹E0› L : ‹S71› V02 ‹DB› 5 , ( Y ‹EA› 1 , A ) N ‹E0› V0D
-2235 ‹S23› = : REM ** : IF V13 4 ) = 7 GOTO 450 : IF V13 4 ) = 5 GOTO 2240 : IF V13 4 ) = 1 GOTO 2238 : ‹S23› F : IF V13 4 ) AT(0,0) : GOSUB V11 ‹90› : GOTO " 5
-2238 V0C = "ОПИСАНИЯ" : GOSUB c B : GOTO " V10
-2240 IF V13 5 ) > 1 GOTO 1100 : GOSUB c B : GOTO "
-2250 REM  *
-2410 IF ) ‹D7› 2 GOTO 2450
-2420 FOR E 1 ‹D1› ) ‹E9› 1 : IF ‹E1› L E ) 3 ) ‹D6› ‹E1› L E ‹EA› 1 ) 3 ) GOTO 2440 : V0C = L E ‹EA› 1 ) : L E ‹EA› 1 ) = L E ) : e = 0 : IF E = 1 GOTO 2430 : FOR e E ‹E9› 1 ‹D1› 1 ‹D2› ‹E9› 1 : IF ‹E1› L e ) 3 ) ‹D6› ‹E1› V0C 3 ) GOTO 2430 : L e ‹EA› 1 ) = L e ) : NEXT e : e = 0
-2430 L e ‹EA› 1 ) = V0C
-2440 NEXT E
-2450 Q T p = 1 : GOSUB % V10 : GOSUB %
-2460 IF M ‹D6› V16 3 ) GOTO 2470 : GOSUB % 0 : p = p ‹EA› 1 : GOSUB %
-2470 IF P ‹D6› q GOTO 2480 : IF T ‹D8› N GOTO 2550 : T = T ‹EA› 1 : GOSUB % V10
-2480 IF Q > ) GOTO 2540 : IF Q ‹D6› 1 GOTO 2490 : IF Q ‹D8› ) GOTO 2490 : IF ‹E1› L Q ) 3 ) = ‹E1› L Q ‹E9› 1 ) 3 ) GOTO 2500
-2490 IF ‹E1› R P ) 3 ) > ‹E1› L Q ) 3 ) GOTO 2560 : IF ‹E1› R P ) 3 ) ‹D5› ‹E1› L Q ) 3 ) GOTO 2540 : P = P ‹EA› 1
-2500 PRINT AT(11,21) : PRINT "НАЛИЧИЕ СИНОНИМОВ В КЛАССИФИКАТОРЕ" : Q = Q ‹EA› 1 : GOTO $ `
-2510 ‹S23› & 0 , T : P = 1 : q = O : RETURN
-2520 M = 1 : INIT , V00 ‹E0› o : RETURN
-2530 O = M ‹E9› 1 : V0D p ) = ‹E1› o O ) 3 ) : ‹S23› & 1 , p : RETURN
-2540 o M ) = R P ) : P = P ‹EA› 1 : GOTO % p
-2550 IF Q > ) GOTO 2580
-2560 o M ) = L Q ) : Q = Q ‹EA› 1
-2570 M = M ‹EA› 1 : GOTO $ `
-2580 N = p ‹E9› 1 : IF M = 1 GOTO 2590 : GOSUB % 0 : N = p
-2590 RETURN
-2900 IF + ‹D5› X GOTO 2902 : RETURN
-2902 IF m ‹D5› n GOTO 2905 : ‹S23› # : K = + : + = X : ‹S23› # : X = + : + = K
-2905 r ) = 1 : s = 0 : BIN( V10 , ‹DB› j
-2910 ‹S23› * * : GOSUB ) ‹80› : GOSUB 2 E : GOSUB 2 P : V0C = +
-2915 IF t ‹D6› % GOTO 2920 : GOSUB 2 U : u = u ‹EA› 1 : GOSUB 2 P : IF _ > v GOTO 2920 : IF r > 1 GOTO 2916 : GOSUB V15 @ : IF e AT(0,0)
-2916 IF s = 1 GOTO 2917 : GOSUB 0 V00 : IF e AT(0,0)
-2917 N = v ‹E9› _ ‹EA› 1 : GOSUB 2 ‹98› : GOTO ) V15
-2920 IF _ ‹D6› v GOTO 2925 : IF w ‹D8› g GOTO 2955 : w = w ‹EA› 1 : GOSUB 2 E : IF r > 1 GOTO 2921 : GOSUB V15 @ : IF e AT(0,0)
-2921 IF s = 1 GOTO 2922 : GOSUB 0 V00 : IF e AT(0,0)
-2922 N = v : IF % ‹E9› t ‹EA› 1 ‹D8› N GOTO 2923 : N = % ‹E9› t ‹EA› 1
-2923 GOSUB 2 ‹98› : GOTO ) V15
-2925 IF r > 1 GOTO 2930 : IF ‹E1› f _ ) 3 ) > + GOTO 2960
-2930 x t ) = f _ ) : _ = _ ‹EA› 1 : IF j ‹D5› ‹EF› ‹E1› f _ ‹E9› 1 ) 1 ) , ‹DB› GOTO 2965 : s = 1 : GOTO ) V15
-2955 IF r > 1 GOTO 2970
-2960 BIN( ‹E1› x t ) 1 ) , ‹DB› j : ‹E1› x t ) 3 ) = + : r = r ‹EA› 1
-2965 t = t ‹EA› 1 : GOTO ) V15
-2970 g = u ‹E9› 1 : IF t = 1 GOTO 2975 : GOSUB 2 U : g = u
-2975 ‹S75› V02 ‹DB› 6 , 6 6 ) : ‹S76› ‹DB› 6 , g , ‹E0› l : RETURN
-2980 V0C = + : IF X > + GOTO 2990 : V0C = X
-2990 GOTO 2 ‹90›
-3000 ‹S06› / ‹E1› ‹E0› f ( _ ‹E9› 1 )
-3040 SELECT V07 V05 ( V00 P : RETURN
-3052 SELECT V07 V0C ( V00 ‹82› : RETURN
-3100 IF % = 0 GOTO 3120 : IF V13 17 ) = 1 GOTO 2900 : s = & * , 1 ) : ) = & * , 2 ) : IF ) ‹D7› V09 GOTO 3105 : GOSUB 2 V05 : ) = 0
-3105 ) = ) ‹EA› 1 : & * , 2 ) = ) : IF m ‹D5› n GOTO 3110 : ‹S23› #
-3110 BIN( ‹E1› y ) , s ) 1 ) , ‹DB› j : ‹E1› y ) , s ) 3 ) = +
-3120 RETURN
-3200 FOR z 1 ‹D1› V13 8 ) : * = ‹EF› ‹E1› V1B z ) 1 , 1 ) : ‹S23› " * : IF % = 0 GOTO 3285 : s = & * , 1 ) : ) = & * , 2 ) : IF ) = 0 GOTO 3285 : GOSUB 2 V05 : GOTO 2 ‹85›
-3205 IF ) ‹D7› 2 GOTO 3220 : FOR F 1 ‹D1› ) ‹E9› 1 : IF ‹E1› y F , s ) 3 ) ‹D6› ‹E1› y F ‹EA› 1 , s ) 3 ) GOTO 3215 : V0C = y F ‹EA› 1 , s ) : y F ‹EA› 1 , s ) = y F , s ) : " = 0 : IF F = 1 GOTO 3210 : FOR " F ‹E9› 1 ‹D1› 1 ‹D2› ‹E9› 1 : IF ‹E1› y " , s ) 3 ) ‹D6› ‹E1› V0C 3 ) GOTO 3210 : y " ‹EA› 1 , s ) = y " , s ) : NEXT " : " = 0
-3210 y " ‹EA› 1 , s ) = V0C
-3215 NEXT F
-3220 ‹S23› * * : r = 1 : V0C = ‹E1› y r , s ) 3 ) : GOSUB 2 ‹90› : GOSUB 2 E : GOSUB 2 P
-3225 IF t ‹D6› % GOTO 3230 : GOSUB 2 U : u = u ‹EA› 1 : GOSUB 2 P : IF r > ) ‹E6› _ > v GOTO 3230 : GOSUB 2 ‹96› : IF e AT(0,0) : N = v ‹E9› _ ‹EA› 1 : GOSUB 2 ‹98› : GOTO 2 %
-3230 IF _ ‹D6› v GOTO 3235 : IF w ‹D8› g GOTO 3260 : w = w ‹EA› 1 : GOSUB 2 E : IF r > ) GOTO 3235 : GOSUB 2 ‹96› : IF e AT(0,0) : N = v : IF % ‹E9› t ‹EA› 1 > N GOTO 3232 : N = % ‹E9› t ‹EA› 1
-3232 GOSUB 2 ‹98› : GOTO 2 %
-3235 IF r > ) GOTO 3240 : IF ‹E1› f _ ) 3 ) > ‹E1› y r , s ) 3 ) GOTO 3265
-3240 x t ) = f _ ) : _ = _ ‹EA› 1 : GOTO 2 p
-3245 _ = 1 : ‹S23› , 0 , w : v = # : RETURN
-3250 t = 1 : INIT , V00 ‹E0› x : RETURN
-3255 # = t ‹E9› 1 : l u ) = ‹E1› x # ) 3 ) : ‹S23› , 1 , u : RETURN
-3260 IF r > ) GOTO 3275
-3265 x t ) = y r , s ) : r = r ‹EA› 1
-3270 t = t ‹EA› 1 : GOTO 2 %
-3275 g = u ‹E9› 1 : IF t = 1 GOTO 3280 : GOSUB 2 U : g = u
-3280 ‹S75› V02 ‹DB› 6 , 6 6 ) : ‹S76› ‹DB› 6 , g , ‹E0› l : FOR r 1 ‹D1› ) : y r , s ) = " " : NEXT r : & * , 2 ) = 0 : RETURN
-3285 NEXT z : RETURN
-3290 GOSUB V18 V10 : IF e AT(0,0) : w u = g : GOTO 2 ‹94›
-3292 w u = ‹F3› ( e ‹E9› 1 ) ‹DC› d ) ‹EA› 1
-3294 RETURN
-3296 V0C = ‹E1› y r , s ) 3 ) : GOTO V15 @
-3298 ‹E1› ‹E0› x ( t ‹E9› 1 ) ‹DF› ( d ‹EA› 2 ) ‹EA› 1 , N ‹DF› ( d ‹EA› 2 ) ) = ‹E1› ‹E0› f ( _ ‹E9› 1 ) ‹DF› ( d ‹EA› 2 ) ‹EA› 1 ) : t = t ‹EA› N : _ = _ ‹EA› N : RETURN
-3310 { = ‹EC› V11 = "0" : IF { AT(0,0)
-3320 IF > ‹DF› ‹E7› V02 P ‹D8› | GOTO 3340 : > = > ‹EA› 1 : ‹S23› ' 0 , > : GOTO 3 V10
-3330 g = { ‹EA› ( > ‹E9› 1 ) ‹DF› ‹E7› V02 P : j = g : IF g ‹D6› | GOTO 3350
-3340 GOSUB 3 E : GOSUB 0 R : GOSUB 3 E : GOSUB 0 @ : PRINT AT(1,7) ; : STOP "ДЛЯ ПРОДОЛЖЕНИЯ - CONTINUE" : RETURN
-3345 PRINT : PRINT "МАССИВ /" ; ‹E1›   1 , ‹ED›   ) ; "/ ПЕРЕПОЛНЕН. ВВОД ПРЕКРАЩЕН!!!" : IF V0A = 0 GOTO 3346 : GOSUB 2 V00
-3346 RETURN
-3350 ‹S23› + 0 , g : V13 17 ) = 0 : ‹S23› @ : IF V13 4 ) = 7 GOTO 1030 : IF V13 7 ) ‹EA› V13 9 ) = 0 GOTO 3352 : IF V13 16 ) AT(0,0) : GOTO 3 T
-3352 V13 16 ) = 0 : PRINT AT(14,40) , 40 : PRINT "В МАССИВ ДОБАВЛЕНА ЗАПИСЬ N " ;
-3354 GOSUB 3 ‹80› : V13 9 ) = V13 9 ) ‹EA› 1
-3356 ‹E1› V11 { , 1 ) = "1" : IF j > 4 GOTO 3360 : 5 = 5 ‹E9› 1 : GOTO 3 p
-3360 4 = j
-3370 ‹S23› ' 1 , > : RETURN
-3380 PRINT AT(14,73) : PRINT AT(1,18) ; j ; AT(1,17) ; : ‹S23› + 1 , j : IF V13 7 ) ‹EA› V13 9 ) AT(0,0) : B = 0 : ‹S23› 0 1
-3385 B = j : ‹S23› 0 1 : RETURN
-3590 IF ? = 0 ‹E7› ! AT(2,0) : IF ? AT(0,0) : V13 16 ) = 2 : PRINT AT(14,40) , 40 : PRINT "*** ЗАПИСЬ ПРОПУЩЕНА ***" : GOTO V10 0
-3600 GOSUB 3 V10 : IF j > | GOTO 1105 : GOTO V10 0
-3610 PRINT : PRINT ‹DF› 18 ) ; ‹E1› 0 4 , 5 ) ; ‹DF› 28 ) ; "*** КОНЕЦ ПРОТОКОЛА ***" : PRINT : GOSUB 0 @ : RETURN
-4000 ‹E1› V0C 15 , 4 ) = AT(4,21) V11 ‹DC› ‹E0› : ROTATE ( ‹E1› V0C 15 , 4 ) , ‹E9› 2 ) : ‹E1› V0C 19 ) = "3C01F6FFF2000001" : ‹E1› V0C 35 ) = AT(2,41) ‹85› : ‹E1› V0C 1 , 14 ) = AT(14,49) 4 6 5 $ G I O   ' H E X ( : RETURN
-4030 DEFFN'   ‹E0› V04 ‹97› 5 V0C / } e
-4050 PRINT AT(1,6) ; : d = 2 ‹DF› e ‹EA› 12 : IF ( AT(0,0) : ‹S23› 1 : PRINT V1C : ( = e : GOSUB A 0 : GOTO @ `
-4055 IF e = 1 GOTO 4060 : GOSUB A V10
-4060 * = / ‹EA› ( ‹DF› d : PRINT AT(21,21) , 40 : PRINT "УКАЖИТЕ НОМЕР ( 0 - КОНЕЦ )" : PRINT AT(21,51) : INPUT * : REM  ERRORGOTO4080
-4070 IF * = 0 GOTO 4102 : IF * = ‹E5› V12 V11 GOTO 4102 : IF * = ‹E5› V12 V09 GOTO 4102 : IF * ‹D5› ‹F3› * ) GOTO 4080 : IF * ‹D6› } GOTO 4090
-4080 PRINT AT(1,7) : GOTO @ `
-4090 IF * = / ‹EA› ( ‹DF› d GOTO 4092 : . * ) = "*"
-4092 IF * ‹D8› / ‹EA› ( ( ‹E9› e ) ‹DF› d GOTO 4110
-4100 ( = ( ‹E9› e : IF * ‹D7› / ‹EA› ( ( ‹E9› e ) ‹DF› d GOTO 4100 : GOSUB A 0
-4102 RETURN
-4110 IF * > B ‹EA› d ‹DF› ( e ‹E9› 1 ) GOTO 4120 : IF e = 1 GOTO 4116 : IF * ‹D6› B GOTO 4112 : PRINT ‹D5› * ‹E9› ‹F3› ( * ‹E9› 1 ) ‹DC› d ) ‹DF› d ‹EA› 4 , 75 : GOTO A V14
-4112 PRINT ‹D5› * ‹E9› ‹F3› ( * ‹E9› 1 ) ‹DC› d ) ‹DF› d ‹EA› 4 , 35
-4114 PRINT . * ) ; AT(1,5)
-4116 RETURN
-4120 ( = ( ‹EA› e : IF * > / ‹EA› ( ‹DF› d ‹E9› 1 GOTO 4120 : GOSUB A 0 : IF * = ‹F3› ( B ‹E9› 1 ) ‹DC› d ) ‹DF› d ‹EA› 1 GOTO 4060 : RETURN : GOTO @ `
-4130 PRINT AT(3,22) , ‹E7› V15 : PRINT ‹E1› V0C 1 , ‹ED› V0C ) ; " ( ЛИСТ -" ; ( ‹DC› e ; ")" ; AT(1,10) : FOR B / ‹EA› ( ( ‹E9› e ) ‹DF› d ‹D1› / ‹EA› ( ( ‹E9› e ) ‹DF› d ‹EA› d ‹E9› 1 : IF } ‹D8› B GOTO 4140 : IF } ‹D5› B ‹E9› 1 GOTO 4132 : PRINT ‹DF› 15 ) ; "*** КОНЕЦ ***" : PRINT ‹D5› B ‹E9› ‹F3› ( B ‹E9› 1 ) ‹DC› d ) ‹DF› d ‹EA› 4 , 29 , 51 : PRINT : GOTO A ‹80›
-4132 PRINT ‹D5› B ‹E9› ‹F3› ( B ‹E9› 1 ) ‹DC› d ) ‹DF› d ‹EA› 4 , 1 , 80 : GOTO A ‹80›
-4140 ‹S23› " B : GOSUB A ‹82›
-4160 PRINT B ; ‹DF› 6 ) ; ‹E1› ~ B ) 13 ) ; ‹DF› 31 ) ; V10 ; ‹DF› 34 ) ; . B ) ; : IF } ‹D8› B ‹EA› d GOTO 4170 : IF } ‹D5› B ‹EA› d ‹E9› 1 GOTO 4162 : PRINT ‹DF› 55 ) ; "*** КОНЕЦ ***" : GOTO A ‹80›
-4162 PRINT ‹D5› B ‹E9› ‹F3› ( B ‹E9› 1 ) ‹DC› d ) ‹DF› d ‹EA› 4 , 41 , 40 : PRINT : GOTO A ‹80›
-4170 PRINT ‹DF› 40 ) ; B ‹EA› d ; ‹DF› 46 ) ; ‹E1› ~ B ‹EA› d ) 13 ) ; : A = B : ‹S23› " B ‹EA› d : GOSUB A ‹82› : B = A : PRINT ‹DF› 71 ) ; V10 ; ‹DF› 74 ) ; . B ‹EA› d )
-4180 NEXT B : IF B ‹D6› } GOTO 4188 : B = } : GOTO A ‹88›
-4182 V10 = V1E : IF V1E = "А" GOTO 4188 : IF V1E = "Ц" GOTO 4188 : IF m ‹D5› n GOTO 4184 : ‹E1› V10 2 , 1 ) = "А" : GOTO A ‹88›
-4184 ‹E1› V10 2 , 1 ) = "Ц"
-4188 RETURN
-4190 DEFFN' ! V0C V05 ‹85› 6 E
-4192 IF E = 0 GOTO 4290
-4200 IF m = n GOTO 4250
-4240 ‹S34› 8 9 ‹CD› C B
-4250 ‹E1› ‹E0› ‹80› ‹81› ‹EA› ‹82› , J ) = + : RETURN
-4290 + = ‹E1› ‹E0› ‹80› ‹81› ‹EA› ‹82› , J )
-4300 IF m ‹D5› n GOTO 4340 : RETURN
-4340 ‹S34› 8 9 ‹CD› C B : ‹S06› V08 ( V02 = [ ) + ‹D1› ‹7F› 4 V00 ! V02 C
-4342 ‹S34› : ‹7F› = 0 : V13 4 ) = 2
-4350 IF V1E ‹D5› "Д" GOTO 4352 : K = "  .  ." : CONVERT ‹7F› ‹D1› ‹E1› K 9 ) "######" : ‹E1› K 1 , 2 ) = ‹E1› K 13 ) : ‹E1› K 4 , 2 ) = ‹E1› K 11 ) : ‹E1› K 7 , 2 ) = ‹E1› K 9 , 2 ) : ‹E1› K 9 ) = " "
-4352 RETURN
-4420 DEFFN' # V18 V05 ‹CD› 6
-4430 ‹S06› V06 + , ‹83› ) , V00 $ V08 V1E ‹D5› ‹E3›
-4432 RETURN
-4520 DEFFN' % , V05 ‹B0› 7 e /
-4530 E = ‹F3› ( J ‹EA› S ) ‹DF› ( / ‹E9› 1 ) ‹DC› ‹E7› V02 V ) : } = Y ‹EA› V16 7 ) ‹EA› V16 4 ) ‹DF› V16 8 ) ‹EA› E ‹EA› 1 : B = ‹F3› ( J ‹EA› S ) ‹DF› / ‹DC› ‹E7› V02 V ) ‹E9› E ‹EA› 1 : IF e = 1 GOTO 4550 : IF } ‹D5› ‹84› GOTO 4532 : IF B = ‹85› GOTO 4540
-4532 ‹84› = } : FOR e 1 ‹D1› B ‹DF› ‹E7› V02 V ‹D2› ‹E7› V02 V : ‹S70› V02 ‹DB› 5 , ( } , } ) ‹E1› ‹E0› V0E e ) : NEXT e : ‹85› = } ‹E9› ‹84›
-4540 V16 10 ) = ( J ‹EA› S ) ‹DF› ( / ‹E9› 1 ) ‹E9› E ‹DF› ‹E7› V02 V ‹EA› 1 : RETURN
-4550 FOR e 1 ‹D1› B ‹DF› ‹E7› V02 V ‹D2› ‹E7› V02 V : ‹S6E› V02 ‹DB› 5 , ( } , E ) ‹E1› ‹E0› V0E e ) : } = E : NEXT e : RETURN
-4560 DEFFN' & 8 V05 V01 8 e E
-4570 } = Y ‹EA› V16 7 ) ‹EA› 1 ‹EA› ( E ‹E9› 1 ) ‹DF› V16 8 ) : IF e = 0 GOTO 4580 : ‹S6F› V02 ‹DB› 5 , ( } , E ) O , ‹E0› o : RETURN
-4580 ‹S71› V02 ‹DB› 5 , ( } , } ) O ‹E0› R : RETURN
-4590 DEFFN' ' L V05 t 8 e E
-4592 } = ‹86› ‹EA› E : IF e = 0 GOTO 4596 : IF E AT(0,0) : ‹S6F› V02 ‹DB› 3 , ( } , A )   , | , 4 , 5 : RETURN
-4594 ‹S6F› V02 ‹DB› 3 , ( } , A ) V11 : RETURN
-4596 IF E AT(0,0) : ‹S71› V02 ‹DB› 3 , ( } , } ) V0C / 4 5
-4598 ‹S71› V02 ‹DB› 3 , ( } , A ) V11 : RETURN
-4600 DEFFN' ( ‹A0› V05 K : V0C e
-4630 IF m = n GOTO 4730 : IF V1E ‹D5› "Д" GOTO 4690 : GOSUB H V00 : IF B AT(0,0) : GOTO G X
-4672 GOTO G B
-4680 NEXT B : IF c # ) = k # ) GOTO 4760 : RETURN
-4688 + = K : GOTO G
-4690 ‹S34› 8 9 ‹CD› G X : IF + ‹D5› " " GOTO 4700 : + = "0"
-4700 CONVERT + ‹D1› B : ‹S34› : + = " "
-4710 c # ) k # ) = + : RETURN
-4720 k # ) = + : IF * = 2 GOTO 4722 : IF * = 6 GOTO 4722 : RETURN
-4722 AND( k # ) c # ) : RETURN
-4730 IF V1E ‹D5› "Д" GOTO 4740 : GOSUB H V00 : IF B = 0 GOTO 4760 : + = K
-4740 IF e = 2 GOTO 4750 : IF * = 2 GOTO 4742 : IF * AT(6,0)
-4742 INIT , V00 c # ) k # ) : FOR B 1 ‹D1› _ : IF ‹E1› + B , 1 ) ‹D5› "#" GOTO 4680 : ‹E1› c # ) B , 1 ) = AT(1,255) : GOTO F ‹80›
-4750 ‹S23› # : GOTO G V10
-4758 ‹S34› : V13 4 ) = 2 : RETURN
-4760 PRINT AT(2,7) V0C ; : GOTO F 0
-4800 B = 0 : IF + = "00.00.00" GOTO 4810 : IF * = 2 GOTO 4806 : IF * = 6 GOTO 4806 : IF ‹E1› + 3 , 1 ) ‹D5› "." GOTO 4804 : IF ‹E1› + 6 , 1 ) ‹D5› "." GOTO 4804
-4802 IF ‹E1› + 1 , 2 ) ‹D7› "01" GOTO 4804 : IF ‹E1› + 1 , 2 ) > "31" GOTO 4804 : IF ‹E1› + 4 , 2 ) ‹D7› "01" GOTO 4804 : IF ‹E1› + 4 , 2 ) > "12" GOTO 4804 : IF ‹E1› + 7 , 2 ) ‹D7› "00" GOTO 4804 : IF ‹E1› + 7 , 2 ) ‹D6› "99" GOTO 4810
-4804 RETURN
-4806 IF e = 2 GOTO 4810 : B = 1 : GOTO H V04
-4810 K = + : + = ‹E1› K 7 ) : ‹E1› + 3 , 2 ) = ‹E1› K 4 ) : ‹E1› + 5 , 2 ) = K : B = 3 : RETURN
-4840 DEFFN' * ‹AC› V05 ‹C1› : /
-4850 CONVERT / ‹D1› ‹E1› 6 6 ) 4 ) "###" : LIMITS V02 ‹DB› 6 , 6 6 ) } E e : d = J : IF J ‹D6› V04 GOTO 4852 : d = V04
-4852 ‹S06› & ‹E0›
-4920 DEFFN' , ‹B8› V05 V07 ; e E
-4930 } = ‹87› ‹EA› ( E ‹E9› 1 ) ‹DF› V06 : IF e = 0 GOTO 4935 : ‹S6F› V02 ‹DB› 6 , ( } , E ) # , ‹E0› x : RETURN
-4935 ‹S71› V02 ‹DB› 6 , ( } , A ) # ‹E0› f : RETURN
-4940 DEFFN' - ‹C4› V05 " ;
-4950 ‹S06› V0C ‹E1› V12 1 , ‹ED› V12 ) , ‹E0› ‹88›
-4960 RETURN
-4970 DEFFN' ; ‹C8› V05 v ; V1F " : V1E = "0" : PRINT ‹D5› V1F , " : PRINT "УКАЖИТЕ НОМЕР (0 - КОНЕЦ)? " ; AT(1,18) ;
-5200 DEFFN' = x V06 ‹F6› A
-5210 REM **
-5220 REM *
-5230 IF V13 3 ) > 1 GOTO 5300 : U < V13 4 ) = 0 : ‹89› ; = 80 : ‹S23› ? "ФАЙЛ ОПИСАНИЯ N " : ‹S23› P V1D , 1 : V13 5 ) = V13 5 ) ‹EA› 1 : IF ^ > 0 GOTO 5240 : IF ‹E1› ‹E0› V15 62 , 1 ) = "K" GOTO 5232 : < = 9 : GOSUB f V00 : GOSUB g V00
-5232 IF V13 1 ) = 1 GOTO 5234 : V12 = 6 5 ) : GOTO R 5
-5234 V12 = 6 2 )
-5235 ‹S23› - : IF ‹E1› ‹E0› V15 4 , 6 ) ‹D5› ‹E1› V12 1 , 6 ) GOTO 5236 : GOTO R P
-5236 IF V13 1 ) AT(1,0) : + = " " : PRINT AT(23,1) , ‹E7› V01 ` : PRINT "ВНИМАНИЕ!!! ФАЙЛ ОПИСАНИЯ ДРУГОГО МАССИВА." : PRINT "ПОДТВЕРДИТЕ ВВОД (ДА - 1, НЕТ - 0)" ;
-5237 KEYIN + R 8 R 8 : GOTO R 7
-5238 PRINT AT(23,1) , ‹E7› V01 ` : IF + = "0" GOTO 5240 : IF + = "1" GOTO 5250 : PRINT AT(1,7) ; : GOTO R 6
-5240 V13 4 ) = 1 : GOTO S ‹80›
-5250 ‹S23› > 47 , 3 : IF V13 4 ) = 2 GOTO 5380 : V13 8 ) = ‹8A› : ‹S23› > 52 , 3 : IF V13 4 ) = 2 GOTO 5380 : A = ‹8A› : V0C = "ПЕЧАТАТЬ ФАЙЛ ОПИСАНИЯ ( 1 - ДА; 0 - НЕТ )" : GOSUB S u : ‹S23› A
-5260 FOR z 1 ‹D1› V13 8 ) : ‹S23› P V1D , 1 : V13 5 ) = V13 5 ) ‹EA› 1 : IF ^ = 0 GOTO 5270 : V13 4 ) = 3 : GOTO R u
-5270 ‹S23› A : ‹S23› C : IF V13 4 ) = 9 GOTO 5275 : IF V13 1 ) = 1 GOTO 5272 : ‹S23› > 6 , 3 : IF V13 4 ) = 2 GOTO 5275
-5272 BIN( ‹E1› V1B z ) 1 , 1 ) ‹8A› : ‹S23› > 12 , 3 : IF V13 4 ) = 2 GOTO 5275 : V = ‹8A› : ‹S23› > 18 , 3 : IF V13 4 ) = 2 GOTO 5275 : W = ‹8A› : ‹S23› U 1 , z : GOTO R ‹80›
-5275 z = V13 8 )
-5280 NEXT z : IF V13 4 ) > 0 GOTO 5380
-5290 ; = A : ‹8B› = ‹8B› ‹EA› 1 : V13 3 ) = 2 : V13 5 ) = 0 : IF V1D > 1 GOTO 5292 : ‹S23› c : V13 2 ) = ‹8B› : IF ‹8B› = @ GOTO 5300 : V13 4 ) = 4 : GOTO S ‹80›
-5292 ( = 10 : 6 10 ) = "Д" : ‹S23› E "ДАННЫХ" : @ = V13 2 ) : IF V13 2 ) AT(0,0) : V13 4 ) = 7 : GOTO S ‹80›
-5300 GOSUB S V15 : IF ^ > 0 GOTO 5310 : V13 5 ) = V13 5 ) ‹EA› 1 : GOSUB S V05 : GOSUB S : IF V13 4 ) AT(0,0) : PRINT AT(14,20) : PRINT AT(1,18) ; V13 5 ) ; AT(1,17) : GOTO S (
-5305 IF V13 5 ) > 1 GOTO 5309 : GOSUB S V12 : GOTO S V09
-5309 RETURN
-5310 V13 4 ) = 5 : GOTO S ‹80›
-5312 IF V13 5 ) > 1 GOTO 5314 : PRINT AT(14,1) : PRINT "ВВЕДЕНА ЗАПИСЬ" ;
-5314 RETURN
-5315 IF V13 5 ) AT(0,0) : ‹S23› ? "ФАЙЛ ДАННЫХ N " : U = 0 : GOSUB f V00 : GOTO S V17
-5316 IF ; = ‹89› GOTO 5317 : IF U ‹D5› ‹89› ‹E9› ; GOTO 5318 : U = 0
-5317 ‹S23› P V1D , 1 : GOTO S V19
-5318 U = U ‹EA› ;
-5319 RETURN
-5320 V13 4 ) = 0 : IF V13 5 ) > 1 GOTO 5327 : FOR z 1 ‹D1› V13 8 )
-5322 A = ‹EF› ‹E1› V1B z ) 1 , 1 ) : ‹S23› U 0 , z : IF V ‹EA› W ‹E9› 1 ‹D6› ; GOTO 5324 : V13 4 ) = 8 : z = V13 8 )
-5324 NEXT z : IF V13 4 ) AT(0,0)
-5325 V0C = "ПЕЧАТАТЬ ВВОДИМЫЕ ЗАПИСИ ( 1 - ВСЕ; 0 - ОШИБОЧНЫЕ )" : GOSUB S u
-5327 RETURN
-5328 # V13 4 ) = 0 : IF V13 1 ) = 2 ‹E6› ! = 1 GOTO 5380 : FOR z 1 ‹D1› V01 : IF , z ) AT(0,0) : z = V01 : GOTO S p
-5330 BIN( V1E , z ) : ‹S06› V17 ‹E1› ‹E0› V1B 1 , 4 ‹DF›
-5350 s = ‹F3› ‹EF› ‹E0› V18 , ‹DB› ‹DC› 4 ) ‹EA› 1 : V13 4 ) = 0 : ‹S23› U 0 , s : ‹S23› " , z ) : IF m = n GOTO 5355 : + = ‹E1› ‹E0› V15 U ‹EA› V , W ) : IF V1E = "Д" GOTO 5360 : ‹S23› H U ‹EA› V , W : IF V13 4 ) = 0 GOTO 5360 : ‹S23› B : GOTO S e
-5355 V12 = ‹E1› ‹E0› V15 U ‹EA› V , Z ) : ‹S23› - : + = ‹E1› V12 1 , ‹ED› V12 )
-5360 # = # ‹EA› 1 : * = 1 : e = 1 : GOSUB F 0 : IF V13 4 ) = 0 GOTO 5365 : ‹S23› B
-5365 IF V13 4 ) = 0 GOTO 5370 : z = V01
-5370 NEXT z : IF V13 4 ) = 0 GOTO 5380 : IF V13 4 ) = 6 GOTO 5380 : ‹S23› A : V13 6 ) = V13 6 ) ‹EA› 1 : GOTO S V00
-5375 V13 18 ) = 0 : PRINT AT(12,1) , 80 : PRINT ‹E1› V0C 1 , ‹ED› V0C ) ; : INPUT V13 18 ) : IF V13 18 ) = 0 ‹E6› V13 18 ) = 1 GOTO 5380 : PRINT AT(1,7) ; : GOTO S u
-5380 RETURN
-5400 DEFFN' > ‹8C› V06 C B ‹8C› ‹8D›
-5410 IF ‹EE› ‹E1› ‹E0› V15 ‹8C› , ‹8D› ) ‹D5› ‹8D› GOTO 5415 : CONVERT ‹E1› ‹E0› V15 ‹8C› , ‹8D› ) ‹D1› ‹8A› : GOTO T 0
-5415 ‹8A› = 0 : IF ‹E1› ‹E0› V15 ‹8C› , ‹8D› ) = " " GOTO 5430
-5420 V13 4 ) = 2
-5430 RETURN
-5440 DEFFN' ? ‹98› V06 ‹82› B V0C
-5450 ‹8A› = ‹F3› ( 80 ‹E9› ‹ED› V0C ‹EA› 3 ) ) ‹DC› 2 : GOSUB 0 R : PRINT : PRINT ‹DF› ‹8A› ) ; ‹E1› V0C 1 , ‹ED› V0C ) ; V13 2 ) : PRINT : GOSUB 0 @
-5460 RETURN
-5500 DEFFN' @ V00 V07 ‹9D› D
-5505 REM **
-5510 REM **
-5515 V13 4 ) V13 10 ) V13 11 ) V13 12 ) = 0
-5520 FOR z 1 ‹D1› V13 8 ) : ‹S23› U 0 , z : * = ‹EF› ‹E1› V1B z ) 1 , 1 ) : ‹S23› " * : ( = *
-5522 ON ' ‹CD› U p U & U 0 U ( U 0 : GOTO U 0
-5526 V13 11 ) = 1 : GOTO U 0
-5528 V13 12 ) = 1
-5530 X = ‹E1› ‹E0› ‹80› ‹81› ‹EA› ‹82› , J ) : IF m = n GOTO 5550 : + = ‹E1› ‹E0› V15 U ‹EA› V , Z ) : IF V1E = "Д" GOTO 5535 : ‹S23› H U ‹EA› V , W : + = " " : IF V13 4 ) = 0 GOTO 5540 : GOTO U 7
-5535 * = 0 : GOSUB H V00 : IF B AT(3,0) : CONVERT + ‹D1› ‹7F› : * = ( : GOTO U E
-5537 ‹S23› B : V13 4 ) = 0 : GOTO U p
-5540 ‹7F› = ‹8A›
-5545 ‹S23› ! 1 : IF V13 4 ) = 2 GOTO 5537 : GOTO U `
-5550 V12 = ‹E1› ‹E0› V15 U ‹EA› V , W ) : ‹S23› - : + ‹E1› ‹E0› ‹80› ‹81› ‹EA› ‹82› , J ) = V12
-5560 GOSUB 1 V00
-5570 NEXT z : IF V13 10 ) ‹D5› V13 8 ) GOTO 5575 : V13 4 ) = 8 : V13 6 ) = V13 6 ) ‹EA› 1 : GOTO V %
-5575 FOR z 1 ‹D1› V05 : IF $ z ) AT(0,0) : z = V05 : GOTO V V18
-5580 * = $ z ) : ‹S23› " * : X = ‹E1› ‹E0› ‹80› ‹81› ‹EA› ‹82› , J ) : ON ' ‹CD› U ‹85› U ‹90› V V18 U ‹90› V V18 : GOTO V V18
-5585 ‹7F› = j : ‹S23› ! 1 : GOTO V V18
-5590 IF ? = 0 GOTO 5600 : IF ' = 2 GOTO 5618 : IF V13 12 ) = 1 GOTO 5618 : GOTO V V10
-5600 IF ' = 4 GOTO 5618 : IF V13 11 ) = 1 GOTO 5618
-5610 ‹E1› ‹E0› ‹80› ‹81› ‹EA› ‹82› , J ) = ‹8E› : + = ‹8E›
-5615 GOSUB 1 V00
-5618 NEXT z
-5625 ‹S23› A
-5630 RETURN
-5740 DEFFN' A V18 V07 ‹F6› D : REM *
-5742 IF V13 18 ) = 0 GOTO 5744 : GOTO W P
-5744 IF V13 10 ) = 0 GOTO 5770
-5750 GOSUB 0 R : IF V13 10 ) = 0 GOTO 5760 : PRINT
-5760 PRINT ‹E1› ‹E0› V15 U ‹EA› 1 , ; ) : V13 10 ) = 0 : GOSUB 0 @
-5770 RETURN
-5790 DEFFN' B V1C V07 K E : GOSUB 0 R : PRINT " *** N0=" ; V ; " <" ; ‹E1› ‹E0› V15 U ‹EA› V , W ) ; "><" ; : HEXPRINT ‹E1› ‹E0› V15 U ‹EA› V , W ) ; : PRINT ">" ; : GOSUB 0 @ : V13 10 ) = V13 10 ) ‹EA› 1 : RETURN
-5800 DEFFN' C $ V07 ‹AE› E : IF V13 1 ) > 1 GOTO 5810 : ‹S06› ! ‹E1› ‹E0› ~ 13 , V05 ‹DF› ‹E8›
-5810 RETURN
-5900 DEFFN' D ‹F4› V07 V0B N e : IF e = 0 GOTO 5940
-5920 ‹S23› 1 : PRINT AT(2,1) : IF e = 2 GOTO 5930 : V0C = "ВВОД " : GOTO Y P
-5930 V0C = "КОРРЕКТИРОВКА " : GOTO Y P
-5940 V0C = "ПЕЧАТЬ " : PRINT : PRINT 0
-5950 ‹8A› = ‹F3› ( 80 ‹E9› ( ‹ED› V0C ‹EA› 20 ) ) ‹DC› 2 ) : PRINT ‹DF› ‹8A› ) ; ‹E1› V0C 1 , ‹ED› V0C ) ; " МАКЕТА ЗАГРУЗКИ N" ; V13 2 )
-5960 IF V13 1 ) = 1 GOTO 5970 : V0C = "(ДЛЯ КЛАССИФИКАТОРА /" : ‹8A› = ‹F3› ( 80 ‹E9› ( ‹ED› V0C ‹EA› ‹ED› 2 ) ) ‹DC› 2 ) : PRINT ‹DF› ‹8A› ) ; ‹E1› V0C 1 , ‹ED› V0C ) ; ‹E1› 2 1 , ‹ED› 2 ) ; "/ " ; ")" : IF e = 0 GOTO 5980 : GOTO Y r
-5970 V0C = "(ДЛЯ МАССИВА /" : ‹8A› = ‹F3› ( 80 ‹E9› ( ‹ED› V0C ‹EA› ‹ED›   ) ) ‹DC› 2 ) : PRINT ‹DF› ‹8A› ) ; ‹E1› V0C 1 , ‹ED› V0C ) ; ‹E1›   1 , ‹ED›   ) ; "/)" : IF e = 0 GOTO 5980
-5972 IF V0F 3 ) ‹D5› "МЛ" GOTO 5974 : PRINT AT(6,1) : PRINT "ИНФОРМАЦИЯ НА МАГНИТНОЙ ЛЕНТЕ ЗАПИСАНА В КОДЕ ( 0 - КОИ-8; 9 - ДКОИ )" ; : < = 0 : INPUT < : IF < = 0 GOTO 5974 : IF < = 9 GOTO 5974 : PRINT AT(1,7) ; : GOTO Y r
-5974 CONVERT ; ‹D1› V0F 1 ) "###" : PRINT AT(6,1) , 80 : PRINT "УКАЖИТЕ ДЛИНУ ЗАПИСИ ФАЙЛА ДАННЫХ " ; AT(1,18) ; : ‹S06› V04 V0F 1 ) L V04 AT(1,17) ; $ V0B ‹EE› V0F 1 ) ‹D7› 3 GOTO 5975 G V06 V0F 1 ) ‹D1› ; $ V07 ; = : ‹SE8›
-5975 PRINT AT(1,7) ; : ; = 0 : GOTO Y t
-5980 PRINT
-5985 V0C = "ДЛИНА ЗАПИСИ ФАЙЛА ДАННЫХ: " : CONVERT ; ‹D1› ‹E1› V0C ‹ED› V0C ‹EA› 2 , 3 ) "###" : IF V0F 3 ) ‹D5› "МЛ" GOTO 5988 : ‹E1› V0C ‹ED› V0C ‹EA› 5 ) = "ИНФОРМАЦИЯ НА МЛ В КОДЕ " : IF < = 0 GOTO 5986 : ‹E1› V0C ‹ED› V0C ‹EA› 3 ) = "ДКОИ" : GOTO Y ‹88›
-5986 ‹E1› V0C ‹ED› V0C ‹EA› 3 ) = "КОИ-8"
-5988 ‹8A› = ‹F3› ( 80 ‹E9› ‹ED› V0C ) ‹DC› 2 ) : PRINT ‹DF› ‹8A› ) ; ‹E1› V0C 1 , ‹ED› V0C ) : IF e > 0 GOTO 5990 : PRINT : GOTO ` V00
-5990 PRINT AT(6,1) , 80
-6000 PRINT "СТРОКА" ; ‹DF› 10 ) ; "ПОКАЗАТЕЛЬ" ; ‹DF› 24 ) ; "НАИМЕНОВАНИЕ ПОКАЗАТЕЛЯ" ; ‹DF› 52 ) ; "ТИП" ;
-6010 PRINT ‹DF› 58 ) ; "N БАЙТА" ; ‹DF› 68 ) ; "КОЛ. БАЙТ" : PRINT : 1 = 7 : A = 0 : ‹8C› = 1
-6030 z = ‹8C› : * = 1 : ) = 0 : V13 8 ) = # : FOR / ‹8C› ‹D1› V13 8 ) : IF e = 0 GOTO 6040 : BIN( ‹E1› V1B / ) 1 , 1 ) = / )
-6040 ‹S23› " = / ) : IF e = 0 GOTO 6080 : IF * ‹D7› 15 GOTO 6080 : PRINT AT(24,1) , 79 : PRINT "ПРОДОЛЖИТЬ (ДА - 1, НЕТ - 0)" ; : + = " "
-6050 KEYIN + ` ` ` ` : GOTO ` P
-6060 IF + = "1" GOTO 6070 : IF + = "0" GOTO 6230 : PRINT AT(1,7) ; : GOTO ` P
-6070 * = 1 : PRINT ‹D5› 1 ‹EA› * , 1 , 80 ‹DF› 14
-6080 IF e = 0 GOTO 6090 : PRINT ‹D5› 1 ‹EA› * , 1 , ‹E7› V01 `
-6090 = / ) = ‹EF› ‹E1› V1B / ) 1 , 1 ) : PRINT ‹DF› 2 ) ; z ; ‹DF› 14 ) ; = / ) ; ‹DF› 24 ) ; : IF V13 1 ) = 1 GOTO 6110 : IF / = 2 GOTO 6100 : PRINT "КОД " ; : GOTO a
-6100 PRINT "НАИМЕНОВАНИЕ" ; : V10 = "А" : GOTO a @
-6110 PRINT 2 ;
-6120 V10 = V1E
-6130 IF V1E = "А" GOTO 6140 : IF V1E = "Ц" GOTO 6140 : IF m = n GOTO 6135 : ‹E1› V10 2 , 1 ) = "Ц" : GOTO a @
-6135 ‹E1› V10 2 , 1 ) = "А"
-6140 PRINT ‹DF› 52 ) ; V10 ;
-6150 ‹S23› U 0 , / : CONVERT V ‹D1› V0F 1 ) "###" : IF ) = 1 GOTO 6190
-6160 ‹S23› U 0 , /
-6165 CONVERT W ‹D1› V0F 2 ) "###" : IF ) = 1 GOTO 6200 : IF e = 0 GOTO 6180 : IF e = 2 GOTO 6170 : GOTO a ‹90›
-6170 IF z ‹D5› A GOTO 6180 : GOTO a ‹90›
-6180 PRINT ‹DF› 60 ) ; V0F 1 ) ; ‹DF› 72 ) ; V0F 2 ) : GOTO b @
-6190 ‹8A› = 1 : PRINT ‹D5› 1 ‹EA› * , 60 : PRINT AT(1,18) ; : ‹S06› V04 V0F 1 ) L V04 AT(1,17) ; $ V0B ‹EE› V0F 1 ) ‹D7› 3 GOTO 6210 G V06 V0F 1 ) ‹D1› V $ V07 V = : ‹SE8›
-6200 ‹8A› = 2 : PRINT ‹D5› 1 ‹EA› * , 72 : PRINT AT(1,18) ; : ‹S06› V04 V0F 2 ) L V04 AT(1,17) ; $ V0B ‹EE› V0F 2 ) ‹D7› 3 GOTO 6205 G V06 V0F 2 ) ‹D1› W $ V0B V ‹EA›
-6201 IF m = n GOTO 6205 : IF V1E = "Д" GOTO 6205 : IF m = AT(1,80) GOTO 6202 : IF W ‹D6› Z ‹EA› 2 GOTO 6220 : W = Z ‹EA› 2 : GOTO b V10
-6202 IF W = Z ‹EA› 1 GOTO 6220 : W = Z ‹EA› 1 : GOTO b V10
-6203 IF W = 0 GOTO 6205 : IF / = 2 GOTO 6204 : IF W > Z ‹EA› 1 GOTO 6205 : GOTO b
-6204 IF W > S GOTO 6205 : GOTO b
-6205 IF V13 1 ) = 1 GOTO 6208 : IF / = 1 GOTO 6208 : ; = S : GOTO b V10
-6208 W = Z
-6210 PRINT AT(1,7) ; : ) = 1 : ON ‹8A› ‹CD› a P a e
-6220 ) = 0 : GOTO b @
-6230 / = V13 8 )
-6240 z = z ‹EA› 1 : * = * ‹EA› 1 : NEXT /
-6250 IF e AT(0,0) : PRINT : PRINT ‹DF› 31 ) ; "***КОНЕЦ МАКЕТА***" : PRINT : GOTO b ‹80›
-6260 PRINT AT(23,1) , 79 : PRINT "УКАЖИТЕ НОМЕР КОРРЕКТИРУЕМОЙ СТРОКИ МАКЕТА ЗАГРУЗКИ (0 - КОНЕЦ)" ; : INPUT A : IF A ‹D7› 0 GOTO 6270 : IF A > V13 8 ) GOTO 6270 : IF A = 0 GOTO 6280 : IF A ‹D5› ‹F3› A ) GOTO 6270 : e = 2
-6265 ‹8C› = z : IF A ‹D6› z ‹E9› 1 ‹E7› A ‹D8› ‹8C› GOTO 6030 : ‹8C› = ‹F3› ( A ‹E9› 1 ) ‹DC› 14 ) ‹DF› 14 ‹EA› 1 : GOTO ` 0
-6270 PRINT AT(1,7) ; : GOTO b `
-6280 RETURN
-6290 DEFFN' E V1C V08 V10 P V0C
-6310 PRINT ‹D5› ( , 1 , ‹E7› V02 @ : PRINT "УКАЖИТЕ НОМЕР ФАЙЛА " ; ‹E1› V0C 1 , ‹ED› V0C ) ; " НА " ; V0F 3 ) ; " (0 - КОНЕЦ)" ; : V13 2 ) = 0 : INPUT V13 2 ) : IF V13 2 ) ‹D5› ‹F3› V13 2 ) ) GOTO 6320 : IF V13 2 ) ‹D7› 0 GOTO 6320 : IF V13 2 ) > ‹E7› y ‹99› GOTO 6320 : IF V13 2 ) = 0 GOTO 6340 : GOTO c 0
-6320 PRINT AT(1,7) ; : GOTO c V10
-6330 ‹8B› = V13 2 ) : IF V1D > 1 GOTO 6332 : ‹S23› c : IF ‹8B› = @ GOTO 6340 : GOSUB c B : GOTO c
-6332 CONVERT ‹8B› ‹D1› ‹E1› 6 10 ) 2 ) "#####" : ‹S34› 8 9 ‹CD› c 4 : LIMITS V02 ‹DB› 1 , 6 10 ) ‹8F› ‹90› ‹90› : ‹S34› : ‹S75› V02 ‹DB› 1 , 6 10 ) : ‹S71› V02 ‹DB› 1 , ( ‹8F› , ‹8F› ) ; ‹89› : ‹90› = 0 : GOTO c @
-6334 IF 8 = "73" GOTO 6336 : PRINT AT(24,1) : SELECT V05 V09 : PRINT AT(1,7) ; "ОШИБКА ПРИ ОБРАЩЕНИИ К УСТРОЙСТВУ " ; V0F 3 ) ; : SELECT V05 V00 : PRINT AT(24,1) , 79 : GOTO c V10
-6336 GOSUB c B : GOTO c
-6340 RETURN
-6342 PRINT AT(24,1) : SELECT V05 V09 : PRINT AT(1,7) ; "ФАЙЛ " ; ‹E1› V0C 1 , ‹ED› V0C ) ; " НОМЕР " ; ‹8B› ; " ОТСУТСТВУЕТ НА " ; V0F 3 ) ; : SELECT V05 V00 : PRINT AT(24,1) , 79 : RETURN
-6344 PRINT AT(24,1) : SELECT V05 V09 : PRINT AT(1,7) ; ‹E1› V0C 1 , ‹ED› V0C ) ; : SELECT V05 V00 : PRINT AT(24,1) , 79 : RETURN
-6350 DEFFN' F < V08 ‹AE› P
-6370 REM  *
-6380 REM  **
-6400 V13 4 ) V13 10 ) = 0 : ‹S23› U 0 , 1 : IF m = n GOTO 6420 : ‹S23› > U ‹EA› V , W : IF V13 4 ) = 0 GOTO 6410 : ‹S23› B : V13 6 ) = V13 6 ) ‹EA› 1 : GOTO d @
-6410 + = " " : ‹S06› V08 ( V02 = [ ) + ‹CA› ‹8A› ! V02 d 0
-6420 V12 = ‹E1› ‹E0› V15 U ‹EA› V , W ) : ‹S23› - : + = V12
-6430 K = + : IF m ‹D5› n GOTO 6440 : ‹S23› #
-6440 ‹S23› A : RETURN
-6442 DEFFN' H L V08 ‹EA› P ‹8C› ‹8D›
-6443 IF ‹EC› ‹E1› ‹E0› V15 ‹8C› , ‹8D› ) = "." = 0 ‹E6› m ‹D5› AT(1,80) GOTO 6445 : V13 4 ) = 2 : GOTO d G
-6445 ‹S23› > ‹8C› , ‹8D›
-6447 RETURN
-6450 DEFFN' P t V08 V05 R V1D :
-6455 IF V1D > 1 GOTO 6460 : ‹S23› d : : GOTO d ‹90›
-6460 ‹8A› = 0 : ^ = 0 : IF ‹90› = 0 GOTO 6462 : IF ‹90› ‹D7› ‹E7› V02 V GOTO 6465
-6462 GOSUB d ‹85›
-6465 ‹8D› = ‹EC› ‹E1› ‹E0› V14 1 ‹EA› ‹90› ) = , ‹DF› : IF ‹8D› = 0 GOTO 6475 : IF ‹8A› ‹EA› ‹8D› ‹D8› ‹89› GOTO 6475 : ‹89› = ‹8D› ‹EA› ‹8A› ‹E9› 1 : IF ‹8D› = 1 GOTO 6470 : GOTO d u
-6470 IF ‹89› AT(0,0) : ^ = 1 : GOTO d ‹90›
-6475 ‹8C› = ‹E7› V02 V ‹E9› ‹90› : IF ‹8C› ‹D8› ‹89› ‹E9› ‹8A› GOTO 6480 : ‹E1› ‹E0› V15 1 ‹EA› ‹8A› , ‹8C› ) = ‹E1› ‹E0› V14 ‹90› ‹EA› 1 , ‹8C› ) : ‹8A› = ‹8A› ‹EA› ‹8C› : GOSUB d ‹85› : IF ‹8A› ‹D7› ‹89› GOTO 6465 : GOTO d ‹90›
-6480 ‹E1› ‹E0› V15 1 ‹EA› ‹8A› , ‹89› ‹E9› ‹8A› ) = ‹E1› ‹E0› V14 ‹90› ‹EA› 1 , ‹89› ‹E9› ‹8A› ) : ‹90› = ‹90› ‹EA› ‹89› ‹E9› ‹8A› : GOTO d ‹90›
-6485 ‹S70› V02 ‹DB› 1 , ( ‹8F› , ‹8F› ) ‹E1› ‹E0› V14 1 , ‹E7› V02 V ) : ‹90› = 0
-6490 RETURN
-6500 DEFFN' U ‹CC› V08 V1C T F "
-6510 IF F = 0 GOTO 6520 : BIN( ‹E1› V1B " ) 2 ) , ‹DB› V : BIN( ‹E1› V1B " ) 4 , 1 ) W : RETURN
-6520 V = ‹EF› ‹E1› V1B " ) 2 ) , ‹DB› : W = ‹EF› ‹E1› V1B " ) 4 , 1 ) : RETURN
-6600 IF < = 0 GOTO 6680 : V17 1 ) = AT(16,0) V01 V02 V03 ‹9C› V09 ‹86› ‹7F› ‹97› ‹8D› ‹8E› V0B V0C V0D V0E V0F
-6605 V17 2 ) = AT(16,16) V11 V12 V13 ‹9D› ‹85› V08 ‹87› V18 V19 ‹92› ‹8F› V1C V1D V1E V1F
-6610 V17 3 ) = AT(16,32) ! " # $ V0A V17 V1B ‹88› ‹89› ‹8A› ‹8B› ‹8C› V05 V06 V07
-6615 V17 4 ) = AT(16,144) ‹91› V16 ‹93› ‹94› ‹95› ‹96› V04 ‹98› ‹99› ‹9A› ‹9B› V14 V15 ‹9E› V1A
-6620 V17 5 ) = AT(16,32) ‹A0› ‹A1› ‹A2› ‹A3› ‹A4› ‹A5› ‹A6› ‹A7› ‹A8› [ . < ( + !
-6625 V17 6 ) = AT(16,38) ‹A9› ‹AA› ‹AB› ‹AC› ‹AD› ‹AE› ‹AF› ‹B0› ‹B1› ] $ * ) ; ^
-6630 V17 7 ) = AT(16,45) / ‹B2› ‹B3› ‹B4› ‹B5› ‹B6› ‹B7› ‹B8› ‹B9› | , % _ > ?
-6635 V17 8 ) = AT(16,186) ‹BB› ‹BC› ‹BD› ‹BE› ‹BF› ‹C0› ‹C1› ‹C2› ` : # @ ' = "
-6640 V17 9 ) = AT(16,195) a b c d e f g h i ‹C4› ‹C5› ‹C6› ‹C7› ‹C8› ‹C9›
-6645 V17 10 ) = AT(16,202) j k l m n o p q r ‹CB› ‹CC› ‹CD› ‹CE› ‹CF› )
-6650 V17 11 ) = AT(16,209) ~ s t u v w x y z ‹D2› GOTO ? ‹D6› ‹D7›
-6655 V17 12 ) = AT(16,216) = ‹DA› ‹DB› ‹DC› ; , ‹DF› ‹E0› ‹E1› AT(227,228) ‹E5› ‹E6› ‹E7›
-6660 V17 13 ) = AT(16,123) A B C D E F G H I 149 ‹EA› ( ‹EC› ‹ED›
-6665 V17 14 ) = AT(16,125) J K L M N O P Q R ‹EE› ‹EF› ‹F0› ‹F1› ‹F2› ‹F3›
-6670 V17 15 ) = AT(16,92) ‹9F› S T U V W X Y Z ‹F4› ‹F5› ‹F6› ‹F7› ‹F8› ‹F9›
-6675 V17 16 ) = AT(16,48) 1 2 3 4 5 6 7 8 9 ‹FA› ‹FB› ‹FC› ‹FD› ‹FE› ‹FF›
-6680 RETURN
-6700 IF < = 0 GOTO 6710 : ‹S06› V0C ‹E1› ‹E0› V15 1 , ‹89› ) , ‹E0› V17
-6710 RETURN
-7000 DEFFN' c V08 V09 l U
-7010 ‹91› = 0 : IF ‹8B› > 0 GOTO 7020 : ‹8B› = 1
-7020 ^ = 0 : ‹92› 1 ) = 1 : IF @ AT(0,0) : @ = 1
-7030 IF ‹8B› > 1 GOTO 7040 : ‹S23› d 1 : ‹S23› d 2 : GOTO q ‹90›
-7040 ‹90› = ( @ ‹DC› ‹8B› ‹EA› 5 ) ‹DC› 3 : IF ‹90› ‹D6› 2 GOTO 7060 : ‹90› = 3
-7060 ON ‹90› ‹CD› p p q @ q ‹80›
-7070 FOR ‹93› @ ‹D1› ‹8B› ‹E9› 1 : FOR ‹94› 1 ‹D1› ‹E5› U V10 V00 V00 : ‹S23› d 1 : IF ^ = 1 GOTO 7120 : IF ^ = 2 GOTO 7130 : NEXT ‹94›
-7120 NEXT ‹93› : GOTO q ‹90›
-7130 ‹S23› d 2 : ‹8B› = ‹93› ‹EA› 1 : GOTO q ‹90›
-7140 ‹90› = ( ( ‹95› ‹EA› 1 ) ‹DC› ‹92› ‹8B› ) ‹EA› 5 ) ‹DC› 3 : IF ‹90› ‹D6› 2 GOTO 7160 : ‹90› = 3
-7160 ON ‹90› ‹CD› q p q ‹90› q ‹80›
-7170 REM ***ВПЕРЕД ПО БЛОКАМ : FOR ‹94› ‹95› ‹D1› ‹92› ‹8B› ) : ‹S23› d 1 : NEXT ‹94› : GOTO q ‹90›
-7180 REM ***ОТМОТКА БЛ : FOR ‹94› ‹95› ‹D1› ‹92› ‹8B› ) ‹D2› ‹E9› 1 : ‹S23› d 2 : NEXT ‹94›
-7190 @ = ‹8B›
-7210 RETURN
-7220 DEFFN' d V00 V00 V00 V00 ‹8F›
-7230 DIM ‹96› ‹8F› ‹97›
-7240 SELECT V09 V1B ( V1F ?
-7250 IF ‹98› > 0 GOTO 7380 : ‹97› = AT(3,27) V00 V01 : FOR ( 1 ‹D1› 6 : ‹96› ( ) = ‹E1› ‹97› 1 , 4 ) : ADD ‹E1› ‹97› 3 , 1 ) , V01 : NEXT (
-7370 ‹98› = 1 : ‹91› = 0
-7380 ON ‹8F› ‹CC› t V00 v P v p w P w ` w p
-7390 RETURN
-7400 REM  ЧТ
-7410 ‹S34› 8 9 ‹CD› x p
-7430 GOSUB t ‹90›
-7440 ‹8F› = ‹EC› ‹E1› ‹E0› V15 1 ) = , V00
-7450 IF ‹8F› = 0 GOTO 7470
-7460 ‹89› = ‹8F› ‹E9› 1 : GOTO t ‹80›
-7470 ‹89› = ‹E7› V10 $
-7480 GOSUB g V00 : RETURN
-7490 ‹97› = AT(4,27) V01 V04 V00
-7500 ( = 0
-7510 ‹S34› 8 9 ‹CD› u 0
-7520 GOTO u @
-7530 IF 8 ‹D5› "800C" GOTO 7850
-7540 ‹S68› ‹96› 1 )
-7550 ‹S68› ‹97› : ‹S66› ‹E0› V15 : ‹S66› ‹E1› 8 1 , 1 ) : ‹95› = ‹95› ‹EA› 1 : ‹S34› : 8 = " "
-7560 ( = ( ‹EA› 1
-7570 IF ‹E1› V15 1 ) 1 , 1 ) ‹D5› AT(1,19) GOTO 7600
-7580 IF ( = 2 GOTO 7590 : @ = @ ‹EA› 1 : ‹92› @ ) = ‹95› ‹EA› 1 : GOTO u @
-7590 ^ = 2 : GOTO v @
-7600 IF ( = 1 GOTO 7620
-7610 ^ = 1 : ‹S68› ‹96› 2 ) : ‹95› = ‹95› ‹E9› 1 : GOTO v @
-7620 ^ = 0
-7630 IF ^ = 0 GOTO 7640
-7640 ‹98› = 1 : ‹S34› : RETURN
-7650 ‹S68› ‹96› 2 ) : ‹95› = ‹95› ‹E9› 1
-7660 RETURN
-7670 REM  ЗП
-7680 GOSUB w ‹80›
-7690 ‹S68› ‹96› 3 ) : ‹S68› ‹97›
-7700 ‹S68› ‹E1› ‹E0› V15 1 , ‹89› ) : ‹S68› ‹E1› 8 1 , 1 ) : ‹95› = ‹95› ‹EA› 1 : 8 = " "
-7740 RETURN
-7750 ‹S68› ‹96› 4 ) : ‹95› = ‹95› ‹EA› 1 : IF ‹91› AT(0,0) : @ = @ ‹EA› 1 : ‹92› @ ) = ‹95›
-7755 ‹91› = ‹91› ‹EA› 1 : IF ‹91› ‹D7› 2 GOTO 7758 : ‹91› = 0
-7758 RETURN
-7760 ‹S68› ‹96› 5 ) : RETURN
-7770 ‹S68› ‹96› 6 ) : ‹95› = 0 : RETURN
-7780 REM  B/B
-7790 ‹97› = AT(4,27) V01 V00 V00 : BIN( ‹E1› ‹97› 3 ) , ‹DB› ‹89› : RETURN
-7850 IF 8 ‹D5› "8001" GOTO 7870
-7860 PRINT "ОШИБКА " ; 8 , "УБЕДИТЕСЬ В ПРАВИЛЬНОСТИ УСТАНОВКИ МЛ.. ИНДИКАТОРЫ 'ЗАГРУЗКА' И 'ДИСТАНЦ' ДОЛЖНЫ БЫТЬ ВКЛЮЧЕНЫ." , "ДЛЯ ПРОДОЛЖЕНИЯ - CONTINUE" : STOP : GOTO u @
-7870 PRINT "ОШИБКА " ; 8 : ‹S34› : END
-8000 ‹E1› + 1 , 8 ) = "BAM9" : SCRATCH V02 + : ‹S80› V02 ‹D6› ‹D1› ( + ) + : STOP "BAM9  ЗАПИСАНА"
+ 200 ? E   * * *   B A M 9   * * *   ( ( ‹EF› ‹F2› ‹F2› ‹E5› ( ‹F4› ‹E9› ‹F2› ‹EF› ‹F7› ( A   0 8 . 0 5 . 8 7   -   1 6 . 0 0 )   * * * AT(229,234) ‹F3› ‹E9› (   0 2     1 0 . 0 9 . 8 6
+ 210 6 ‹B5› V00 = "210 DIM     Y%(Q6),Z%( Q7),J$( Q4)Q3,X%( W8), S$(Q6),U$(Q6),W$( W8)1,X$(256)Q5,Y2$(256)Q8,Z$( Q0),Y3$(256)Q8,      Y$(256)Q5,E$( Q7)4,U1$(256)Q8,U2$(Q9, W4)W2,E1%( W8,2),W%( W8)"
+ 220 G V0E V01 ‹D1› ‹E1› V00 16 , 2 ) "##" G V0F V02 ‹D1› ‹E1› V00 23 , 3 ) "###" G V0F V03 ‹D1› ‹E1› V00 31 , 3 ) "###" G V0E V04 ‹D1› ‹E1› V00 35 , 2 ) "##" G V0F V05 ‹D1› ‹E1› V00 41 , 3 ) "###" G V0E V01 ‹D1› ‹E1› V00 50 , 2 ) "##"
+ 225 G V0E V01 ‹D1› ‹E1› V00 57 , 2 ) "##" G V0F V05 ‹D1› ‹E1› V00 64 , 3 ) "###" G V0E V06 ‹D1› ‹E1› V00 77 , 2 ) "##" G V0E V07 ‹D1› ‹E1› V00 88 , 2 ) "##" G V0F V08 ‹D1› ‹E1› V00 94 , 3 ) "###" G V0F V07 ‹D1› ‹E1› V00 ‹E7› V01 V07 , 2 ) "##"
+ 230 G V0F V06 ‹D1› ‹E1› V00 ‹E7› V01 # , 2 ) "##" G V10 V02 ‹D1› ‹E1› V00 ‹E7› V01 ) , 3 ) "###" G V0F V07 ‹D1› ‹E1› V00 ‹E7› V01 C , 2 ) "##"
+ 235 G V0F V09 ‹D1› ‹E1› V00 ‹E7› V01 P , 2 ) "##" G V13 V0A ‹EA› 1 ‹D1› ‹E1› V00 ‹E7› V01 S , 3 ) "###" G V0F V0B ‹D1› ‹E1› V00 ‹E7› V01 W , 2 ) "##" G V10 V05 ‹D1› ‹E1› V00 ‹E7› V01 d , 3 ) "###" G V10 V05 ‹D1› ‹E1› V00 ‹E7› V01 t , 3 ) "###" 6 V0D ‹E1› V00 ‹E7› V01 x , 1 ) = AT(1,133) - V07 ; V00 V02 V10 , V02 5
+ 240 F V0F V0C V0D V0E V0F V10 V11 V12 V13 V14 V15 V16 V17 V18 V19 V1A
+ 245 " V02 @ V00 - V07 ; V0C V02 E , V02 E
+ 330 V06 V01 V04 ‹E0› V13 = ‹EF› d V04 , V00 ‹E0› V1B 6 V07 V13 18 ) = 1 6 V18 V19 1 ) = "ТОЛЬКО ДОБАВЛЕНИЕ" 6 V1D V19 2 ) = "МАССОВАЯ КОРРЕКТИРОВКА" 6 V1B V19 3 ) = "ЗАМЕЩЕНИЕ/ДОБАВЛЕНИЕ"
+ 340 6 V05 V1C = " " # V01 1 6 & ‹E1› V1C 26 ) = "( ВВОД С МАГНИТНОГО НОСИТЕЛЯ )" L V01 V1C 6 V05 V1C = " " 6 V05 V00 = AT(1,3) L V06 AT(6,30) L V14 "ВВОД С УСТРОЙСТВА:" L V06 AT(9,1) L V1E ‹DF› 28 ) ; "МАГНИТНАЯ ЛЕНТА.......1"
+ 350 L V1E ‹DF› 28 ) ; "ГИБКИЙ ДИСК  18F......2" L V1E ‹DF› 28 ) ; "ГИБКИЙ ДИСК  18R......3" L V1E ‹DF› 28 ) ; "ЖЕСТКИЙ ДИСК 1CF......4" L V1E ‹DF› 28 ) ; "ЖЕСТКИЙ ДИСК 1CR......5"
+ 360 # V06 ; 16 , 25 6 V07 V1D = ‹EF› V1E ‹E9› 48 $ V07 V1D = 0 GOTO 670 & V0C V1D ‹CD› V03 p V03 ‹80› V03 ‹90› V04 V00 V04 V10 ! V02 V03 e
+ 365 L V04 AT(1,7) ; ! V02 V03 0
+ 370 6 " ‹E1› V1C 27 ) = "( ВВОД С МАГНИТНОЙ ЛЕНТЫ )" 6 V09 V0F 3 ) = "МЛ" ! V02 V04 P
+ 380 6 V0A V0F 3 ) = "18F" T V04 V00 V01 V18 V00 ! V02 V04  
+ 390 6 V0A V0F 3 ) = "18R" T V04 V00 V01 V18 V01 ! V02 V04  
+ 400 6 V0A V0F 3 ) = "1CF" T V04 V00 V01 V1C V00 ! V02 V04  
+ 410 6 V0A V0F 3 ) = "1CR" T V04 V00 V01 V1C V01
+ 420 $ V07 V1D = 6 GOTO 16 6 ' ‹E1› V1C 24 ) = "( ВВОД С МАГНИТНОГО ДИСКА XXX )" 6 V0D ‹E1› V1C 50 , 3 ) = V0F 3 )
+ 450 # V01 1 L V01 V1C L V06 AT(6,30) L V12 "ВОЗМОЖНЫЕ РАБОТЫ" L V06 AT(9,26) L V1C "ВВОД В МАССИВ............1" L V06 AT(11,26) L V1C "ВВОД В КЛAССИФИКАТОР.....2"
+ 460 # V06 ; 14 , 26 6 V0A V13 1 ) = ‹EF› V1E ‹E9› 48 $ V0A V13 1 ) = 0 GOTO 330 & V09 V13 1 ) ‹CD› V04 p ! V00 L V04 AT(1,7) ; ! V02 V04 `
+ 470 # V01 1 L V01 V1C L V06 AT(5,30) L V17 "РЕЖИМЫ ВВОДА В МАССИВ" 6 V0F V1F = ‹F3› 80 ‹E9› ‹ED›   ‹EA› 2 ) ‹DC› 2 L V17 ‹DF› V1F ‹E9› 2 ) ; "/" ; ‹E1›   1 , ‹ED›   ) ; "/" L V06 AT(9,27) L V1A ‹E1› V19 1 ) 1 , ‹ED› V19 1 ) ) ; "........1"
+ 475 L V06 AT(11,27) L V15 ‹E1› V19 2 ) 1 , ‹ED› V19 2 ) ) ; "...2" L V06 AT(13,27) L V17 ‹E1› V19 3 ) 1 , ‹ED› V19 3 ) ) ; ".....3"
+ 480 # V06 ; 16 , 28 6 V07 ! = ‹EF› V1E ‹E9› 48 $ V07 ! = 0 GOTO 450 & V08 ! ‹CD› V05   V05   V05   L V04 AT(1,7) ; ! V02 V04 ‹80›
+ 520 6 V07 V13 1 ) = 1 6 V05 " # = 0 V06 V01 V04 ‹E0› $ = ‹EF› W V05 V1F 1 ‹D1› V05 # V02 " V1F $ V07 % = 0 GOTO 522 6 V06 " = " ‹EA› 1 6 V08 & V1F , 1 ) = "
+ 522 $ V07 ' ‹D7› 1 GOTO 525 6 V06 # = # ‹EA› 1 6 V05 $ # ) = V1F
+ 525 R V01 V1F
+ 530 $ V07 ! = 1 GOTO 1010 ! V02 V05 `
+ 540 6 V04 ( = 0 6 V08 V13 14 ) ) = 0
+ 550 # #   "ПОКАЗАТЕЛИ ПОИСКА ЗАПИСИ" , 1 , V05 , 2 $ V08 * = ‹E5› V12 V09 GOTO 600 $ V08 * = ‹E5› V12 V11 GOTO 560 $ V07 * = 0 GOTO 630 ! V02 V05 b
+ 551 L Q "КОЛИЧЕСТВО ОТМЕЧЕННЫХ ПОКАЗАТЕЛЕЙ БОЛЬШЕ ДОПУСТИМОГО! ДЛЯ ПРОДОЛЖЕНИЯ - RETURN" ;
+ 552 % V05 + V05 ` V05 ` ! V02 V05 R
+ 560 6 V04 # = 0 V06 V01 V04 ‹E0› , = ‹EF› V06 V01 V04 ‹E0› - = ‹EF› d V05 " " ‹E0› . ! V02 V05 @
+ 562 $ V09 - * ) = 0 GOTO 575 W V09 V1F - * ) ‹EA› 1 ‹D1› # 6 V0A , V1F ‹E9› 1 ) = , V1F ) R V01 V1F 6 V06 , # ) = 0 6 V06 - * ) = 0 6 V07 . * ) = " " 6 V06 # = # ‹E9› 1 $ V07 # = 0 GOTO 540 W V05 V1F 1 ‹D1› # 6 V07 - , V1F ) ) = V1F R V01 V1F ! V02 V05 P
+ 575 6 V06 # = # ‹EA› 1 $ V06 # > V01 GOTO 551 6 V05 , # ) = * 6 V05 - * ) = # ! V02 V05 P
+ 580 L / "БУДЕТЕ КОРРЕКТИРОВАТЬ СПИСОК (ДА -1, НЕТ -0)" ; 6 V05 + = " "
+ 582 % V05 + V05 ‹84› V05 ‹84› ! V02 V05 ‹82›
+ 584 6 V07 * = ‹EF› + ‹E9› 48 & V09 * ‹EA› 1 ‹CD› V05 ‹90› V05 ‹90› L V04 AT(1,7) ; ! V02 V05 ‹82›
+ 590 ^ V00
+ 600 L V03 AT(1,7) ! V02 V05 @
+ 630 L # "СПИСОК ПОКАЗАТЕЛЕЙ ДЛЯ ПОИСКА : " ; W V05 / 1 ‹D1› # $ V09 , / ) = 0 GOTO 650 $ V0C . , / ) ) ‹D5› "*" GOTO 640 L V04 , / ) ; ! V02 V06 P
+ 640 W V07 * / ‹EA› 1 ‹D1› # 6 V0A , * ‹E9› 1 ) = , * ) R V01 * 6 V06 , # ) = 0 6 V06 # = # ‹E9› 1 6 V06 / = / ‹E9› 1
+ 650 R V01 / L V00 " V02 V05 ‹80› $ V07 * = 1 GOTO 540 $ V07 # = 0 GOTO 450 ! V02 V07  
+ 670 6 V04 V1D = 6 ! V02 V04  
+ 720 ! V02 V10 V10
+ 820 " V02 0 R L V01 0 L V00 $ V0A V13 1 ) = 2 GOTO 830 6 V1D V0C = "ПРОТОКОЛ ВВОДА В МАССИВ /" 6 V16 1 = ‹F3› ( 80 ‹E9› ( ‹ED› V0C ‹EA› ‹ED›   ‹EA› 6 ) ) ‹DC› 2 ) ! V02 V08 @
+ 830 6 $ V0C = "ПРОТОКОЛ ВВОДА В КЛАССИФИКАТОР /" 6 V16 1 = ‹F3› ( 80 ‹E9› ( ‹ED› V0C ‹EA› ‹ED› 2 ‹EA› 7 ) ) ‹DC› 2 ) L V16 ‹DF› 1 ) ; ‹E1› V0C 1 , ‹ED› V0C ) ; ‹E1› 2 1 , ‹ED› 2 ) ; ! V02 V08 P
+ 840 L V16 ‹DF› 1 ) ; ‹E1› V0C 1 , ‹ED› V0C ) ; ‹E1›   1 , ‹ED›   ) ;
+ 850 L V0B "/ C " ; V0F 3 ) $ V0A V13 1 ) = 2 GOTO 870 6 V05 3 = V19 ! ) L V00 " V02 V08 ‹90› L V00 L G ‹DF› 10 ) ; "ТЕКУЩЕЕ ЧИСЛО ЗАПИСЕЙ:" ; 4 ‹E9› 5 ; ‹DF› 42 ) ; "ПОКАЗАТЕЛЕЙ ПРЯМОГО ДОСТУПА:" ; V0A
+ 855 L V1B ‹DF› 20 ) ; "ПОКАЗАТЕЛИ ПОИСКА: " ; W V05 V1F 1 ‹D1› V01 $ V09 , V1F ) = 0 GOTO 860 L V04 , V1F ) ;
+ 860 R V01 V1F L V00
+ 870 $ V0A V13 3 ) = 1 GOTO 880 # V14 ? "МАКЕТ ЗАГРУЗКИ N "
+ 880 6 V05 V0C = " " " V02 0 @ ^ V00
+ 890 L 3 ‹DF› 18 ) ; "Р Е Ж И М   В В О Д А  -  '" ; ‹E1› V19 ! ) 1 , ‹ED› V19 ! ) ) ; "'" ^ V00
+ 900 # V01 1 L V01 V1C L V03 AT(1,5) L V06 AT(5,30) L V0A "ВВОД В " ; $ V0A V13 1 ) = 2 GOTO 902 L V09 "МАССИВ" ; ! V02 V09 V05
+ 902 L V10 "КЛАССИФИКАТОР" ;
+ 905 L V06 AT(8,25) L V1F "СОГЛАСНО ФАЙЛУ ОПИСАНИЯ.....1" L V06 AT(10,25) L V1F "СОГЛАСНО МАКЕТУ ЗАГРУЗКИ....2" L V09 AT(24,1) , 79 L V1E ‹DF› 27 ) ; "!!! ВКЛЮЧИТЕ  АЦПУ !!!" ;
+ 910 # V06 ; 13 , 26 6 V0A V13 3 ) = ‹EF› V1E ‹E9› 48 $ V0A V13 3 ) = 0 GOTO 926 L V09 AT(24,1) , 79 & V09 V13 3 ) ‹CD› V10 V00 V09   L V04 AT(1,7) ; ! V02 V09 V00
+ 920 L V09 AT(15,1) , 80 L 0 "УКАЖИТЕ НОМЕР МАКЕТА ЗАГРУЗКИ (НЕ БОЛЕЕ 1000)" ; A V04 V13 2 ) $ V1F V13 2 ) ‹D7› 0 ‹E6› V13 2 ) > ‹E7› V10 V00 ‹E6› V13 2 ) ‹D5› ‹F3› V13 2 ) ) GOTO 925 ! V02 V09 0
+ 925 L V04 AT(1,7) ; ! V02 V09  
+ 926 0 V00 ! V02 V03 0
+ 930 6 V0F ‹E1› 6 10 ) 1 , 1 ) = "М" G V11 7 ‹D1› ‹E1› 6 10 ) 2 , 2 ) "##" G V15 V13 2 ) ‹D1› ‹E1› 6 10 ) 4 , 3 ) "###" L V06 AT(22,2) L O "МАКЕТ ЗАГРУЗКИ ДОЛЖЕН НАХОДИТЬСЯ НА ОДНОМ УСТРОЙСТВЕ С ФОРМАМИ ВВОДА-ВЫВОДА !"
+ 935 4 V05 8 9 ‹CD› V09 P { V0C V02 ‹DB› 7 , 6 10 ) ) : : 4 V00 u V09 V02 ‹DB› 7 , 6 10 ) t V0C ‹DB› 7 , V13 8 ) ; < ‹E0› V1B
+ 940 L V0A AT(17,1) , ‹E7› V05 ` L 8 "БУДЕТЕ КОРРЕКТИРОВАТЬ МАКЕТ ЗАГРУЗКИ (ДА -1, НЕТ - 0)" ; A V04 V13 5 ) $ V12 V13 5 ) = 0 ‹E6› V13 5 ) = 1 GOTO 955 L V04 AT(1,7) ; ! V02 V09 @
+ 950 4 V00 L V09 AT(15,1) , 80 L 4 "БУДЕТЕ СОЗДАВАТЬ МАКЕТ ЗАГРУЗКИ (ДА - 1, НЕТ - 0)" ; A V04 V13 3 ) $ V0A V13 3 ) = 0 GOTO 900 $ V0A V13 3 ) = 1 GOTO 960 L V04 AT(1,7) ; ! V02 V09 P
+ 955 $ V0A V13 1 ) = 2 GOTO 960 d V04 ,   ‹E0› . V06 V01 V04 ‹E0› = = ‹EF› V06 V01 V04 ‹E0› - = ‹EF›
+ 957 W V08 / 1 ‹D1› V13 8 ) 6 V08 = / ) = ‹EF› V1B / ) $ V09 = / ) AT(0,0) 6 V06 # = / ‹E9› 1 6 V06 / = V13 8 ) R V01 / ! V02 V09 Y
+ 958 6 V09 . = / ) ) = "*" 6 V07 - = / ) ) = / R V01 / 6 V06 # = V13 8 )
+ 959 $ V0A V13 5 ) = 0 GOTO 988 ! V02 V09 f
+ 960 $ V0A V13 1 ) = 1 GOTO 964 6 V06 = 1 ) = * 6 V06 = 2 ) = * 6 V04 # = 2 ! V02 V09 ‹80›
+ 961 6 V04 ( = 0 d V04 , V00 ‹E0› V1B
+ 962 # V1E   "ВВОДИМЫЕ ПОКАЗАТЕЛИ" , 1 , V05 , 2 $ V08 * = ‹E5› V12 V11 GOTO 964 $ V07 * = 0 GOTO 966 $ V08 * = ‹E5› V12 V09 GOTO 974 $ V09 - * ) = 0 GOTO 963 ! V02 V09 e
+ 963 6 V06 # = # ‹EA› 1 $ V06 # > V02 GOTO 977 6 V05 = # ) = * 6 V05 - * ) = # ! V02 V09 b
+ 964 6 V04 # = 0 V06 V01 V04 ‹E0› = = ‹EF› V06 V01 V04 ‹E0› - = ‹EF› d V05 " " ‹E0› . ! V02 V09 a
+ 965 W V09 V1F - * ) ‹EA› 1 ‹D1› # 6 V0A = V1F ‹E9› 1 ) = = V1F ) R V01 V1F 6 V06 = # ) = 0 6 V07 . * ) = " " 6 V06 - * ) = 0 6 V06 # = # ‹E9› 1 $ V07 # = 0 GOTO 961 W V05 V1F 1 ‹D1› # 6 V07 - = V1F ) ) = V1F R V01 V1F d V04 , V00 ‹E0› V1B ! V02 V09 b
+ 966 L ! "СПИСОК ПОКАЗАТЕЛЕЙ ДЛЯ ВВОДА: " ; W V05 / 1 ‹D1› # $ V09 = / ) = 0 GOTO 970 $ V0C . = / ) ) ‹D5› "*" GOTO 968 L V04 = / ) ; ! V02 V09 p
+ 968 W V07 * / ‹EA› 1 ‹D1› # 6 V0A = * ‹E9› 1 ) = = * ) R V01 * 6 V06 = # ) = 0 6 V06 # = # ‹E9› 1 6 V06 / = / ‹E9› 1
+ 970 R V01 / L V00 " V02 V05 ‹80› 6 V04 ( = 0 $ V07 * = 1 GOTO 962 $ V07 # = 0 GOTO 961 ! V02 V09 v
+ 974 d V04 , * ‹E0› . V06 V01 V04 ‹E0› - = ‹EF› 6 V03 # = V05 W V05 / 1 ‹D1› V05 6 V05 = / ) = / 6 V07 - = / ) ) = / R V01 / ! V02 V09 f
+ 976 $ V06 # ‹D7› V02 GOTO 980
+ 977 L R "КОЛИЧЕСТВО ОТМЕЧЕННЫХ ПОКАЗАТЕЛЕЙ БОЛЬШЕ ДОПУСТИМОГО! ДЛЯ ПРОДОЛЖЕНИЯ - RETURN " ;
+ 978 % V05 + V09 d V09 d ! V02 V09 x
+ 980 $ V0A V13 3 ) = 1 GOTO 982 $ V0A V13 5 ) = 1 GOTO 984 $ V0A V13 5 ) = 0 GOTO 988
+ 982 # V03 D 1 ! V02 V09 ‹88›
+ 984 L V09 AT(23,1) , 79 L ; "КОРРЕКТИРОВКА МАКЕТА (ВЫБОРОЧНО - 1, ПОСЛЕДОВАТЕЛЬНО -0)" ; 6 V05 + = " "
+ 985 % V05 + V09 ‹86› V09 ‹86› ! V02 V09 ‹85›
+ 986 $ V08 + = "1" GOTO 987 $ V08 + = "0" GOTO 982 L V04 AT(1,7) ; ! V02 V09 ‹84›
+ 987 # V03 D 2
+ 988 L V09 AT(23,1) , 79 L , "ПЕЧАТАТЬ МАКЕТ ЗАГРУЗКИ (ДА - 1, НЕТ - 0)" ; 6 V05 + = " "
+ 990 % V05 + V09 ‹92› V09 ‹92› ! V02 V09 ‹90›
+ 992 $ V08 + = "1" GOTO 994 $ V08 + = "0" GOTO 996 L V04 AT(1,7) ; ! V02 V09 ‹88›
+ 994 " V02 0 R # V03 D 0 " V02 0 @
+ 996 $ V0A V13 3 ) = 1 GOTO 997 $ V0A V13 5 ) = 0 GOTO 1000 $ V0A V13 5 ) = 1 GOTO 998
+ 997 x V1D V02 ‹DB› 7 , ( ‹F3› ( V02 ‹DF› 6 ‹EA› 24 ) ‹DC› ‹E7› V02 U ) ‹EA› 3 ) 6 10 )
+ 998 u V09 V02 ‹DB› 7 , 6 10 ) v V0F ‹DB› 7 , V13 8 ) , ; , < , ‹E0› V1B v V05 ‹DB› 7 , ‹D7› $ V0A V13 3 ) = 1 GOTO 999 ! V02 V10 V00
+ 999 L V09 AT(24,1) , 79 T V02 V05 V09 L * "МАКЕТ ЗАГРУЗКИ СОЗДАН И ЗАПИСАН НА ДИСК" ; T V02 V05 V00 ! V02 V09 V00
+1000 ^ V00
+1010 6 V07 V13 5 ) = 0 6 V0A V0C = "МАССИВ" " V02 V09 V00 " V02 V08   # V01 1 L V01 V1C L V06 AT(5,1) " V02 V08 ‹90› $ V0A V13 3 ) = 2 GOTO 1020
+1015 6 V04 ( = 8 $ V0A V13 3 ) = 2 GOTO 1020 6 V08 6 10 ) = "Л" # V0B E "ОПИСАНИЯ" $ V0A V13 2 ) = 0 GOTO 450 ! V02 V10 %
+1020 6 V07 V13 5 ) = 0 6 V04 ( = 10 6 V08 6 10 ) = "Д" # V09 E "ДАННЫХ" $ V0A V13 2 ) = 0 GOTO 450
+1025 # V06 ' 0 , 0 6 V04 > = 1
+1030 6 V04 ? = 0 " V02 V10 e # V01 = V V01 * & V17 V13 4 ) ‹CD› V10 @ V10 P V10 ` V10 p V10 ‹80› V10 ‹90› V04 P V10 ‹92› V10 ‹94› $ V07 ! = 1 GOTO 3590 ! V02 V14 P
+1035 L V04 AT(1,7) ; ! V02 V10 V15
+1040 6 V0C V0C = "ОПИСАНИЯ" " V02 c B ! V02 V10 5
+1050 L V09 AT(24,1) , 79 T V02 V05 V09 L Q "В СТРОКЕ" ; V13 5 ) ; " ФАЙЛА ОПИСАНИЯ НОМЕР" ; @ ; " ЧИСЛОВОЙ РЕКВИЗИТ СОДЕРЖИТ НЕ ЦИФРЫ" ; T V02 V05 V00 ! V02 V10 5
+1060 6 B V0C = "КОЛИЧЕСТВО СТРОК ФАЙЛА ОПИСАНИЯ МЕНЬШЕ УКАЗАННОГО В 1 - СТРОКЕ" " V02 c D ! V02 V10 5
+1065 $ V0A V13 3 ) = 1 GOTO 1066 $ V0A V13 5 ) AT(0,0) 6 V07 V13 6 ) = 0
+1066 ^ V00
+1070 6 V0A V0C = "ДАННЫХ" " V02 c B ! V02 V10 5
+1080 $ V0A V13 5 ) > 0 GOTO 1095 ! V02 V10 p
+1090 6 L V0C = "СПИСОК ПОИСКОВЫХ ПОКАЗАТЕЛЕЙ НЕ СООТВЕТСТВУEТ ПОКАЗАТЕЛЯМ ФАЙЛА ОПИСАНИЯ" " V02 c D ! V02 V05 `
+1092 L V06 AT(24,1) T V02 V05 V09 L 8 "ОШИБКА ПРИ ЗАДАНИИ НАЧАЛА И ДЛИНЫ ДЛЯ ПОКАЗАТЕЛЯ N " ; A ; L V04 AT(1,7) ; T V02 V05 V00 ! V02 V05 `
+1094 6 , V0C = "ВВОДИМЫЕ ПОКАЗАТЕЛИ НЕ ОПИСАНЫ В МАССИВЕ" " V02 c D ! V02 V10 5
+1095 $ V07 V0A = 0 GOTO 1100 " V02 2 V00
+1100 $ V0A V13 1 ) = 1 GOTO 1102 ! V02 V14 V10
+1102 # V06 ' 1 , 0
+1105 " V02 0 @ # V01 1 L V01 V1C L V06 AT(11,31) L V18 "!!! ВВОД  ЗАКОНЧЕН !!!" 6 V07 V13 18 ) = 1 L V00 d V05 "=" ‹E0› V15 # V01 A " V02 0 R L V00
+1110 L ^ "ВСЕГО СТРОК ДАННЫХ, ПРОЧИТАННЫХ С " ; V0F 3 ) ; ": " ; V13 5 ) ; " / " ; "ИЗ НИХ ОТВЕРГНУТО ОШИБОЧНЫХ :" ; V13 6 ) L V13 "ВСЕГО ВВЕДЕНО В " ; $ V0A V13 1 ) = 2 GOTO 1120 L V0A "МАССИВ:" ; 6 V04 B = 0 # V03 0 1 ! V02 V11 0
+1120 L V11 "КЛАССИФИКАТОР:" ;
+1130 L : V13 9 ) ‹EA› V13 7 ) ; " / " ; "ЗАМЕЩЕНО: " ; V13 7 ) ; " / " ; "ДОБАВЛЕНО: " ; V13 9 ) " V02 6 V10 $ V08 C = " " GOTO 330 6 V04 D = 9 6 V04 E = 8 6 V04 F = 0 6 V08 2 = "BAM8" ! V02 V00 S
+1140 6 V06 G = H ‹EA› 1 $ V07 I = 0 GOTO 1145 6 V10 G = ‹EF› ‹E1› V11 2 ‹DF› I ‹E9› 1 , 2 ) 6 V06 I = I ‹E9› 1 d V0F , V00 ‹E1› V11 2 ‹DF› I ‹EA› 1 , 2 ) ! V02 V11 E
+1145 6 V06 ) = ) ‹EA› 1 $ V09 G > V16 1 ) GOTO 1390 # V05 % 0 , G 6 V0C ‹E1› ‹E0› V0E V16 10 ) , J ) = K " V02 V12 p $ V0F V13 9 ) ‹EA› V13 7 ) = 0 GOTO 1146 $ V0A V13 16 ) = 1 GOTO 1146 ! V02 V11 G
+1146 6 V07 V13 16 ) = 0 L V09 AT(14,40) , 40 L $ "В КЛАССИФИКАТОР ДОБАВЛЕНА ЗАПИСЬ " ;
+1147 L V06 AT(14,73) L V0A AT(1,18) ; G ; AT(1,17) ; 6 V0C V13 9 ) = V13 9 ) ‹EA› 1 $ V06 H > G GOTO 1150 6 V03 H = G
+1150 K V0C ‹E1› L ) ) 1 ) G ‹DC› ‹E7› V02 V K V14 ‹E1› L ) ) 2 ) G ‹E9› ‹E7› V02 V ‹DF› ‹F3› G ‹DC› ‹E7› V02 V ) 6 V09 ‹E1› L ) ) 3 ) = + 6 V03 M = G ! V02 V12 e
+1190 6 V04 B = 1
+1200 $ V06 B > N GOTO 1370 $ V08 V0D B ) ‹D8› + GOTO 1210 6 V06 B = B ‹EA› 1 ! V02 V12 V00
+1210 # V05 & 0 , B $ V07 O = 0 GOTO 1370 6 V04 P = 1 6 V03 M = O ! V02 V12 0
+1220 6 V03 P = Q
+1230 $ V09 M ‹E9› P > 1 GOTO 1240 $ V0C + = ‹E1› R P ) 3 ) GOTO 1260 $ V0C + ‹D5› ‹E1› R M ) 3 ) GOTO 1370 6 V03 P = M ! V02 V12 `
+1240 6 V0C Q = ‹F3› ( P ‹EA› M ) ‹DC› 2 ) $ V0C + > ‹E1› R Q ) 3 ) GOTO 1220 $ V0C + = ‹E1› R Q ) 3 ) GOTO 1250 6 V03 M = Q ! V02 V12 0
+1250 6 V03 P = Q
+1260 6 V0C M = ‹EF› ‹E1› R P ) 1 ) , ‹DB› # V05 % 0 , M 6 V03 Q = S 6 V04 T = 0 " V02 V12 p $ V0F V13 7 ) ‹EA› V13 9 ) = 0 GOTO 1262 $ V0A V13 16 ) = 0 GOTO 1262 ! V02 V12 d
+1262 6 V07 V13 16 ) = 1 L V09 AT(14,40) , 40 L $ "В КЛАССИФИКАТОРЕ ЗАМЕНЕНА ЗАПИСЬ " ;
+1264 6 V0C V13 7 ) = V13 7 ) ‹EA› 1 L V06 AT(14,73) L V0A AT(1,18) ; M ; AT(1,17) ;
+1265 6 V0E ‹E1› ‹E0› V0E V16 10 ) ‹EA› J , S ) = V12 # V05 % 1 , M ^ V00
+1270 # V06 U 0 , 2 6 V0B V12 = ‹E1› ‹E0› V15 U ‹EA› V , W ) # V01 - ^ V00
+1370 $ V09 H = V16 1 ) GOTO 1390 $ V09 ) ‹D7› V16 9 ) GOTO 1140 6 V03 X = + " V02 $ V10 6 V03 + = X 6 V04 ) = 0 d V04 , V00 ‹E0› L ! V02 V11 @
+1390 0 V00 6 V06 ) = ) ‹E9› 1 L > AT(1,7) ; "ВАШ КЛАССИФИКАТОР ПЕРЕПОЛНЕН ! ДЛЯ ПРОДОЛЖЕНИЯ - CR/LF " ;
+1400 % V05 + V14 V10 V14 V10 ! V02 V14 V00
+1410 $ V07 ) = 0 GOTO 1430
+1420 " V02 $ V10
+1430 6 V0B ‹E1› V1A 17 ) = ‹E1› 0 73 ) o N V02 ‹DB› 5 , ( Y , A ) 2 , V1A , Z , [ , J , \ , S , ] , V16 8 ) , V16 1 ) , V16 2 ) , V16 3 ) , V16 4 ) , V16 6 ) , V16 7 ) , V16 9 ) , H , I , ‹E1› V11 1 , 48 )
+1440 o V11 V02 ‹DB› 5 , ( Y ‹EA› 1 , A ) N , ‹E0› V0D $ V07 ^ = 0 GOTO 330 ! V02 V11 V05
+1450 6 V05 * 1 = 0 6 V04 _ = 1
+1460 6 V06 * = * ‹EA› 1 $ V06 * > V01 GOTO 1780 6 V05 / = , * ) $ V07 / = 0 GOTO 1780 # V02 " / 6 V04 B = 1 $ V07 ' = 1 GOTO 1780 $ V07 % = 0 GOTO 1460 $ V07 B = 2 GOTO 1460 $ V07 B = 5 GOTO 1460 $ V07 B = 6 GOTO 1460 $ V07 B ‹D6› 8 GOTO 1462
+1462 # V02 * / 6 V05 ` a = 1
+1470 V06 % V03 ‹E0› b ‹DF› 6 V0B V0C = ‹E1› c * ) 1 , d ) " V02 V18 V10 $ V07 e = 0 GOTO 3590 6 V0F ` = ‹F3› ( e ‹E9› 1 ) ‹DC› d ) ‹EA› 1
+1480 # V05 , 0 , ` $ V07 # = 0 GOTO 3590 " V02 V15 @ $ V07 e = 0 GOTO 3590 6 V0F 1 = ‹F3› e ‹DC› ( d ‹EA› 2 ) ) ‹EA› 1 ! V02 V16 0
+1540 V06 V0A 8 ‹E1› ‹E0› f ( _ ‹E9› 1 ) ‹DF› ( d ‹EA› 2 ) ‹EA› 3 , ( # ‹E9› _ ‹EA› 1 ) ‹DF› ( d ‹EA› 2 ) ‹E9› 2 ) , ‹D8› ‹E1› V0C 1 , d ) ‹D1› ‹E0› V18 ‹D2› d ‹EA› 2 ! V02 V15 p
+1560 V06 V0A 8 ‹E1› ‹E0› f ( _ ‹E9› 1 ) ‹DF› ( d ‹EA› 2 ) ‹EA› 3 , ( # ‹E9› _ ‹EA› 1 ) ‹DF› ( d ‹EA› 2 ) ‹E9› 2 ) , > ‹E1› V0C 1 , d ) ‹D1› ‹E0› V18 ‹D2› d ‹EA› 2
+1570 6 V07 e = ‹EF› ‹E0› V18 , ‹DB› ^ V00
+1630 " V02 V18   $ V07 e = 0 GOTO 1640 6 V0F a = ‹F3› ( e ‹E9› 1 ) ‹DC› d ) ‹EA› 1 $ V06 ` = a GOTO 1655 $ V06 a ‹D6› g GOTO 1650
+1640 6 V03 a = g # V05 , 0 , a 6 V03 h = # ! V02 V17 V10
+1650 # V05 , 0 , a
+1655 " V02 V15 ` 6 V03 h = # $ V07 e = 0 GOTO 1710 6 V0F h = ‹F3› e ‹DC› ( d ‹EA› 2 ) ) ‹EA› 1
+1710 6 V04 g = 0 $ V06 ` = a GOTO 1732
+1720 $ V06 ` > a GOTO 3590 # V05 , 0 , `
+1730 $ V06 ` ‹D5› a GOTO 1732 $ V06 1 > h GOTO 3590
+1732 6 V03 i = / 6 V08 j = ‹EF› f 1 ) , ‹DB› " V02 V18 @ $ V0C ! = 3 ‹E7› ? = 1 GOTO 1030 " V02 V17 P 6 V06 1 = 1 ‹EA› 1 $ V06 1 ‹D6› % GOTO 1730 6 V04 1 = 1 6 V06 ` = ` ‹EA› 1 ! V02 V17  
+1750 $ V07 ! AT(2,0) 6 V03 / = i # V02 " / # V02 * / # V05 , 0 , `
+1755 ^ V00
+1780 6 V04 1 = 1 6 V03 h = 4 W V05 e 1 ‹D1› V01 $ V09 , e ) = 0 GOTO 1790 # V04 " , e ) $ V07 ' AT(1,0) 6 V04 * = 1 $ V07 * = 2 GOTO 1790 $ V07 * = 6 GOTO 1790 V06 V0E V0A ( V02 = [ ) c e ) ‹D1› 1 $ V07 1 ‹D8› 1 GOTO 1782 6 V04 1 = 1
+1782 $ V07 * = 8 GOTO 1783 $ V07 * = 5 GOTO 1783 V06 V0E V0A ( V02 = [ ) k e ) ‹D1› h $ V06 h ‹D6› 4 GOTO 1784
+1783 6 V03 h = 4 $ V07 * AT(5,0) 6 V04 1 = 1
+1784 6 V03 e = V01
+1790 R V01 e 6 V04 g = 0
+1800 $ V06 1 > h GOTO 3590 6 V03 j = 1 " V02 V18 @ $ V07 ! = 3 GOTO 1030 6 V06 1 = 1 ‹EA› 1 ! V02 V18 V00
+1810 V06 V0A V18 ‹E1› ‹E0› l 1 , g ‹DF› d ) , ‹D8› ‹E1› V0C 1 , d ) ‹D1› ‹E0› V18 ‹D2› d 6 V07 e = ‹EF› ‹E0› V18 , ‹DB› ^ V00
+1820 V06 V0A V18 ‹E1› ‹E0› l 1 , g ‹DF› d ) , > ‹E1› V0C 1 , d ) ‹D1› ‹E0› V18 ‹D2› d 6 V07 e = ‹EF› ‹E0› V18 , ‹DB› ^ V00
+1840 # V05 + 0 , j 6 V04 / = 1
+1880 6 V05 B = , / ) $ V07 B = 0 GOTO 2020 # V02 " B # V03 ! 0 $ V06 m ‹D5› n GOTO 1882 # V01 #
+1882 $ V08 + = c / ) GOTO 1980 ^ V00
+1980 6 V06 / = / ‹EA› 1 $ V06 / ‹D6› V01 GOTO 1880
+2020 6 V06 ? = ? ‹EA› 1 6 V07 V13 17 ) = 1 # V01 @ $ V0A V13 4 ) = 8 GOTO 1030 $ V0F V13 9 ) ‹EA› V13 7 ) = 0 GOTO 2022 $ V0A V13 16 ) AT(1,0) ! V02   $
+2022 6 V07 V13 16 ) = 1 L V09 AT(14,40) , 40 L V1F "В МАССИВЕ ЗАМЕНЕНА ЗАПИСЬ N " ;
+2024 " V02 3 ‹80› 6 V0C V13 7 ) = V13 7 ) ‹EA› 1 ^ V00
+2090 V06 V02 0 ‹E0› V0D ( V16 4 ) ) J , ‹E0› R ( V16 3 ) ) V16 2 ) , ‹E0› o ( V16 3 ) ) V16 2 ) , ‹E0› L ( V16 9 ) ) V16 2 ) ^ V00
+2100 6 V04 ( = 0 d V04 ,   ‹E0› . 6 V07 V13 1 ) = 2 6 V07 V13 14 ) = 0
+2110 # '   "КЛАССИФИКАТОР ДЛЯ ПОКАЗАТЕЛЯ" , 1 , V05 , 2 $ V07 * = 0 GOTO 330 # V02 " * $ V08 V1E = "К" GOTO 2120 L V03 AT(1,7) ! V02 ! V00
+2120 6 V03 / = \ $ V07 / AT(0,0) 6 V09 / = * ‹EA› ‹E7› V10 V00 ‹DF› 7
+2130 G V11 / ‹D1› ‹E1› 6 5 ) 2 ) "#####" 4 V05 8 9 ‹CD› ! 7 { V0C V02 ‹DB› 5 , 6 5 ) Y e / " V02 ! 5 4 V00 6 V06 + V0C = " " " V02   ‹90› ! V02 ! P
+2135 q 5 V02 ‹DB› 5 , ( Y , / ) 2 V1A Z [ J \ S ] V16 8 ) V16 1 ) V16 2 ) V16 3 ) V16 4 ) V16 6 ) V16 7 ) V16 9 ) H I V11 ^ V00
+2137 T V02 V05 V09 L V09 AT(23,1) , 80 L V04 AT(1,7) ; $ V09 8 = "73" GOTO 2138 L V15 "ОШИБКА ВВОДА/ВВОДА" ; ! V02 ! 9
+2138 L ; "ОТСУТСТВУЕТ КЛАССИФИКАТОР ДЛЯ ПОКАЗАТЕЛЯ  '" ; ‹E1› 2 1 , ‹ED› 2 ) ; "'" ;
+2139 T V02 V05 V00 4 V00 ! V02 ! V00
+2140 4 V00 6 V05 V1E = "0" L V0A AT(3,1) , ‹E7› V17 `
+2150 6 V05 + = " " $ V08 ] = " " GOTO 2200 L V06 AT(23,1) L V1A "УКАЖИТЕ ПАРОЛЬ ДОСТУПА " ; W V06 A 1 ‹D1› 4
+2160 % V05 V0C ! p ! p ! V02 ! `
+2170 $ V08 V0C = AT(1,133) GOTO 2180 6 V09 ‹E1› + A , 1 ) = V0C R V01 A
+2180 $ V06 + = ] GOTO 2200 $ V08 + = AT(1,223) GOTO 2200 $ V08 + = " " GOTO 2100 L V1A ‹DF› 40 ) ; AT(2,7) V12 ; "ЗАЩИТА ПАРОЛЕМ" L V05 AT(2,17) V0C ; ! V02 ! P
+2200 6 V11 V0C = "КЛАССИФИКАТОР" " V02 V09 V00 " V02 V08   # V01 1 6 V04 ! = 3 L V01 V1C L V06 AT(5,1) " V02 V08 ‹90›
+2210 6 V07 V13 5 ) = 0 $ V0A V13 3 ) = 2 GOTO 2220 6 V04 ( = 8 6 V08 6 10 ) = "Л" # V1A E "ОПИСАНИЯ КЛАССИФИКАТОРА" $ V0A V13 2 ) = 0 GOTO 450 ! V02 " 0
+2220 6 V04 ( = 10 6 V08 6 10 ) = "Д" # V11 E "КЛАССИФИКАТОРА" $ V0A V13 2 ) = 0 GOTO 450
+2230 6 V04 ) = 0 d V04 , V00 ‹E0› L q V10 V02 ‹DB› 5 , ( Y ‹EA› 1 , A ) N ‹E0› V0D
+2235 # V01 = V V02 * * $ V0A V13 4 ) = 7 GOTO 450 $ V0A V13 4 ) = 5 GOTO 2240 $ V0A V13 4 ) = 1 GOTO 2238 # V01 F $ V0A V13 4 ) AT(0,0) " V02 V11 ‹90› ! V02 " 5
+2238 6 V0C V0C = "ОПИСАНИЯ" " V02 c B ! V02 " V10
+2240 $ V0A V13 5 ) > 1 GOTO 1100 " V02 c B ! V02 "  
+2250 V V02   *
+2410 $ V07 ) ‹D7› 2 GOTO 2450
+2420 W V08 E 1 ‹D1› ) ‹E9› 1 $ V15 ‹E1› L E ) 3 ) ‹D6› ‹E1› L E ‹EA› 1 ) 3 ) GOTO 2440 6 V08 V0C = L E ‹EA› 1 ) 6 V0A L E ‹EA› 1 ) = L E ) 6 V04 e = 0 $ V07 E = 1 GOTO 2430 W V0C e E ‹E9› 1 ‹D1› 1 ‹D2› ‹E9› 1 $ V10 ‹E1› L e ) 3 ) ‹D6› ‹E1› V0C 3 ) GOTO 2430 6 V0A L e ‹EA› 1 ) = L e ) R V01 e 6 V04 e = 0
+2430 6 V08 L e ‹EA› 1 ) = V0C
+2440 R V01 E
+2450 6 V06 Q T p = 1 " V02 % V10 " V02 %  
+2460 $ V09 M ‹D6› V16 3 ) GOTO 2470 " V02 % 0 6 V06 p = p ‹EA› 1 " V02 %  
+2470 $ V06 P ‹D6› q GOTO 2480 $ V06 T ‹D8› N GOTO 2550 6 V06 T = T ‹EA› 1 " V02 % V10
+2480 $ V06 Q > ) GOTO 2540 $ V07 Q ‹D6› 1 GOTO 2490 $ V06 Q ‹D8› ) GOTO 2490 $ V15 ‹E1› L Q ) 3 ) = ‹E1› L Q ‹E9› 1 ) 3 ) GOTO 2500
+2490 $ V12 ‹E1› R P ) 3 ) > ‹E1› L Q ) 3 ) GOTO 2560 $ V12 ‹E1› R P ) 3 ) ‹D5› ‹E1› L Q ) 3 ) GOTO 2540 6 V06 P = P ‹EA› 1
+2500 L V06 AT(11,21) L $ "НАЛИЧИЕ СИНОНИМОВ В КЛАССИФИКАТОРЕ" 6 V06 Q = Q ‹EA› 1 ! V02 $ `
+2510 # V05 & 0 , T 6 V04 P = 1 6 V03 q = O ^ V00
+2520 6 V04 M = 1 d V04 , V00 ‹E0› o ^ V00
+2530 6 V06 O = M ‹E9› 1 6 V0B V0D p ) = ‹E1› o O ) 3 ) # V05 & 1 , p ^ V00
+2540 6 V07 o M ) = R P ) 6 V06 P = P ‹EA› 1 ! V02 % p
+2550 $ V06 Q > ) GOTO 2580
+2560 6 V07 o M ) = L Q ) 6 V06 Q = Q ‹EA› 1
+2570 6 V06 M = M ‹EA› 1 ! V02 $ `
+2580 6 V06 N = p ‹E9› 1 $ V07 M = 1 GOTO 2590 " V02 % 0 6 V03 N = p
+2590 ^ V00
+2900 $ V06 + ‹D5› X GOTO 2902 ^ V00
+2902 $ V06 m ‹D5› n GOTO 2905 # V01 # 6 V03 K = + 6 V03 + = X # V01 # 6 V03 X = + 6 V03 + = K
+2905 6 V05 r ) = 1 6 V04 s = 0 K V04 V10 , ‹DB› j
+2910 # V02 * * " V02 ) ‹80› " V02 2 E " V02 2 P 6 V03 V0C = +
+2915 $ V06 t ‹D6› % GOTO 2920 " V02 2 U 6 V06 u = u ‹EA› 1 " V02 2 P $ V06 _ > v GOTO 2920 $ V07 r > 1 GOTO 2916 " V02 V15 @ $ V07 e AT(0,0)
+2916 $ V07 s = 1 GOTO 2917 " V02 0 V00 $ V07 e AT(0,0)
+2917 6 V08 N = v ‹E9› _ ‹EA› 1 " V02 2 ‹98› ! V02 ) V15
+2920 $ V06 _ ‹D6› v GOTO 2925 $ V06 w ‹D8› g GOTO 2955 6 V06 w = w ‹EA› 1 " V02 2 E $ V07 r > 1 GOTO 2921 " V02 V15 @ $ V07 e AT(0,0)
+2921 $ V07 s = 1 GOTO 2922 " V02 0 V00 $ V07 e AT(0,0)
+2922 6 V03 N = v $ V0B % ‹E9› t ‹EA› 1 ‹D8› N GOTO 2923 6 V08 N = % ‹E9› t ‹EA› 1
+2923 " V02 2 ‹98› ! V02 ) V15
+2925 $ V07 r > 1 GOTO 2930 $ V0C ‹E1› f _ ) 3 ) > + GOTO 2960
+2930 6 V07 x t ) = f _ ) 6 V06 _ = _ ‹EA› 1 $ V12 j ‹D5› ‹EF› ‹E1› f _ ‹E9› 1 ) 1 ) , ‹DB› GOTO 2965 6 V04 s = 1 ! V02 ) V15
+2955 $ V07 r > 1 GOTO 2970
+2960 K V0A ‹E1› x t ) 1 ) , ‹DB› j 6 V09 ‹E1› x t ) 3 ) = + 6 V06 r = r ‹EA› 1
+2965 6 V06 t = t ‹EA› 1 ! V02 ) V15
+2970 6 V06 g = u ‹E9› 1 $ V07 t = 1 GOTO 2975 " V02 2 U 6 V03 g = u
+2975 u V09 V02 ‹DB› 6 , 6 6 ) v V08 ‹DB› 6 , g , ‹E0› l ^ V00
+2980 6 V03 V0C = + $ V06 X > + GOTO 2990 6 V03 V0C = X
+2990 ! V02 2 ‹90›
+3000 V06 V0A / ‹E1› ‹E0› f ( _ ‹E9› 1 ) ‹DF› ( d ‹EA› 2 ) ‹EA› 1 , ( # ‹E9› _ ‹EA› 1 ) ‹DF› ( d ‹EA› 2 ) ) , = V10 ‹D1› ‹E0› V18 ‹D2› d ‹EA› 2 6 V07 e = ‹EF› ‹E0› V18 , ‹DB› ^ V00
+3040 T V05 V07 V05 ( V00 P ^ V00
+3052 T V05 V07 V0C ( V00 ‹82› ^ V00
+3100 $ V07 % = 0 GOTO 3120 $ V0A V13 17 ) = 1 GOTO 2900 6 V08 s = & * , 1 ) 6 V08 ) = & * , 2 ) $ V06 ) ‹D7› V09 GOTO 3105 " V02 2 V05 6 V04 ) = 0
+3105 6 V06 ) = ) ‹EA› 1 6 V08 & * , 2 ) = ) $ V06 m ‹D5› n GOTO 3110 # V01 #
+3110 K V0C ‹E1› y ) , s ) 1 ) , ‹DB› j 6 V0B ‹E1› y ) , s ) 3 ) = +
+3120 ^ V00
+3200 W V08 z 1 ‹D1› V13 8 ) 6 V0D * = ‹EF› ‹E1› V1B z ) 1 , 1 ) # V02 " * $ V07 % = 0 GOTO 3285 6 V08 s = & * , 1 ) 6 V08 ) = & * , 2 ) $ V07 ) = 0 GOTO 3285 " V02 2 V05 ! V02 2 ‹85›
+3205 $ V07 ) ‹D7› 2 GOTO 3220 W V08 F 1 ‹D1› ) ‹E9› 1 $ V19 ‹E1› y F , s ) 3 ) ‹D6› ‹E1› y F ‹EA› 1 , s ) 3 ) GOTO 3215 6 V0A V0C = y F ‹EA› 1 , s ) 6 V0E y F ‹EA› 1 , s ) = y F , s ) 6 V04 " = 0 $ V07 F = 1 GOTO 3210 W V0C " F ‹E9› 1 ‹D1› 1 ‹D2› ‹E9› 1 $ V12 ‹E1› y " , s ) 3 ) ‹D6› ‹E1› V0C 3 ) GOTO 3210 6 V0E y " ‹EA› 1 , s ) = y " , s ) R V01 " 6 V04 " = 0
+3210 6 V0A y " ‹EA› 1 , s ) = V0C
+3215 R V01 F
+3220 # V02 * * 6 V04 r = 1 6 V0B V0C = ‹E1› y r , s ) 3 ) " V02 2 ‹90› " V02 2 E " V02 2 P
+3225 $ V06 t ‹D6› % GOTO 3230 " V02 2 U 6 V06 u = u ‹EA› 1 " V02 2 P $ V0A r > ) ‹E6› _ > v GOTO 3230 " V02 2 ‹96› $ V07 e AT(0,0) 6 V08 N = v ‹E9› _ ‹EA› 1 " V02 2 ‹98› ! V02 2 %
+3230 $ V06 _ ‹D6› v GOTO 3235 $ V06 w ‹D8› g GOTO 3260 6 V06 w = w ‹EA› 1 " V02 2 E $ V06 r > ) GOTO 3235 " V02 2 ‹96› $ V07 e AT(0,0) 6 V03 N = v $ V0B % ‹E9› t ‹EA› 1 > N GOTO 3232 6 V08 N = % ‹E9› t ‹EA› 1
+3232 " V02 2 ‹98› ! V02 2 %
+3235 $ V06 r > ) GOTO 3240 $ V14 ‹E1› f _ ) 3 ) > ‹E1› y r , s ) 3 ) GOTO 3265
+3240 6 V07 x t ) = f _ ) 6 V06 _ = _ ‹EA› 1 ! V02 2 p
+3245 6 V04 _ = 1 # V05 , 0 , w 6 V03 v = # ^ V00
+3250 6 V04 t = 1 d V04 , V00 ‹E0› x ^ V00
+3255 6 V06 # = t ‹E9› 1 6 V0B l u ) = ‹E1› x # ) 3 ) # V05 , 1 , u ^ V00
+3260 $ V06 r > ) GOTO 3275
+3265 6 V09 x t ) = y r , s ) 6 V06 r = r ‹EA› 1
+3270 6 V06 t = t ‹EA› 1 ! V02 2 %
+3275 6 V06 g = u ‹E9› 1 $ V07 t = 1 GOTO 3280 " V02 2 U 6 V03 g = u
+3280 u V09 V02 ‹DB› 6 , 6 6 ) v V08 ‹DB› 6 , g , ‹E0› l W V05 r 1 ‹D1› ) 6 V09 y r , s ) = " " R V01 r 6 V09 & * , 2 ) = 0 ^ V00
+3285 R V01 z ^ V00
+3290 " V02 V18 V10 $ V07 e AT(0,0) 6 V04 w u = g ! V02 2 ‹94›
+3292 6 V10 w u = ‹F3› ( e ‹E9› 1 ) ‹DC› d ) ‹EA› 1
+3294 ^ V00
+3296 6 V0B V0C = ‹E1› y r , s ) 3 ) ! V02 V15 @
+3298 6 2 ‹E1› ‹E0› x ( t ‹E9› 1 ) ‹DF› ( d ‹EA› 2 ) ‹EA› 1 , N ‹DF› ( d ‹EA› 2 ) ) = ‹E1› ‹E0› f ( _ ‹E9› 1 ) ‹DF› ( d ‹EA› 2 ) ‹EA› 1 ) 6 V05 t = t ‹EA› N 6 V05 _ = _ ‹EA› N ^ V00
+3310 6 V08 { = ‹EC› V11 = "0" $ V07 { AT(0,0)
+3320 $ V0A > ‹DF› ‹E7› V02 P ‹D8› | GOTO 3340 6 V06 > = > ‹EA› 1 # V05 ' 0 , > ! V02 3 V10
+3330 6 V0E g = { ‹EA› ( > ‹E9› 1 ) ‹DF› ‹E7› V02 P 6 V03 j = g $ V06 g ‹D6› | GOTO 3350
+3340 " V02 3 E " V02 0 R " V02 3 E " V02 0 @ L V04 AT(1,7) ; B V1C "ДЛЯ ПРОДОЛЖЕНИЯ - CONTINUE" ^ V00
+3345 L V00 L 5 "МАССИВ /" ; ‹E1›   1 , ‹ED›   ) ; "/ ПЕРЕПОЛНЕН. ВВОД ПРЕКРАЩЕН!!!" $ V07 V0A = 0 GOTO 3346 " V02 2 V00
+3346 ^ V00
+3350 # V05 + 0 , g 6 V07 V13 17 ) = 0 # V01 @ $ V0A V13 4 ) = 7 GOTO 1030 $ V0F V13 7 ) ‹EA› V13 9 ) = 0 GOTO 3352 $ V0A V13 16 ) AT(0,0) ! V02 3 T
+3352 6 V07 V13 16 ) = 0 L V09 AT(14,40) , 40 L V1F "В МАССИВ ДОБАВЛЕНА ЗАПИСЬ N " ;
+3354 " V02 3 ‹80› 6 V0C V13 9 ) = V13 9 ) ‹EA› 1
+3356 6 V0B ‹E1› V11 { , 1 ) = "1" $ V06 j > 4 GOTO 3360 6 V06 5 = 5 ‹E9› 1 ! V02 3 p
+3360 6 V03 4 = j
+3370 # V05 ' 1 , > ^ V00
+3380 L V06 AT(14,73) L V0A AT(1,18) ; j ; AT(1,17) ; # V05 + 1 , j $ V0F V13 7 ) ‹EA› V13 9 ) AT(0,0) 6 V04 B = 0 # V03 0 1
+3385 6 V03 B = j # V03 0 1 ^ V00
+3590 $ V0C ? = 0 ‹E7› ! AT(2,0) $ V07 ? AT(0,0) 6 V07 V13 16 ) = 2 L V09 AT(14,40) , 40 L V1A "*** ЗАПИСЬ ПРОПУЩЕНА ***" ! V02 V10 0
+3600 " V02 3 V10 $ V06 j > | GOTO 1105 ! V02 V10 0
+3610 L V00 L , ‹DF› 18 ) ; ‹E1› 0 4 , 5 ) ; ‹DF› 28 ) ; "*** КОНЕЦ ПРОТОКОЛА ***" L V00 " V02 0 @ ^ V00
+4000 6 V0F ‹E1› V0C 15 , 4 ) = AT(4,21) V11 ‹DC› ‹E0› M V0E ( ‹E1› V0C 15 , 4 ) , ‹E9› 2 ) 6 V18 ‹E1› V0C 19 ) = "3C01F6FFF2000001" 6 V0A ‹E1› V0C 35 ) = AT(2,41) ‹85› 6 V19 ‹E1› V0C 1 , 14 ) = AT(14,49) 4 6 5 $ G I O   ' H E X ( ^ V00
+4030 ' V09   ‹E0› V04 ‹97› 5 V0C / } e
+4050 L V04 AT(1,6) ; 6 V09 d = 2 ‹DF› e ‹EA› 12 $ V07 ( AT(0,0) # V01 1 L V01 V1C 6 V03 ( = e " V02 A 0 ! V02 @ `
+4055 $ V07 e = 1 GOTO 4060 " V02 A V10
+4060 6 V07 * = / ‹EA› ( ‹DF› d L V09 AT(21,21) , 40 L V1D "УКАЖИТЕ НОМЕР ( 0 - КОНЕЦ )" L V06 AT(21,51) A V01 * V V0E   E R R O R G O T O 4 0 8 0
+4070 $ V07 * = 0 GOTO 4102 $ V08 * = ‹E5› V12 V11 GOTO 4102 $ V08 * = ‹E5› V12 V09 GOTO 4102 $ V08 * ‹D5› ‹F3› * ) GOTO 4080 $ V06 * ‹D6› } GOTO 4090
+4080 L V03 AT(1,7) ! V02 @ `
+4090 $ V0A * = / ‹EA› ( ‹DF› d GOTO 4092 6 V07 . * ) = "*"
+4092 $ V0E * ‹D8› / ‹EA› ( ( ‹E9› e ) ‹DF› d GOTO 4110
+4100 6 V05 ( = ( ‹E9› e $ V0E * ‹D7› / ‹EA› ( ( ‹E9› e ) ‹DF› d GOTO 4100 " V02 A 0
+4102 ^ V00
+4110 $ V0F * > B ‹EA› d ‹DF› ( e ‹E9› 1 ) GOTO 4120 $ V07 e = 1 GOTO 4116 $ V06 * ‹D6› B GOTO 4112 L V15 ‹D5› * ‹E9› ‹F3› ( * ‹E9› 1 ) ‹DC› d ) ‹DF› d ‹EA› 4 , 75 ! V02 A V14
+4112 L V15 ‹D5› * ‹E9› ‹F3› ( * ‹E9› 1 ) ‹DC› d ) ‹DF› d ‹EA› 4 , 35
+4114 L V07 . * ) ; AT(1,5)
+4116 ^ V00
+4120 6 V05 ( = ( ‹EA› e $ V0D * > / ‹EA› ( ‹DF› d ‹E9› 1 GOTO 4120 " V02 A 0 $ V14 * = ‹F3› ( B ‹E9› 1 ) ‹DC› d ) ‹DF› d ‹EA› 1 GOTO 4060 ^ V00 ! V02 @ `
+4130 L V0A AT(3,22) , ‹E7› V15   L   ‹E1› V0C 1 , ‹ED› V0C ) ; " ( ЛИСТ -" ; ( ‹DC› e ; ")" ; AT(1,10) W V19 B / ‹EA› ( ( ‹E9› e ) ‹DF› d ‹D1› / ‹EA› ( ( ‹E9› e ) ‹DF› d ‹EA› d ‹E9› 1 $ V06 } ‹D8› B GOTO 4140 $ V09 } ‹D5› B ‹E9› 1 GOTO 4132 L V14 ‹DF› 15 ) ; "*** КОНЕЦ ***" L V18 ‹D5› B ‹E9› ‹F3› ( B ‹E9› 1 ) ‹DC› d ) ‹DF› d ‹EA› 4 , 29 , 51 L V00 ! V02 A ‹80›
+4132 L V18 ‹D5› B ‹E9› ‹F3› ( B ‹E9› 1 ) ‹DC› d ) ‹DF› d ‹EA› 4 , 1 , 80 ! V02 A ‹80›
+4140 # V02 " B " V02 A ‹82›
+4160 L V1F B ; ‹DF› 6 ) ; ‹E1› ~ B ) 13 ) ; ‹DF› 31 ) ; V10 ; ‹DF› 34 ) ; . B ) ; $ V08 } ‹D8› B ‹EA› d GOTO 4170 $ V0B } ‹D5› B ‹EA› d ‹E9› 1 GOTO 4162 L V14 ‹DF› 55 ) ; "*** КОНЕЦ ***" ! V02 A ‹80›
+4162 L V18 ‹D5› B ‹E9› ‹F3› ( B ‹E9› 1 ) ‹DC› d ) ‹DF› d ‹EA› 4 , 41 , 40 L V00 ! V02 A ‹80›
+4170 L V18 ‹DF› 40 ) ; B ‹EA› d ; ‹DF› 46 ) ; ‹E1› ~ B ‹EA› d ) 13 ) ; 6 V03 A = B # V04 " B ‹EA› d " V02 A ‹82› 6 V03 B = A L V11 ‹DF› 71 ) ; V10 ; ‹DF› 74 ) ; . B ‹EA› d )
+4180 R V01 B $ V06 B ‹D6› } GOTO 4188 6 V03 B = } ! V02 A ‹88›
+4182 6 V03 V10 = V1E $ V08 V1E = "А" GOTO 4188 $ V08 V1E = "Ц" GOTO 4188 $ V06 m ‹D5› n GOTO 4184 6 V0C ‹E1› V10 2 , 1 ) = "А" ! V02 A ‹88›
+4184 6 V0C ‹E1› V10 2 , 1 ) = "Ц"
+4188 ^ V00
+4190 ' V06 ! V0C V05 ‹85› 6 E
+4192 $ V07 E = 0 GOTO 4290
+4200 $ V06 m = n GOTO 4250
+4240 4 V05 8 9 ‹CD› C B V06 V0D V08 ( V02 = [ ) + ‹CA› ‹7F› 4 V00
+4250 6 V0B ‹E1› ‹E0› ‹80› ‹81› ‹EA› ‹82› , J ) = + ^ V00
+4290 6 V0B + = ‹E1› ‹E0› ‹80› ‹81› ‹EA› ‹82› , J )
+4300 $ V06 m ‹D5› n GOTO 4340 ^ V00
+4340 4 V05 8 9 ‹CD› C B V06 V0E V08 ( V02 = [ ) + ‹D1› ‹7F› 4 V00 ! V02 C P
+4342 4 V00 6 V04 ‹7F› = 0 6 V07 V13 4 ) = 2
+4350 $ V08 V1E ‹D5› "Д" GOTO 4352 6 V0A K = "  .  ." G V0F ‹7F› ‹D1› ‹E1› K 9 ) "######" 6 V0E ‹E1› K 1 , 2 ) = ‹E1› K 13 ) 6 V0E ‹E1› K 4 , 2 ) = ‹E1› K 11 ) 6 V11 ‹E1› K 7 , 2 ) = ‹E1› K 9 , 2 ) 6 V09 ‹E1› K 9 ) = " "
+4352 ^ V00
+4420 ' V05 # V18 V05 ‹CD› 6
+4430 V06 V0C V06 + , ‹83› ) , V00 $ V08 V1E ‹D5› "Д" GOTO 4432 $ V06 m ‹D5› n GOTO 4432 6 V03 V0C = + 6 V0E ‹E1› + 1 , 2 ) = ‹E1› + 7 ) 6 V0A ‹E1› + 7 , 2 ) = V0C
+4432 ^ V00
+4520 ' V07 % , V05 ‹B0› 7 e /
+4530 6 V14 E = ‹F3› ( J ‹EA› S ) ‹DF› ( / ‹E9› 1 ) ‹DC› ‹E7› V02 V ) 6 V17 } = Y ‹EA› V16 7 ) ‹EA› V16 4 ) ‹DF› V16 8 ) ‹EA› E ‹EA› 1 6 V14 B = ‹F3› ( J ‹EA› S ) ‹DF› / ‹DC› ‹E7› V02 V ) ‹E9› E ‹EA› 1 $ V07 e = 1 GOTO 4550 $ V06 } ‹D5› ‹84› GOTO 4532 $ V06 B = ‹85› GOTO 4540
+4532 6 V03 ‹84› = } W V0D e 1 ‹D1› B ‹DF› ‹E7› V02 V ‹D2› ‹E7› V02 V p V0F V02 ‹DB› 5 , ( } , } ) ‹E1› ‹E0› V0E e ) R V01 e 6 V05 ‹85› = } ‹E9› ‹84›
+4540 6 V1A V16 10 ) = ( J ‹EA› S ) ‹DF› ( / ‹E9› 1 ) ‹E9› E ‹DF› ‹E7› V02 V ‹EA› 1 ^ V00
+4550 W V0D e 1 ‹D1› B ‹DF› ‹E7› V02 V ‹D2› ‹E7› V02 V n V0F V02 ‹DB› 5 , ( } , E ) ‹E1› ‹E0› V0E e ) 6 V03 } = E R V01 e ^ V00
+4560 ' V07 & 8 V05 V01 8 e E
+4570 6 V17 } = Y ‹EA› V16 7 ) ‹EA› 1 ‹EA› ( E ‹E9› 1 ) ‹DF› V16 8 ) $ V07 e = 0 GOTO 4580 o V0E V02 ‹DB› 5 , ( } , E ) O , ‹E0› o ^ V00
+4580 q V0D V02 ‹DB› 5 , ( } , } ) O ‹E0› R ^ V00
+4590 ' V07 ' L V05 t 8 e E
+4592 6 V05 } = ‹86› ‹EA› E $ V07 e = 0 GOTO 4596 $ V07 E AT(0,0) o V11 V02 ‹DB› 3 , ( } , A )   , | , 4 , 5 ^ V00
+4594 o V0B V02 ‹DB› 3 , ( } , A ) V11 ^ V00
+4596 $ V07 E AT(0,0) q V0E V02 ‹DB› 3 , ( } , } ) V0C / 4 5
+4598 q V0B V02 ‹DB› 3 , ( } , A ) V11 ^ V00
+4600 ' V07 ( ‹A0› V05 K : V0C e
+4630 $ V06 m = n GOTO 4730 $ V08 V1E ‹D5› "Д" GOTO 4690 " V02 H V00 $ V07 B AT(0,0) ! V02 G X
+4672 ! V02 G B
+4680 R V01 B $ V0A c # ) = k # ) GOTO 4760 ^ V00
+4688 6 V03 + = K ! V02 G  
+4690 4 V05 8 9 ‹CD› G X $ V08 + ‹D5› " " GOTO 4700 6 V05 + = "0"
+4700 G V03 + ‹D1› B 4 V00 6 V05 + = " " V06 V0D V08 ( V02 = [ ) + ‹CA› B
+4710 6 V08 c # ) k # ) = + ^ V00
+4720 6 V05 k # ) = + $ V07 * = 2 GOTO 4722 $ V07 * = 6 GOTO 4722 ^ V00
+4722 C V06 k # ) c # ) ^ V00
+4730 $ V08 V1E ‹D5› "Д" GOTO 4740 " V02 H V00 $ V07 B = 0 GOTO 4760 6 V03 + = K
+4740 $ V07 e = 2 GOTO 4750 $ V07 * = 2 GOTO 4742 $ V07 * AT(6,0)
+4742 d V08 , V00 c # ) k # ) W V05 B 1 ‹D1› _ $ V0E ‹E1› + B , 1 ) ‹D5› "#" GOTO 4680 6 V0D ‹E1› c # ) B , 1 ) = AT(1,255) ! V02 F ‹80›
+4750 # V01 # ! V02 G V10
+4758 4 V00 6 V07 V13 4 ) = 2 ^ V00
+4760 L V05 AT(2,7) V0C ; ! V02 F 0
+4800 6 V04 B = 0 $ V0F + = "00.00.00" GOTO 4810 $ V07 * = 2 GOTO 4806 $ V07 * = 6 GOTO 4806 $ V0F ‹E1› + 3 , 1 ) ‹D5› "." GOTO 4804 $ V0F ‹E1› + 6 , 1 ) ‹D5› "." GOTO 4804
+4802 $ V10 ‹E1› + 1 , 2 ) ‹D7› "01" GOTO 4804 $ V10 ‹E1› + 1 , 2 ) > "31" GOTO 4804 $ V10 ‹E1› + 4 , 2 ) ‹D7› "01" GOTO 4804 $ V10 ‹E1› + 4 , 2 ) > "12" GOTO 4804 $ V10 ‹E1› + 7 , 2 ) ‹D7› "00" GOTO 4804 $ V10 ‹E1› + 7 , 2 ) ‹D6› "99" GOTO 4810
+4804 ^ V00
+4806 $ V07 e = 2 GOTO 4810 6 V04 B = 1 ! V02 H V04
+4810 6 V03 K = + 6 V07 + = ‹E1› K 7 ) 6 V0E ‹E1› + 3 , 2 ) = ‹E1› K 4 ) 6 V0A ‹E1› + 5 , 2 ) = K 6 V04 B = 3 ^ V00
+4840 ' V06 * ‹AC› V05 ‹C1› : /
+4850 G V0F / ‹D1› ‹E1› 6 6 ) 4 ) "###" { V0C V02 ‹DB› 6 , 6 6 ) } E e 6 V03 d = J $ V06 J ‹D6› V04 GOTO 4852 6 V03 d = V04
+4852 V06 V02 & ‹E0› l ( ‹F3› ( | ‹E9› 1 ) ‹DC› % ) ‹EA› 1 ) d , ‹E0› f ( % ) d ‹EA› 2 , ‹E0› x ( % ) d ‹EA› 2 q V0D V02 ‹DB› 6 , ( } , ‹87› ) g ‹E0› l ^ V00
+4920 ' V07 , ‹B8› V05 V07 ; e E
+4930 6 V0C } = ‹87› ‹EA› ( E ‹E9› 1 ) ‹DF› V06 $ V07 e = 0 GOTO 4935 o V0E V02 ‹DB› 6 , ( } , E ) # , ‹E0› x ^ V00
+4935 q V0D V02 ‹DB› 6 , ( } , A ) # ‹E0› f ^ V00
+4940 ' V05 - ‹C4› V05 " ;
+4950 V06 V0C V0C ‹E1› V12 1 , ‹ED› V12 ) , ‹E0› ‹88› )
+4960 ^ V00
+4970 ' V07 ; ‹C8› V05 v ; V1F " 6 V05 V1E = "0" L V04 ‹D5› V1F , " L " "УКАЖИТЕ НОМЕР (0 - КОНЕЦ)? " ; AT(1,18) ; V06 $ V02 ‹E9› V1E L V04 AT(1,17) ; L V07 ‹D5› V1F , " ‹EA› 27 L V01 V1E ^ V00
+5200 ' V05 = x V06 ‹F6› A
+5210 V V02 * *
+5220 V V01 *
+5230 $ V0A V13 3 ) > 1 GOTO 5300 6 V09 U < V13 4 ) = 0 6 V05 ‹89› ; = 80 # V13 ? "ФАЙЛ ОПИСАНИЯ N " # V05 P V1D , 1 6 V0C V13 5 ) = V13 5 ) ‹EA› 1 $ V07 ^ > 0 GOTO 5240 $ V10 ‹E1› ‹E0› V15 62 , 1 ) = "K" GOTO 5232 6 V04 < = 9 " V02 f V00 " V02 g V00
+5232 $ V0A V13 1 ) = 1 GOTO 5234 6 V06 V12 = 6 5 ) ! V02 R 5
+5234 6 V06 V12 = 6 2 )
+5235 # V01 - $ V15 ‹E1› ‹E0› V15 4 , 6 ) ‹D5› ‹E1› V12 1 , 6 ) GOTO 5236 ! V02 R P
+5236 $ V0A V13 1 ) AT(1,0) 6 V05 + = " " L V0A AT(23,1) , ‹E7› V01 ` L , "ВНИМАНИЕ!!! ФАЙЛ ОПИСАНИЯ ДРУГОГО МАССИВА." L % "ПОДТВЕРДИТЕ ВВОД (ДА - 1, НЕТ - 0)" ;
+5237 % V05 + R 8 R 8 ! V02 R 7
+5238 L V0A AT(23,1) , ‹E7› V01 ` $ V08 + = "0" GOTO 5240 $ V08 + = "1" GOTO 5250 L V04 AT(1,7) ; ! V02 R 6
+5240 6 V07 V13 4 ) = 1 ! V02 S ‹80›
+5250 # V06 > 47 , 3 $ V0A V13 4 ) = 2 GOTO 5380 6 V06 V13 8 ) = ‹8A› # V06 > 52 , 3 $ V0A V13 4 ) = 2 GOTO 5380 6 V03 A = ‹8A› 6 . V0C = "ПЕЧАТАТЬ ФАЙЛ ОПИСАНИЯ ( 1 - ДА; 0 - НЕТ )" " V02 S u # V01 A
+5260 W V08 z 1 ‹D1› V13 8 ) # V05 P V1D , 1 6 V0C V13 5 ) = V13 5 ) ‹EA› 1 $ V07 ^ = 0 GOTO 5270 6 V07 V13 4 ) = 3 ! V02 R u
+5270 # V01 A # V01 C $ V0A V13 4 ) = 9 GOTO 5275 $ V0A V13 1 ) = 1 GOTO 5272 # V06 > 6 , 3 $ V0A V13 4 ) = 2 GOTO 5275
+5272 K V0B ‹E1› V1B z ) 1 , 1 ) ‹8A› # V06 > 12 , 3 $ V0A V13 4 ) = 2 GOTO 5275 6 V03 V = ‹8A› # V06 > 18 , 3 $ V0A V13 4 ) = 2 GOTO 5275 6 V03 W = ‹8A› # V05 U 1 , z ! V02 R ‹80›
+5275 6 V06 z = V13 8 )
+5280 R V01 z $ V0A V13 4 ) > 0 GOTO 5380
+5290 6 V03 ; = A 6 V06 ‹8B› = ‹8B› ‹EA› 1 6 V07 V13 3 ) = 2 6 V07 V13 5 ) = 0 $ V07 V1D > 1 GOTO 5292 # V01 c 6 V06 V13 2 ) = ‹8B› $ V06 ‹8B› = @ GOTO 5300 6 V07 V13 4 ) = 4 ! V02 S ‹80›
+5292 6 V04 ( = 10 6 V08 6 10 ) = "Д" # V09 E "ДАННЫХ" 6 V06 @ = V13 2 ) $ V0A V13 2 ) AT(0,0) 6 V07 V13 4 ) = 7 ! V02 S ‹80›
+5300 " V02 S V15 $ V07 ^ > 0 GOTO 5310 6 V0C V13 5 ) = V13 5 ) ‹EA› 1 " V02 S V05 " V02 S   $ V0A V13 4 ) AT(0,0) L V06 AT(14,20) L V0C AT(1,18) ; V13 5 ) ; AT(1,17) ! V02 S (
+5305 $ V0A V13 5 ) > 1 GOTO 5309 " V02 S V12 ! V02 S V09
+5309 ^ V00
+5310 6 V07 V13 4 ) = 5 ! V02 S ‹80›
+5312 $ V0A V13 5 ) > 1 GOTO 5314 L V06 AT(14,1) L V11 "ВВЕДЕНА ЗАПИСЬ" ;
+5314 ^ V00
+5315 $ V0A V13 5 ) AT(0,0) # V11 ? "ФАЙЛ ДАННЫХ N " 6 V04 U = 0 " V02 f V00 ! V02 S V17
+5316 $ V06 ; = ‹89› GOTO 5317 $ V08 U ‹D5› ‹89› ‹E9› ; GOTO 5318 6 V04 U = 0
+5317 # V05 P V1D , 1 ! V02 S V19
+5318 6 V05 U = U ‹EA› ;
+5319 ^ V00
+5320 6 V07 V13 4 ) = 0 $ V0A V13 5 ) > 1 GOTO 5327 W V08 z 1 ‹D1› V13 8 )
+5322 6 V0D A = ‹EF› ‹E1› V1B z ) 1 , 1 ) # V05 U 0 , z $ V0B V ‹EA› W ‹E9› 1 ‹D6› ; GOTO 5324 6 V07 V13 4 ) = 8 6 V06 z = V13 8 )
+5324 R V01 z $ V0A V13 4 ) AT(0,0)
+5325 6 7 V0C = "ПЕЧАТАТЬ ВВОДИМЫЕ ЗАПИСИ ( 1 - ВСЕ; 0 - ОШИБОЧНЫЕ )" " V02 S u
+5327 ^ V00
+5328 6 V08 # V13 4 ) = 0 $ V0F V13 1 ) = 2 ‹E6› ! = 1 GOTO 5380 W V05 z 1 ‹D1› V01 $ V09 , z ) AT(0,0) 6 V03 z = V01 ! V02 S p
+5330 K V04 V1E , z ) V06 V0A V17 ‹E1› ‹E0› V1B 1 , 4 ‹DF› V13 8 ) ) , = V1E ‹D1› ‹E0› V18 ‹D2› 4 $ V0B ‹EF› ‹E0› V18 , ‹DB› AT(0,0) 6 V07 V13 4 ) = 6 ! V02 S e
+5350 6 V0F s = ‹F3› ‹EF› ‹E0› V18 , ‹DB› ‹DC› 4 ) ‹EA› 1 6 V07 V13 4 ) = 0 # V05 U 0 , s # V04 " , z ) $ V06 m = n GOTO 5355 6 V0B + = ‹E1› ‹E0› V15 U ‹EA› V , W ) $ V08 V1E = "Д" GOTO 5360 # V06 H U ‹EA› V , W $ V0A V13 4 ) = 0 GOTO 5360 # V01 B ! V02 S e
+5355 6 V0B V12 = ‹E1› ‹E0› V15 U ‹EA› V , Z ) # V01 - 6 V0A + = ‹E1› V12 1 , ‹ED› V12 )
+5360 6 V06 # = # ‹EA› 1 6 V04 * = 1 6 V04 e = 1 " V02 F 0 $ V0A V13 4 ) = 0 GOTO 5365 # V01 B
+5365 $ V0A V13 4 ) = 0 GOTO 5370 6 V03 z = V01
+5370 R V01 z $ V0A V13 4 ) = 0 GOTO 5380 $ V0A V13 4 ) = 6 GOTO 5380 # V01 A 6 V0C V13 6 ) = V13 6 ) ‹EA› 1 ! V02 S V00
+5375 6 V07 V13 18 ) = 0 L V09 AT(12,1) , 80 L V09 ‹E1› V0C 1 , ‹ED› V0C ) ; A V04 V13 18 ) $ V12 V13 18 ) = 0 ‹E6› V13 18 ) = 1 GOTO 5380 L V04 AT(1,7) ; ! V02 S u
+5380 ^ V00
+5400 ' V07 > ‹8C› V06 C B ‹8C› ‹8D›
+5410 $ V0D ‹EE› ‹E1› ‹E0› V15 ‹8C› , ‹8D› ) ‹D5› ‹8D› GOTO 5415 G V09 ‹E1› ‹E0› V15 ‹8C› , ‹8D› ) ‹D1› ‹8A› ! V02 T 0
+5415 6 V04 ‹8A› = 0 $ V0E ‹E1› ‹E0› V15 ‹8C› , ‹8D› ) = " " GOTO 5430
+5420 6 V07 V13 4 ) = 2
+5430 ^ V00
+5440 ' V06 ? ‹98› V06 ‹82› B V0C
+5450 6 V11 ‹8A› = ‹F3› ( 80 ‹E9› ‹ED› V0C ‹EA› 3 ) ) ‹DC› 2 " V02 0 R L V00 L V11 ‹DF› ‹8A› ) ; ‹E1› V0C 1 , ‹ED› V0C ) ; V13 2 ) L V00 " V02 0 @
+5460 ^ V00
+5500 ' V05 @ V00 V07 ‹9D› D
+5505 V V02 * *
+5510 V V02 * *
+5515 6 V13 V13 4 ) V13 10 ) V13 11 ) V13 12 ) = 0
+5520 W V08 z 1 ‹D1› V13 8 ) # V05 U 0 , z 6 V0D * = ‹EF› ‹E1› V1B z ) 1 , 1 ) # V02 " * 6 V03 ( = *
+5522 & V0C ' ‹CD› U p U & U 0 U ( U 0 ! V02 U 0
+5526 6 V07 V13 11 ) = 1 ! V02 U 0
+5528 6 V07 V13 12 ) = 1
+5530 6 V0B X = ‹E1› ‹E0› ‹80› ‹81› ‹EA› ‹82› , J ) $ V06 m = n GOTO 5550 6 V0B + = ‹E1› ‹E0› V15 U ‹EA› V , Z ) $ V08 V1E = "Д" GOTO 5535 # V06 H U ‹EA› V , W 6 V05 + = " " $ V0A V13 4 ) = 0 GOTO 5540 ! V02 U 7
+5535 6 V04 * = 0 " V02 H V00 $ V07 B AT(3,0) G V03 + ‹D1› ‹7F› 6 V03 * = ( ! V02 U E
+5537 # V01 B 6 V07 V13 4 ) = 0 ! V02 U p
+5540 6 V03 ‹7F› = ‹8A›
+5545 # V03 ! 1 $ V0A V13 4 ) = 2 GOTO 5537 ! V02 U `
+5550 6 V0B V12 = ‹E1› ‹E0› V15 U ‹EA› V , W ) # V01 - 6 V0C + ‹E1› ‹E0› ‹80› ‹81› ‹EA› ‹82› , J ) = V12
+5560 " V02 1 V00
+5570 R V01 z $ V0C V13 10 ) ‹D5› V13 8 ) GOTO 5575 6 V07 V13 4 ) = 8 6 V0C V13 6 ) = V13 6 ) ‹EA› 1 ! V02 V %
+5575 W V05 z 1 ‹D1› V05 $ V09 $ z ) AT(0,0) 6 V03 z = V05 ! V02 V V18
+5580 6 V05 * = $ z ) # V02 " * 6 V0B X = ‹E1› ‹E0› ‹80› ‹81› ‹EA› ‹82› , J ) & V0C ' ‹CD› U ‹85› U ‹90› V V18 U ‹90› V V18 ! V02 V V18
+5585 6 V03 ‹7F› = j # V03 ! 1 ! V02 V V18
+5590 $ V07 ? = 0 GOTO 5600 $ V07 ' = 2 GOTO 5618 $ V0A V13 12 ) = 1 GOTO 5618 ! V02 V V10
+5600 $ V07 ' = 4 GOTO 5618 $ V0A V13 11 ) = 1 GOTO 5618
+5610 6 V0B ‹E1› ‹E0› ‹80› ‹81› ‹EA› ‹82› , J ) = ‹8E› 6 V03 + = ‹8E›
+5615 " V02 1 V00
+5618 R V01 z
+5625 # V01 A
+5630 ^ V00
+5740 ' V05 A V18 V07 ‹F6› D V V01 *
+5742 $ V0A V13 18 ) = 0 GOTO 5744 ! V02 W P
+5744 $ V0A V13 10 ) = 0 GOTO 5770
+5750 " V02 0 R $ V0A V13 10 ) = 0 GOTO 5760 L V00
+5760 L V0A ‹E1› ‹E0› V15 U ‹EA› 1 , ; ) 6 V07 V13 10 ) = 0 " V02 0 @
+5770 ^ V00
+5790 ' V05 B V1C V07 K E " V02 0 R L ! " *** N0=" ; V ; " <" ; ‹E1› ‹E0› V15 U ‹EA› V , W ) ; "><" ; P V0A ‹E1› ‹E0› V15 U ‹EA› V , W ) ; L V04 ">" ; " V02 0 @ 6 V0C V13 10 ) = V13 10 ) ‹EA› 1 ^ V00
+5800 ' V05 C $ V07 ‹AE› E $ V0A V13 1 ) > 1 GOTO 5810 V06 V0A ! ‹E1› ‹E0› ~ 13 , V05 ‹DF› 35 ‹E9› 12 ) , = ‹E1› ‹E0› V15 U ‹EA› 33 , 23 ) ‹D1› ‹E0› V18 ‹D2› 35 6 V07 e = ‹EF› ‹E0› V18 , ‹DB› 6 V0B ‹8A› = ‹F3› e ‹DC› 35 ) ‹EA› 1 $ V07 e AT(0,0) 6 V07 V13 4 ) = 9
+5810 ^ V00
+5900 ' V06 D ‹F4› V07 V0B N e $ V07 e = 0 GOTO 5940
+5920 # V01 1 L V06 AT(2,1) $ V07 e = 2 GOTO 5930 6 V09 V0C = "ВВОД " ! V02 Y P
+5930 6 V12 V0C = "КОРРЕКТИРОВКА " ! V02 Y P
+5940 6 V0B V0C = "ПЕЧАТЬ " L V00 L V01 0
+5950 6 V13 ‹8A› = ‹F3› ( 80 ‹E9› ( ‹ED› V0C ‹EA› 20 ) ) ‹DC› 2 ) L & ‹DF› ‹8A› ) ; ‹E1› V0C 1 , ‹ED› V0C ) ; " МАКЕТА ЗАГРУЗКИ N" ; V13 2 )
+5960 $ V0A V13 1 ) = 1 GOTO 5970 6 V19 V0C = "(ДЛЯ КЛАССИФИКАТОРА /" 6 V13 ‹8A› = ‹F3› ( 80 ‹E9› ( ‹ED› V0C ‹EA› ‹ED› 2 ) ) ‹DC› 2 ) L V1E ‹DF› ‹8A› ) ; ‹E1› V0C 1 , ‹ED› V0C ) ; ‹E1› 2 1 , ‹ED› 2 ) ; "/ " ; ")" $ V07 e = 0 GOTO 5980 ! V02 Y r
+5970 6 V12 V0C = "(ДЛЯ МАССИВА /" 6 V13 ‹8A› = ‹F3› ( 80 ‹E9› ( ‹ED› V0C ‹EA› ‹ED›   ) ) ‹DC› 2 ) L V1A ‹DF› ‹8A› ) ; ‹E1› V0C 1 , ‹ED› V0C ) ; ‹E1›   1 , ‹ED›   ) ; "/)" $ V07 e = 0 GOTO 5980
+5972 $ V0C V0F 3 ) ‹D5› "МЛ" GOTO 5974 L V06 AT(6,1) L H "ИНФОРМАЦИЯ НА МАГНИТНОЙ ЛЕНТЕ ЗАПИСАНА В КОДЕ ( 0 - КОИ-8; 9 - ДКОИ )" ; 6 V04 < = 0 A V01 < $ V07 < = 0 GOTO 5974 $ V07 < = 9 GOTO 5974 L V04 AT(1,7) ; ! V02 Y r
+5974 G V0B ; ‹D1› V0F 1 ) "###" L V09 AT(6,1) , 80 L ) "УКАЖИТЕ ДЛИНУ ЗАПИСИ ФАЙЛА ДАННЫХ " ; AT(1,18) ; V06 $ V04 V0F 1 ) L V04 AT(1,17) ; $ V0B ‹EE› V0F 1 ) ‹D7› 3 GOTO 5975 G V06 V0F 1 ) ‹D1› ; $ V07 ; = 0 GOTO 5975 L V06 AT(4,1) ! V02 Y ‹85›
+5975 L V04 AT(1,7) ; 6 V04 ; = 0 ! V02 Y t
+5980 L V00
+5985 6 V1F V0C = "ДЛИНА ЗАПИСИ ФАЙЛА ДАННЫХ: " G V12 ; ‹D1› ‹E1› V0C ‹ED› V0C ‹EA› 2 , 3 ) "###" $ V0C V0F 3 ) ‹D5› "МЛ" GOTO 5988 6 # ‹E1› V0C ‹ED› V0C ‹EA› 5 ) = "ИНФОРМАЦИЯ НА МЛ В КОДЕ " $ V07 < = 0 GOTO 5986 6 V0F ‹E1› V0C ‹ED› V0C ‹EA› 3 ) = "ДКОИ" ! V02 Y ‹88›
+5986 6 V10 ‹E1› V0C ‹ED› V0C ‹EA› 3 ) = "КОИ-8"
+5988 6 V0E ‹8A› = ‹F3› ( 80 ‹E9› ‹ED› V0C ) ‹DC› 2 ) L V0C ‹DF› ‹8A› ) ; ‹E1› V0C 1 , ‹ED› V0C ) $ V07 e > 0 GOTO 5990 L V00 ! V02 ` V00
+5990 L V09 AT(6,1) , 80
+6000 L E "СТРОКА" ; ‹DF› 10 ) ; "ПОКАЗАТЕЛЬ" ; ‹DF› 24 ) ; "НАИМЕНОВАНИЕ ПОКАЗАТЕЛЯ" ; ‹DF› 52 ) ; "ТИП" ;
+6010 L V1F ‹DF› 58 ) ; "N БАЙТА" ; ‹DF› 68 ) ; "КОЛ. БАЙТ" L V00 6 V04 1 = 7 6 V04 A = 0 6 V04 ‹8C› = 1
+6030 6 V03 z = ‹8C› 6 V04 * = 1 6 V04 ) = 0 6 V06 V13 8 ) = # W V07 / ‹8C› ‹D1› V13 8 ) $ V07 e = 0 GOTO 6040 K V0D ‹E1› V1B / ) 1 , 1 ) = / )
+6040 # V04 " = / ) $ V07 e = 0 GOTO 6080 $ V07 * ‹D7› 15 GOTO 6080 L V09 AT(24,1) , 79 L V1F "ПРОДОЛЖИТЬ (ДА - 1, НЕТ - 0)" ; 6 V05 + = " "
+6050 % V05 + ` ` ` ` ! V02 ` P
+6060 $ V08 + = "1" GOTO 6070 $ V08 + = "0" GOTO 6230 L V04 AT(1,7) ; ! V02 ` P
+6070 6 V04 * = 1 L V0D ‹D5› 1 ‹EA› * , 1 , 80 ‹DF› 14
+6080 $ V07 e = 0 GOTO 6090 L V0B ‹D5› 1 ‹EA› * , 1 , ‹E7› V01 `
+6090 6 V0F = / ) = ‹EF› ‹E1› V1B / ) 1 , 1 ) L V15 ‹DF› 2 ) ; z ; ‹DF› 14 ) ; = / ) ; ‹DF› 24 ) ; $ V0A V13 1 ) = 1 GOTO 6110 $ V07 / = 2 GOTO 6100 L V07 "КОД " ; ! V02 a  
+6100 L V0F "НАИМЕНОВАНИЕ" ; 6 V05 V10 = "А" ! V02 a @
+6110 L V02 2 ;
+6120 6 V03 V10 = V1E
+6130 $ V08 V1E = "А" GOTO 6140 $ V08 V1E = "Ц" GOTO 6140 $ V06 m = n GOTO 6135 6 V0C ‹E1› V10 2 , 1 ) = "Ц" ! V02 a @
+6135 6 V0C ‹E1› V10 2 , 1 ) = "А"
+6140 L V07 ‹DF› 52 ) ; V10 ;
+6150 # V05 U 0 , / G V0B V ‹D1› V0F 1 ) "###" $ V07 ) = 1 GOTO 6190
+6160 # V05 U 0 , /
+6165 G V0B W ‹D1› V0F 2 ) "###" $ V07 ) = 1 GOTO 6200 $ V07 e = 0 GOTO 6180 $ V07 e = 2 GOTO 6170 ! V02 a ‹90›
+6170 $ V06 z ‹D5› A GOTO 6180 ! V02 a ‹90›
+6180 L V13 ‹DF› 60 ) ; V0F 1 ) ; ‹DF› 72 ) ; V0F 2 ) ! V02 b @
+6190 6 V04 ‹8A› = 1 L V07 ‹D5› 1 ‹EA› * , 60 L V04 AT(1,18) ; V06 $ V04 V0F 1 ) L V04 AT(1,17) ; $ V0B ‹EE› V0F 1 ) ‹D7› 3 GOTO 6210 G V06 V0F 1 ) ‹D1› V $ V07 V = 0 GOTO 6210 $ V06 V > ; GOTO 6210 # V05 U 1 , / 6 V04 ) = 0
+6200 6 V04 ‹8A› = 2 L V07 ‹D5› 1 ‹EA› * , 72 L V04 AT(1,18) ; V06 $ V04 V0F 2 ) L V04 AT(1,17) ; $ V0B ‹EE› V0F 2 ) ‹D7› 3 GOTO 6205 G V06 V0F 2 ) ‹D1› W $ V0B V ‹EA› W ‹E9› 1 > ; GOTO 6205 # V05 U 1 , / $ V0A V13 1 ) > 1 GOTO 6203 $ V07 W = 0 GOTO 6201 $ V06 W > Z GOTO 6201 ! V02 b  
+6201 $ V06 m = n GOTO 6205 $ V08 V1E = "Д" GOTO 6205 $ V08 m = AT(1,80) GOTO 6202 $ V09 W ‹D6› Z ‹EA› 2 GOTO 6220 6 V06 W = Z ‹EA› 2 ! V02 b V10
+6202 $ V09 W = Z ‹EA› 1 GOTO 6220 6 V06 W = Z ‹EA› 1 ! V02 b V10
+6203 $ V07 W = 0 GOTO 6205 $ V07 / = 2 GOTO 6204 $ V09 W > Z ‹EA› 1 GOTO 6205 ! V02 b  
+6204 $ V06 W > S GOTO 6205 ! V02 b  
+6205 $ V0A V13 1 ) = 1 GOTO 6208 $ V07 / = 1 GOTO 6208 6 V03 ; = S ! V02 b V10
+6208 6 V03 W = Z
+6210 L V04 AT(1,7) ; 6 V04 ) = 1 & V06 ‹8A› ‹CD› a P a e
+6220 6 V04 ) = 0 ! V02 b @
+6230 6 V06 / = V13 8 )
+6240 6 V06 z = z ‹EA› 1 6 V06 * = * ‹EA› 1 R V01 /
+6250 $ V07 e AT(0,0) L V00 L V19 ‹DF› 31 ) ; "***КОНЕЦ МАКЕТА***" L V00 ! V02 b ‹80›
+6260 L V09 AT(23,1) , 79 L B "УКАЖИТЕ НОМЕР КОРРЕКТИРУЕМОЙ СТРОКИ МАКЕТА ЗАГРУЗКИ (0 - КОНЕЦ)" ; A V01 A $ V07 A ‹D7› 0 GOTO 6270 $ V09 A > V13 8 ) GOTO 6270 $ V07 A = 0 GOTO 6280 $ V08 A ‹D5› ‹F3› A ) GOTO 6270 6 V04 e = 2
+6265 6 V03 ‹8C› = z $ V0D A ‹D6› z ‹E9› 1 ‹E7› A ‹D8› ‹8C› GOTO 6030 6 V13 ‹8C› = ‹F3› ( A ‹E9› 1 ) ‹DC› 14 ) ‹DF› 14 ‹EA› 1 ! V02 ` 0
+6270 L V04 AT(1,7) ; ! V02 b `
+6280 ^ V00
+6290 ' V06 E V1C V08 V10 P V0C
+6310 L V09 ‹D5› ( , 1 , ‹E7› V02 @ L ; "УКАЖИТЕ НОМЕР ФАЙЛА " ; ‹E1› V0C 1 , ‹ED› V0C ) ; " НА " ; V0F 3 ) ; " (0 - КОНЕЦ)" ; 6 V07 V13 2 ) = 0 A V04 V13 2 ) $ V0E V13 2 ) ‹D5› ‹F3› V13 2 ) ) GOTO 6320 $ V0A V13 2 ) ‹D7› 0 GOTO 6320 $ V0B V13 2 ) > ‹E7› y ‹99› GOTO 6320 $ V0A V13 2 ) = 0 GOTO 6340 ! V02 c 0
+6320 L V04 AT(1,7) ; ! V02 c V10
+6330 6 V06 ‹8B› = V13 2 ) $ V07 V1D > 1 GOTO 6332 # V01 c $ V06 ‹8B› = @ GOTO 6340 " V02 c B ! V02 c  
+6332 G V11 ‹8B› ‹D1› ‹E1› 6 10 ) 2 ) "#####" 4 V05 8 9 ‹CD› c 4 { V0C V02 ‹DB› 1 , 6 10 ) ‹8F› ‹90› ‹90› 4 V00 u V09 V02 ‹DB› 1 , 6 10 ) q V0C V02 ‹DB› 1 , ( ‹8F› , ‹8F› ) ; ‹89› 6 V04 ‹90› = 0 ! V02 c @
+6334 $ V09 8 = "73" GOTO 6336 L V06 AT(24,1) T V02 V05 V09 L . AT(1,7) ; "ОШИБКА ПРИ ОБРАЩЕНИИ К УСТРОЙСТВУ " ; V0F 3 ) ; T V02 V05 V00 L V09 AT(24,1) , 79 ! V02 c V10
+6336 " V02 c B ! V02 c  
+6340 ^ V00
+6342 L V06 AT(24,1) T V02 V05 V09 L 9 AT(1,7) ; "ФАЙЛ " ; ‹E1› V0C 1 , ‹ED› V0C ) ; " НОМЕР " ; ‹8B› ; " ОТСУТСТВУЕТ НА " ; V0F 3 ) ; T V02 V05 V00 L V09 AT(24,1) , 79 ^ V00
+6344 L V06 AT(24,1) T V02 V05 V09 L V0D AT(1,7) ; ‹E1› V0C 1 , ‹ED› V0C ) ; T V02 V05 V00 L V09 AT(24,1) , 79 ^ V00
+6350 ' V05 F < V08 ‹AE› P
+6370 V V02   *
+6380 V V03   * *
+6400 6 V0B V13 4 ) V13 10 ) = 0 # V06 U 0 , 1 $ V06 m = n GOTO 6420 # V06 > U ‹EA› V , W $ V0A V13 4 ) = 0 GOTO 6410 # V01 B 6 V0C V13 6 ) = V13 6 ) ‹EA› 1 ! V02 d @
+6410 6 V05 + = " " V06 V0D V08 ( V02 = [ ) + ‹CA› ‹8A› ! V02 d 0
+6420 6 V0B V12 = ‹E1› ‹E0› V15 U ‹EA› V , W ) # V01 - 6 V03 + = V12
+6430 6 V03 K = + $ V06 m ‹D5› n GOTO 6440 # V01 #
+6440 # V01 A ^ V00
+6442 ' V07 H L V08 ‹EA› P ‹8C› ‹8D›
+6443 $ V18 ‹EC› ‹E1› ‹E0› V15 ‹8C› , ‹8D› ) = "." = 0 ‹E6› m ‹D5› AT(1,80) GOTO 6445 6 V07 V13 4 ) = 2 ! V02 d G
+6445 # V04 > ‹8C› , ‹8D›
+6447 ^ V00
+6450 ' V07 P t V08 V05 R V1D :
+6455 $ V07 V1D > 1 GOTO 6460 # V02 d : ! V02 d ‹90›
+6460 6 V04 ‹8A› = 0 6 V04 ^ = 0 $ V07 ‹90› = 0 GOTO 6462 $ V08 ‹90› ‹D7› ‹E7› V02 V GOTO 6465
+6462 " V02 d ‹85›
+6465 6 V0E ‹8D› = ‹EC› ‹E1› ‹E0› V14 1 ‹EA› ‹90› ) = , ‹DF› $ V07 ‹8D› = 0 GOTO 6475 $ V08 ‹8A› ‹EA› ‹8D› ‹D8› ‹89› GOTO 6475 6 V08 ‹89› = ‹8D› ‹EA› ‹8A› ‹E9› 1 $ V07 ‹8D› = 1 GOTO 6470 ! V02 d u
+6470 $ V07 ‹89› AT(0,0) 6 V04 ^ = 1 ! V02 d ‹90›
+6475 6 V07 ‹8C› = ‹E7› V02 V ‹E9› ‹90› $ V08 ‹8C› ‹D8› ‹89› ‹E9› ‹8A› GOTO 6480 6 V15 ‹E1› ‹E0› V15 1 ‹EA› ‹8A› , ‹8C› ) = ‹E1› ‹E0› V14 ‹90› ‹EA› 1 , ‹8C› ) 6 V05 ‹8A› = ‹8A› ‹EA› ‹8C› " V02 d ‹85› $ V06 ‹8A› ‹D7› ‹89› GOTO 6465 ! V02 d ‹90›
+6480 6 V19 ‹E1› ‹E0› V15 1 ‹EA› ‹8A› , ‹89› ‹E9› ‹8A› ) = ‹E1› ‹E0› V14 ‹90› ‹EA› 1 , ‹89› ‹E9› ‹8A› ) 6 V07 ‹90› = ‹90› ‹EA› ‹89› ‹E9› ‹8A› ! V02 d ‹90›
+6485 p V14 V02 ‹DB› 1 , ( ‹8F› , ‹8F› ) ‹E1› ‹E0› V14 1 , ‹E7› V02 V ) 6 V04 ‹90› = 0
+6490 ^ V00
+6500 ' V07 U ‹CC› V08 V1C T F "
+6510 $ V07 F = 0 GOTO 6520 K V0A ‹E1› V1B " ) 2 ) , ‹DB› V K V0B ‹E1› V1B " ) 4 , 1 ) W ^ V00
+6520 6 V0C V = ‹EF› ‹E1› V1B " ) 2 ) , ‹DB› 6 V0D W = ‹EF› ‹E1› V1B " ) 4 , 1 ) ^ V00
+6600 $ V07 < = 0 GOTO 6680 6 V17 V17 1 ) = AT(16,0) V01 V02 V03 ‹9C› V09 ‹86› ‹7F› ‹97› ‹8D› ‹8E› V0B V0C V0D V0E V0F
+6605 6 V17 V17 2 ) = AT(16,16) V11 V12 V13 ‹9D› ‹85› V08 ‹87› V18 V19 ‹92› ‹8F› V1C V1D V1E V1F
+6610 6 V17 V17 3 ) = AT(16,32) ! " # $ V0A V17 V1B ‹88› ‹89› ‹8A› ‹8B› ‹8C› V05 V06 V07
+6615 6 V17 V17 4 ) = AT(16,144) ‹91› V16 ‹93› ‹94› ‹95› ‹96› V04 ‹98› ‹99› ‹9A› ‹9B› V14 V15 ‹9E› V1A
+6620 6 V17 V17 5 ) = AT(16,32) ‹A0› ‹A1› ‹A2› ‹A3› ‹A4› ‹A5› ‹A6› ‹A7› ‹A8› [ . < ( + !
+6625 6 V17 V17 6 ) = AT(16,38) ‹A9› ‹AA› ‹AB› ‹AC› ‹AD› ‹AE› ‹AF› ‹B0› ‹B1› ] $ * ) ; ^
+6630 6 V17 V17 7 ) = AT(16,45) / ‹B2› ‹B3› ‹B4› ‹B5› ‹B6› ‹B7› ‹B8› ‹B9› | , % _ > ?
+6635 6 V17 V17 8 ) = AT(16,186) ‹BB› ‹BC› ‹BD› ‹BE› ‹BF› ‹C0› ‹C1› ‹C2› ` : # @ ' = "
+6640 6 V17 V17 9 ) = AT(16,195) a b c d e f g h i ‹C4› ‹C5› ‹C6› ‹C7› ‹C8› ‹C9›
+6645 6 V17 V17 10 ) = AT(16,202) j k l m n o p q r ‹CB› ‹CC› ‹CD› ‹CE› ‹CF› )
+6650 6 V17 V17 11 ) = AT(16,209) ~ s t u v w x y z ‹D2› GOTO ? ‹D6› ‹D7›
+6655 6 V17 V17 12 ) = AT(16,216) = ‹DA› ‹DB› ‹DC› ; , ‹DF› ‹E0› ‹E1› AT(227,228) ‹E5› ‹E6› ‹E7›
+6660 6 V17 V17 13 ) = AT(16,123) A B C D E F G H I 149 ‹EA› ( ‹EC› ‹ED›
+6665 6 V17 V17 14 ) = AT(16,125) J K L M N O P Q R ‹EE› ‹EF› ‹F0› ‹F1› ‹F2› ‹F3›
+6670 6 V17 V17 15 ) = AT(16,92) ‹9F› S T U V W X Y Z ‹F4› ‹F5› ‹F6› ‹F7› ‹F8› ‹F9›
+6675 6 V17 V17 16 ) = AT(16,48) 1 2 3 4 5 6 7 8 9 ‹FA› ‹FB› ‹FC› ‹FD› ‹FE› ‹FF›
+6680 ^ V00
+6700 $ V07 < = 0 GOTO 6710 V06 V0C V0C ‹E1› ‹E0› V15 1 , ‹89› ) , ‹E0› V17 )
+6710 ^ V00
+7000 ' V05 c V08 V09 l U
+7010 6 V04 ‹91› = 0 $ V07 ‹8B› > 0 GOTO 7020 6 V04 ‹8B› = 1
+7020 6 V04 ^ = 0 6 V07 ‹92› 1 ) = 1 $ V07 @ AT(0,0) 6 V04 @ = 1
+7030 $ V07 ‹8B› > 1 GOTO 7040 # V03 d 1 # V03 d 2 ! V02 q ‹90›
+7040 6 V0D ‹90› = ( @ ‹DC› ‹8B› ‹EA› 5 ) ‹DC› 3 $ V07 ‹90› ‹D6› 2 GOTO 7060 6 V04 ‹90› = 3
+7060 & V08 ‹90› ‹CD› p p q @ q ‹80›
+7070 W V07 ‹93› @ ‹D1› ‹8B› ‹E9› 1 W V09 ‹94› 1 ‹D1› ‹E5› U V10 V00 V00 # V03 d 1 $ V07 ^ = 1 GOTO 7120 $ V07 ^ = 2 GOTO 7130 R V01 ‹94›
+7120 R V01 ‹93› ! V02 q ‹90›
+7130 # V03 d 2 6 V06 ‹8B› = ‹93› ‹EA› 1 ! V02 q ‹90›
+7140 6 V14 ‹90› = ( ( ‹95› ‹EA› 1 ) ‹DC› ‹92› ‹8B› ) ‹EA› 5 ) ‹DC› 3 $ V07 ‹90› ‹D6› 2 GOTO 7160 6 V04 ‹90› = 3
+7160 & V08 ‹90› ‹CD› q p q ‹90› q ‹80›
+7170 V V13 * * * ‹F7› ‹F0› ‹E5› ‹F2› ‹E5› ‹E4›   ‹F0› ‹EF›   AT(236,239) ( ‹E1› ‹ED› W V06 ‹94› ‹95› ‹D1› ‹92› ‹8B› ) # V03 d 1 R V01 ‹94› ! V02 q ‹90›
+7180 V V0D * * * ‹EF› ‹F4› ‹ED› ‹EF› ‹F4› ( ‹E1›   AT(236,87) V0A ‹94› ‹95› ‹D1› ‹92› ‹8B› ) ‹D2› ‹E9› 1 # V03 d 2 R V01 ‹94›
+7190 6 V03 @ = ‹8B›
+7210 ^ V00
+7220 ' V06 d V00 V00 V00 V00 ‹8F›
+7230 F V03 ‹96› ‹8F› ‹97›
+7240 T V05 V09 V1B ( V1F ?
+7250 $ V07 ‹98› > 0 GOTO 7380 6 V07 ‹97› = AT(3,27) V00 V01 W V06 ( 1 ‹D1› 6 6 V0C ‹96› ( ) = ‹E1› ‹97› 1 , 4 ) J V0A ‹E1› ‹97› 3 , 1 ) , V01 R V01 (
+7370 6 V04 ‹98› = 1 6 V04 ‹91› = 0
+7380 & V0E ‹8F› ‹CC› t V00 v P v p w P w ` w p
+7390 ^ V00
+7400 V V03   ‹FE› ‹F4›
+7410 4 V05 8 9 ‹CD› x p
+7430 " V02 t ‹90›
+7440 6 V0C ‹8F› = ‹EC› ‹E1› ‹E0› V15 1 ) = , V00
+7450 $ V07 ‹8F› = 0 GOTO 7470
+7460 6 V06 ‹89› = ‹8F› ‹E9› 1 ! V02 t ‹80›
+7470 6 V05 ‹89› = ‹E7› V10 $
+7480 " V02 g V00 ^ V00
+7490 6 V08 ‹97› = AT(4,27) V01 V04 V00
+7500 6 V04 ( = 0
+7510 4 V05 8 9 ‹CD› u 0
+7520 ! V02 u @
+7530 $ V0B 8 ‹D5› "800C" GOTO 7850
+7540 h V04 ‹96› 1 )
+7550 h V01 ‹97› f V02 ‹E0› V15 f V08 ‹E1› 8 1 , 1 ) 6 V06 ‹95› = ‹95› ‹EA› 1 4 V00 6 V05 8 = " "
+7560 6 V06 ( = ( ‹EA› 1
+7570 $ V12 ‹E1› V15 1 ) 1 , 1 ) ‹D5› AT(1,19) GOTO 7600
+7580 $ V07 ( = 2 GOTO 7590 6 V06 @ = @ ‹EA› 1 6 V08 ‹92› @ ) = ‹95› ‹EA› 1 ! V02 u @
+7590 6 V04 ^ = 2 ! V02 v @
+7600 $ V07 ( = 1 GOTO 7620
+7610 6 V04 ^ = 1 h V04 ‹96› 2 ) 6 V06 ‹95› = ‹95› ‹E9› 1 ! V02 v @
+7620 6 V04 ^ = 0
+7630 $ V07 ^ = 0 GOTO 7640
+7640 6 V04 ‹98› = 1 4 V00 ^ V00
+7650 h V04 ‹96› 2 ) 6 V06 ‹95› = ‹95› ‹E9› 1
+7660 ^ V00
+7670 V V03   ‹FA› ‹F0›
+7680 " V02 w ‹80›
+7690 h V04 ‹96› 3 ) h V01 ‹97›
+7700 h V08 ‹E1› ‹E0› V15 1 , ‹89› ) h V08 ‹E1› 8 1 , 1 ) 6 V06 ‹95› = ‹95› ‹EA› 1 6 V05 8 = " "
+7740 ^ V00
+7750 h V04 ‹96› 4 ) 6 V06 ‹95› = ‹95› ‹EA› 1 $ V07 ‹91› AT(0,0) 6 V06 @ = @ ‹EA› 1 6 V05 ‹92› @ ) = ‹95›
+7755 6 V06 ‹91› = ‹91› ‹EA› 1 $ V07 ‹91› ‹D7› 2 GOTO 7758 6 V04 ‹91› = 0
+7758 ^ V00
+7760 h V04 ‹96› 5 ) ^ V00
+7770 h V04 ‹96› 6 ) 6 V04 ‹95› = 0 ^ V00
+7780 V V04   B / B
+7790 6 V08 ‹97› = AT(4,27) V01 V00 V00 K V08 ‹E1› ‹97› 3 ) , ‹DB› ‹89› ^ V00
+7850 $ V0B 8 ‹D5› "8001" GOTO 7870
+7860 L ‹8A› "ОШИБКА " ; 8 , "УБЕДИТЕСЬ В ПРАВИЛЬНОСТИ УСТАНОВКИ МЛ.. ИНДИКАТОРЫ 'ЗАГРУЗКА' И 'ДИСТАНЦ' ДОЛЖНЫ БЫТЬ ВКЛЮЧЕНЫ." , "ДЛЯ ПРОДОЛЖЕНИЯ - CONTINUE" B V00 ! V02 u @
+7870 L V0B "ОШИБКА " ; 8 4 V00 Y V00
+8000 6 V0F ‹E1› + 1 , 8 ) = "BAM9" ‹81› V02 V02 + ‹80› V07 V02 ‹D6› ‹D1› ( + ) + B V10 "BAM9  ЗАПИСАНА"

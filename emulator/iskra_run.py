@@ -7,7 +7,7 @@ implementation of the same BASIC-2 dialect, built to run the original
 programs correctly. Loads a disk image, decodes the tokenized BASIC 02
 program, and executes it on an 80x24 KOI-8 screen.
 
-Ground truth for iteration: the 4,189 decoded source lines of the
+Ground truth for iteration: the 5,842 decoded source lines of the
 STIPENDIYA payroll system and BAM database suite. When output is wrong
 the responsible statement is directly visible, so the interpreter can
 be debugged against real software.

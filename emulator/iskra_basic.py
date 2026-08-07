@@ -83,8 +83,33 @@ class Disk:
     def sector(self, n):
         return self.data[n * SECTOR:(n + 1) * SECTOR]
 
+    BOOT_MAGIC = bytes([0x06, 0x90, 0x09, 0x90, 0x07, 0x90])
+
+    def kind(self):
+        """system, data or blank.
+
+        A system side has no file structure at all. Sector 0 holds the boot
+        signature, not a catalog, and a scan across all 1001 sectors finds
+        no catalog-like entries and no file header sectors: these are pure
+        firmware images, which is also why they run 966 to 996 sectors full.
+        """
+        if self.data.count(0) == len(self.data):
+            return "blank"
+        if self.data.startswith(self.BOOT_MAGIC):
+            return "system"
+        return "data"
+
     def catalog(self):
+        # A system side has no catalog. Reading one anyway used to take the
+        # boot signature as the index word: 0x0690 is 1680, the loop then
+        # walked past the end of the image, sector() returned b"" and the
+        # first byte test raised IndexError. Three of the six original
+        # sides crashed here and it went unnoticed because those sides were
+        # only ever identified by their plain-text signature.
+        if self.kind() != "data":
+            return []
         idx = struct.unpack(">H", self.data[0:2])[0]
+        idx = min(idx, self.sectors - 1)   # never index past the image
         out = []
         for s in range(0, idx + 1):
             sec = self.sector(s)
@@ -218,22 +243,49 @@ def decode_lines(body, tokens, start=0, limit=None):
     return lines
 
 
+def decode_program(body, tokens):
+    """Decode a whole program body the way the runtime loader does.
+
+    Sync on the record terminator, and when a record does not check out,
+    step one byte and try again instead of giving up. Line numbers are
+    de-duplicated and sorted at the end, because a program body is not
+    required to be stored in ascending order.
+
+    The previous listing path slid the start offset over the first 400
+    bytes, kept the run with the most ascending line numbers, and stopped at
+    the first line number that did not increase. On four of the nineteen BAM
+    programs that truncated after one to three lines: BAM0, BAM1, BAM2 and
+    BAM10 were missing from listings/ entirely, and the survey's own counts
+    contradicted them. The runtime never had the problem, so the listing
+    side uses the same rule now. All nineteen BAM programs and all four
+    STIPENDIYA segments decode at the counts the survey recorded.
+    """
+    out = {}
+    i = 0
+    while i + 3 < len(body):
+        ln = bcd2(body[i], body[i + 1])
+        length = body[i + 2]
+        if ln is not None and length and i + 3 + length <= len(body) \
+                and body[i + 2 + length] == 0xFE:
+            break
+        i += 1
+    while i + 3 < len(body):
+        ln = bcd2(body[i], body[i + 1])
+        length = body[i + 2]
+        if ln is None or length == 0 or i + 3 + length > len(body) \
+                or body[i + 2 + length] != 0xFE:
+            i += 1
+            continue
+        rec = body[i + 3:i + 2 + length]
+        if ln not in out:
+            out[ln] = render_payload(rec, tokens)
+        i += 3 + length
+    return [(ln, out[ln]) for ln in sorted(out)]
+
+
 def best_decode(body, tokens):
-    """Slide the start offset; keep the run with most ascending lines."""
-    best = []
-    for s in range(0, min(len(body), 400)):
-        got = decode_lines(body, tokens, s)
-        asc = []
-        last = -1
-        for ln, txt in got:
-            if ln > last:
-                asc.append((ln, txt))
-                last = ln
-            else:
-                break
-        if len(asc) > len(best):
-            best = asc
-    return best
+    """Kept as the listing entry point; the tolerant decoder does the work."""
+    return decode_program(body, tokens)
 
 
 # --- commands ------------------------------------------------------------
