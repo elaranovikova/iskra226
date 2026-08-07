@@ -1,19 +1,28 @@
-# What 58 to 90 roubles were worth in 1988
+# What a vocational stipend was worth in 1988
 
-Context for the amounts on the STIPENDIYA ведомость of SPTU-132, October
-1988, computed and printed by `emulator/iskra_run.py`.
+Context for reading the STIPENDIYA listings of SPTU-132. The sheet in
+`vedomost-printed.png` is **not a surviving document**. The program is the
+one from 1989 and every formula in it is the original; the three students
+on it are three I typed in, to see whether the arithmetic still came out.
+It does, to the kopeck, against a hand calculation.
+
+So the figures below are not evidence of what anyone was paid. They are
+period-plausible inputs, chosen so the output could be checked, and the
+scale section after them is the part that is sourced.
 
 ## The amounts from the run
 
-| Student | practical wage | stipend | deductions, meals | net, К ВЫДАЧЕ |
+| Row | practical wage | stipend | deductions, meals | net, К ВЫДАЧЕ |
 |---|---|---|---|---|
-| Иванов И.И.* | 46.80 | 30.00 | 12.40 | **64.40** |
-| Петров П.П.* | 39.50 | 30.00 | 11.20 | **58.30** |
-| Сидорова А.А.* | 58.20 | 45.00 | 13.60 | **89.60** |
+| 1 | 46.80 | 30.00 | 12.40 | **64.40** |
+| 2 | 39.50 | 30.00 | 11.20 | **58.30** |
+| 3 | 58.20 | 45.00 | 13.60 | **89.60** |
 | **total** | 144.50 | 105.00 | 37.20 | **212.30** |
 
-The asterisk in a name is the software's full-month marker. Without it the
-proportional formula applies, `V84 = days worked / days in the month`.
+The names are placeholders and stay out of this file. An asterisk after a
+name is the software's full-month marker; without it the proportional
+formula applies, `V84 = days worked / days in the month`. That marker is a
+finding about the program, and it holds whatever names you put in.
 
 ## The Soviet wage scale in 1988
 
@@ -24,9 +33,12 @@ proportional formula applies, `V84 = days worked / days in the month`.
 | engineer | 130 to 180 |
 | **average wage** | **about 220** |
 
-The three students, at 58 to 90 roubles net, sat at a quarter to two fifths
-of the average wage. Сидорова at 89.60 was effectively at factory-entrant
-level, as a vocational student.
+Three rows at 58 to 90 roubles net sit at a quarter to two fifths of the
+average wage. What the sourced scale supports is the shape of the thing:
+the base stipend of 30 roubles was a fraction of a wage, and a student who
+also worked practicals could reach the bottom of the factory range. The
+individual figures above cannot support more than that, because I chose
+them.
 
 ## Why the stipend alone was so thin
 

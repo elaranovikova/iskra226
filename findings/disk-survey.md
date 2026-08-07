@@ -88,9 +88,14 @@ The data file is not decoded. It has students' names in it.
 
 ## Total
 
-24 of 24 findable programs load and run without a crash. Two complete
-application systems from two corners of the Soviet Union, eight interpreter
-builds spanning five years, and one side that was never written to.
+23 of 23 programs load and run without a crash. Two complete application
+systems from two corners of the Soviet Union, eight interpreter builds
+spanning five years, and one side that was never written to.
+
+Twenty-three, not the twenty-four this section said until this evening.
+Byte 1 of a catalog entry is 0x80 for a program and 0x00 for data, and the
+two entries carrying 0x00 are `132` and the scratched `СПИСОК`. Counting
+`132` as a program meant counting the students' file as software.
 
 ## Limits, stated plainly
 
