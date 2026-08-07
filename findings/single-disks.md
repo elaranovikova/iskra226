@@ -21,6 +21,7 @@ looked.
 | `iskra226-plan.dsk` | PLAN | Плановое хозяйство | 26 | 2 |
 | `iskra226-artil.dsk` | ARTIL | Артиллерийская дуэль | 31 | 2 |
 | `iskra226-tetris.dsk` | TETRIS | Падающие блоки | 92 | 5 |
+| `iskra226-chat.dsk` | CHAT | Терминал связи | 25 | 3 |
 
 ## Why one each
 
