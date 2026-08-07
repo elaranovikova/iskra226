@@ -1,0 +1,20 @@
+cff-version: 1.2.0
+title: "Iskra-226: recovery, format documentation and emulation"
+message: "If you use this, please cite it and mirror the disk images."
+type: software
+authors:
+  - family-names: Novikova
+    given-names: Elara S.
+    email: elara@elaranovikova.com
+    city: Bishkek
+    country: KG
+repository-code: "https://github.com/elaranovikova/iskra226"
+license: MIT
+version: "1.0"
+date-released: "2026-08-06"
+keywords:
+  - Iskra-226
+  - soviet computing
+  - Wang 2200
+  - emulator
+  - digital preservation
