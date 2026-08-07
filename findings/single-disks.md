@@ -21,6 +21,7 @@ looked.
 | `iskra226-plan.dsk` | PLAN | Плановое хозяйство | 26 | 2 |
 | `iskra226-artil.dsk` | ARTIL | Артиллерийская дуэль | 31 | 2 |
 | `iskra226-tetris.dsk` | TETRIS | Падающие блоки | 92 | 5 |
+| `iskra226-snake.dsk` | SNAKE | Змейка | 56 | 3 |
 | `iskra226-chat.dsk` | CHAT | Терминал связи | 25 | 3 |
 
 ## Why one each
@@ -45,6 +46,14 @@ it.run('WUMPUS')
 
 The program name is in the catalog of each disk and in the *Program* column
 above, limited to eight characters as the original format requires.
+
+For the real-time program SNAKE, supply keystrokes through
+`it.key_source`, a callable returning a key code or None:
+
+```python
+keys = list("6644882")
+it.key_source = lambda: (ord(keys.pop(0)) if keys else None)
+```
 
 ## These are not a find
 

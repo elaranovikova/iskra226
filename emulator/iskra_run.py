@@ -143,9 +143,12 @@ def parse_expr(pl, tokens):
                                  0xDF: "*"}[b]))
             i += 1
         elif b == 0xE9 and items and items[-1][0] in (
-                "num", "str", "var", "aref", "arefl", "rpar", "strfn") \
-                and not (i + 2 < len(pl) and pl[i + 1] == 0xE8
-                         and (i + 3 >= len(pl) or pl[i + 3] != 0xD0)):
+                "num", "str", "var", "aref", "arefl", "rpar", "strfn"):
+            # E9 after an OPERAND is binary minus; after an operator or at
+            # the start of an expression it introduces a negative literal
+            # (the "-1" end code). The earlier lookahead-based rule
+            # mis-read "X - 1" at the end of a payload as "X" plus a
+            # stray -1, retracted.
             items.append(("op", "-")); i += 1
         elif b == 0xE9 and i + 2 < len(pl) and pl[i + 1] == 0xE8:
             # unary minus:  E9 E8 <bcd>  ->  negative numeric literal
@@ -309,6 +312,19 @@ class Interp:
         self._pg = {}            # printer page grid: row -> {col: char}
         self._prow = 0
         self._pcol = 0
+        # --- communication line, device 015 -------------------------
+        # Writing to device 015 sends a line to the host; the host's
+        # reply is queued and delivered to the program through INPUT,
+        # one line per INPUT, terminated by a single "." line.
+        self.comm_out = []       # lines written by the program
+        self._cline = ""         # partial line on the comm device
+        self.comm_in = []        # reply lines waiting to be INPUT
+        self.llm_handler = None  # callable(str) -> str, set by the host
+        # --- keyboard buffer for KEYIN --------------------------------
+        # Non-blocking: get_key() returns None when nothing is pending,
+        # which is what makes the poll loop in the corpus work.
+        self.keys = []           # pending keystrokes, consumed in order
+        self.key_source = None   # optional callable() -> key or None
         self.auto = list(auto) if auto else None
         self.auto_i = 0
         self.trace = trace
@@ -446,7 +462,9 @@ class Interp:
         """Emit to the currently selected device. The printer keeps a
         2-D page (the form is laid out with AT(row,col)), flushed to
         self.printer line by line via _pr_flush."""
-        if self.print_device == 12:
+        if self.print_device == 15:
+            self._cline += str(s)
+        elif self.print_device == 12:
             row = self._pg.setdefault(self._prow, {})
             for ch in str(s):
                 row[self._pcol] = ch
@@ -455,7 +473,11 @@ class Interp:
             self.scr.puts(s)
 
     def _pr_nl(self):
-        if self.print_device == 12:
+        if self.print_device == 15:
+            if self._cline:
+                self.comm_out.append(self._cline)
+            self._cline = ""
+        elif self.print_device == 12:
             self._prow += 1
             self._pcol = 0
         else:
@@ -477,6 +499,26 @@ class Interp:
             self._pcol = max(0, col)
         else:
             self.scr.at(row, col)
+
+    def _comm_flush(self):
+        """Hand the buffered question to the host and queue the reply."""
+        if self._cline:
+            self.comm_out.append(self._cline)
+            self._cline = ""
+        if not self.comm_out:
+            return
+        question = "\n".join(self.comm_out)
+        self.comm_out = []
+        if self.llm_handler is None:
+            reply = "СВЯЗЬ НЕ УСТАНОВЛЕНА"
+        else:
+            try:
+                reply = self.llm_handler(question)
+            except Exception as exc:                # noqa: BLE001
+                reply = "ОШИБКА СВЯЗИ: %s" % exc
+        for ln in str(reply).split("\n"):
+            self.comm_in.append(ln)
+        self.comm_in.append(".")
 
     def _pr_flush(self):
         """Convert the accumulated printer page into text lines."""
@@ -675,7 +717,23 @@ class Interp:
             cond = False
         return cond, target
 
+    def get_key(self):
+        """Return the next pending keystroke, or None if none is ready."""
+        if self.keys:
+            return self.keys.pop(0)
+        if self.key_source is not None:
+            return self.key_source()
+        return None
+
+    def press(self, *keys):
+        """Queue keystrokes. Codes >= 128 count as special/function keys."""
+        for k in keys:
+            self.keys.append(k)
+
     def get_input(self):
+        # a queued reply from the communication line is consumed first
+        if self.comm_in:
+            return self.comm_in.pop(0)
         if self.auto is not None:
             if self.auto_i >= len(self.auto):
                 # scripted input exhausted: stop cleanly instead of feeding
@@ -930,6 +988,43 @@ class Interp:
                             tgt = it[1]
                     if ch is not None and tgt is not None:
                         self.svars[tgt] = chr(ch) * self.print_width
+                elif nm == "KEYIN":
+                    # KEYIN <var>, <line-if-key>, <line-if-special>
+                    # Corpus: 104 occurrences, ALL payload length 5
+                    # (one slot + two 2-byte BCD line numbers). 103 have
+                    # both targets equal; BAM3 line 990 is the decisive
+                    # exception, "KEYIN V21, 1000, 1160 : GOTO 990" -
+                    # the canonical non-blocking poll: branch on a key,
+                    # fall through to the GOTO when the buffer is empty.
+                    # Line 1160 opens with "ON V21+1", a function-key
+                    # dispatcher, confirming the second target's role.
+                    raw = [x[1] for x in items
+                           if x[0] in ("var", "num", "byte")]
+                    slot = raw[0] if raw else 0
+                    t1 = t2 = None
+
+                    def _bcd(b):
+                        return (b >> 4) * 10 + (b & 0xF)
+
+                    if len(raw) >= 5:
+                        t1 = _bcd(raw[1]) * 100 + _bcd(raw[2])
+                        t2 = _bcd(raw[3]) * 100 + _bcd(raw[4])
+                    ch = self.get_key()
+                    if ch is None:
+                        pass                      # no key: fall through
+                    else:
+                        code = ord(ch[0]) if isinstance(ch, str) and ch \
+                            else int(ch)
+                        special = code >= 128
+                        # the corpus compares the result numerically
+                        # (BAM3: "ON V21+1"), so the slot holds the code;
+                        # a stale string in the same slot would shadow it
+                        self.nvars[slot] = code
+                        self.svars.pop(slot, None)
+                        tgt = t2 if special else t1
+                        if tgt is not None:
+                            jump = tgt
+                            break
                 elif nm == "CONVERT":
                     # CONVERT <src> TO <dst> , '<picture>' : format the
                     # numeric source through the # picture into a string
@@ -975,7 +1070,10 @@ class Interp:
                     nums = [x[1] for x in items if x[0] in ("var", "byte",
                                                             "num")]
                     if len(nums) >= 2 and nums[0] == 7:
+                        prev = self.print_device
                         self.print_device = nums[1]
+                        if prev == 15 and nums[1] != 15:
+                            self._comm_flush()
                         for x in items:
                             if x[0] == "byte" and x[1] > 100:
                                 self.print_width = x[1]
