@@ -213,9 +213,9 @@ on a clock, so on the original machine the game would run at the pace of its
 own interpreter. For a program of that period, though, that is the normal
 way to build it.
 
-## Addendum 3: TETRIS3 replaces both of them
+## Addendum 3: one TETRIS replaces both of them
 
-The two above are gone from the disk set. `TETRIS3` does what they were each
+The two above are gone from the disk set. The disk that ships now does what they were each
 reaching for and did not get to: all seven tetrominoes, a bordered field, and
 real-time key polling, in 432 lines across 30 sectors. That is more than the
 turn-based version and the real-time one put together, and it is the largest
@@ -227,8 +227,8 @@ limit first showed up, and the real-time one is where the redraw cost of a
 character cell screen got measured. Both of those still hold. What changed is
 which disk ships.
 
-One honest gap: `games-src/` has no `TETRIS3.bas`. Every other disk here was
+One honest gap: `games-src/` has no source for it. Every other disk here was
 assembled from a source in that directory and the source is the proof that
 the format works in both directions. For this one I have the image and not
-the source, so the proof for TETRIS3 is narrower: it is that an independent
+the source, so the proof for this one is narrower: it is that an independent
 parser loads and runs it.
