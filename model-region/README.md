@@ -308,10 +308,12 @@ chose to represent.
 
 ## Two more things it does to you
 
-**No praise you can rest on.** A top result gets
-*ПОПРОБУЙТЕ СЫГРАТЬ ЕЩЕ ЛУЧШЕ*, try to play better still. Between 14 and
-16 the message is that you have learned to steer but are not yet decisive
-enough. The scale keeps going after you have won it.
+**No praise you can rest on.** The 14 to 16 band tells you your work can
+be rated excellent and that you have learned to manage the system, then
+adds that you do not yet trust yourself, then closes with
+*ПОПРОБУЙТЕ СЫГРАТЬ ЕЩЕ ЛУЧШЕ*, try to play better still. There are two
+more bands above it. The scale keeps going after it has called you
+excellent.
 
 **A harder start for the second run.** Lines 27 and 28 reset the opening
 position for a returning player: almost double the pollution, and two
@@ -366,14 +368,14 @@ The header line in that front material is worth reading twice:
         ВЕРСИЯ 1.4  18.10.85    BASIC 02 30.09.84
 ```
 
-Yushchenko, Parkhaev and Kazakevich. The same side that carries an
-teaching game about the limits of growth also carries a
-function and graphics package by three named people from the Institute of
-Physical Chemistry. Whoever assembled this diskette was not sorting by
+Yushchenko, Parkhaev and Kazakevich. The same side that carries a
+teaching game about the limits of growth also carries a function and
+graphics package by three named people from the Institute of Physical
+Chemistry. Whoever assembled this diskette was not sorting by
 subject.
 
-`MANAGEM` line 10 is a comment, and it is the only attribution anywhere
-on the side:
+`MANAGEM` line 10 is a comment, and it is the only attribution that sits
+in plain sight rather than behind a screen you have to earn:
 
 ```
 10 REM MANAGEM.01/28.04.83/ГОРПЕНКО/ДЕЛОВАЯ ИГРА
@@ -526,8 +528,9 @@ about `reconstruction/`, and it is kept here for the same reason.
 The image of side `012 1` came from **dk_spb**, who read the physical
 diskettes and has kept this material alive for years. Without his
 archive there is no folder here and no repository either. The program
-itself is the work of somebody at a Soviet teaching institution in the
-1980s whose name is not on it.
+itself is the work of **Mamaeva L. A., Kotov Yu. S. and Tarkaev A. N.**
+of ОТСО and the biology faculty of KGU, who put their names at the far
+end of it where almost no player would arrive.
 
 My code in this folder is MIT and my prose is CC BY 4.0, the same as the
 rest of the repository. The decoded listing is a Soviet work of the
