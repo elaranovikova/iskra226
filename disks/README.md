@@ -11,6 +11,12 @@ media. Both readings are true; see `docs/on-disk-format.md`.
     disk3side0   application, STIPENDIYA, SPTU-132, 1988/89
     disk3side1   256,256 zero bytes, never written
 
+And one more, from a second archive:
+
+    012-1        no catalog. Tokenised SIG at the front, then three
+                 programs as plain source text, among them the teaching
+                 game in model-region/
+
 ## Where they come from
 
 `880.rar` was published on oldpc.su. The physical disks belonged to the forum
@@ -22,6 +28,26 @@ as I can establish it is the only one left.
 
 Neither of them owes me anything and both of them are the reason any of this
 was possible. If you mirror this repository, mirror their names with it.
+
+## The second archive, and 012-1
+
+In August 2026 dk_spb sent me a great deal more: 41 images, of which the
+six above turned out to be a byte identical subset. He read the two `012`
+sides in May 2021 and kept no log for them.
+
+`012-1.dsk` is one side out of that archive, published here with his
+permission. The rest of it is not in this repository yet. I am not going
+to pretend the decision is finished: it is his material, the sides carry
+other people's working documents, and each one needs looking at before it
+goes anywhere. This one is here because the program on it is worth
+reading and because nothing on it is anybody's private correspondence.
+
+The side is a mixture. Sectors 0 to 202 hold tokenised BASIC 02 carrying
+the header line of the SIG package, version 1.4 of 18 October 1985,
+authors V. S. Yushchenko, V. V. Parkhaev and Yu. V. Kazakevich. After
+that come three programs written to the surface as plain source by
+BASIC's own LIST DC, and then more tokenised material. `model-region/`
+explains that format and takes one of the three apart.
 
 ## The data file 132
 

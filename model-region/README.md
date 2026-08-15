@@ -51,14 +51,18 @@ followed by an eight byte name, then text sectors prefixed `02 80`,
 `8F 80` and `03 80` for first, middle and last, lines separated by `85`,
 an end record `1C 00 78`, and no line ever split across a sector.
 
-`region.dsk` is built by that writer from `REGION.bas`. Its sectors 0 to
-119 are byte for byte the same as sectors 203 to 322 of the original
-side. That equality is the reason this folder exists in the form it
-does: the program is preserved exactly, without publishing a stranger's
-read of a diskette that also holds three other people's work.
+The original side is `disks/012-1.dsk`, here with dk_spb's permission.
+`region.dsk` in this folder is a side carrying only REGION, built by that
+writer from `REGION.bas`. Its sectors 0 to 119 are byte for byte the same
+as sectors 203 to 322 of the original, which anyone with this repository
+can check:
 
-    python3 listing_format.py names region.dsk
-    python3 listing_format.py read  region.dsk REGION
+    python3 listing_format.py names ../disks/012-1.dsk
+    python3 listing_format.py read  ../disks/012-1.dsk REGION | diff - REGION.bas
+    python3 listing_format.py write /tmp/rebuilt.dsk REGION REGION.bas
+
+The point of keeping both is that the second one is a test. If the writer
+is wrong about the format, the rebuild stops matching.
 
 ## The screens
 
@@ -205,14 +209,34 @@ people play.
 
 ## The disk it sits on
 
-Four programs, in this order:
+The side is `disks/012-1.dsk`, and it is not all one thing:
 
-| sector | name | |
+| sectors | | |
 |---:|---|---|
-| 203 | `REGION` | this game |
-| 323 | `SNAKE` | the snake game |
-| 343 | `MANAGEM` | a second business game, and this one is signed |
+| 0 to 202 | tokenised BASIC 02, no header record | carries the header line of the `SIG` package, version 1.4 of 18 October 1985 |
+| 203 | `REGION` | this game, listing |
+| 323 | `SNAKE` | the snake game, listing, arrow keys on 4 6 8 5 |
+| 343 | `MANAGEM` | a second business game, listing, and this one is signed |
 | 450 | `SIG1` | not a listing, and the header flag byte says so |
+| 668 to 680 | a short tail | |
+
+The four names above are the members that carry an `01` header record.
+The material at the front has none, which is why a reader that looks only
+for headers reports four programs and a reader that looks at the bytes
+finds more.
+
+The header line in that front material is worth reading twice:
+
+```
+++++++  В.С.ЮЩЕНКО В.В.ПАРХАЕВ Ю.В.КАЗАКЕВИЧ  ++++++
+        ВЕРСИЯ 1.4  18.10.85    BASIC 02 30.09.84
+```
+
+Yushchenko, Parkhaev and Kazakevich. The same side that carries an
+anonymous teaching game about the limits of growth also carries a
+function and graphics package by three named people from the Institute of
+Physical Chemistry. Whoever assembled this diskette was not sorting by
+subject.
 
 `MANAGEM` line 10 is a comment, and it is the only attribution anywhere
 on the side:
