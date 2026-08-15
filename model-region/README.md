@@ -24,13 +24,12 @@ The developers of the machine realisation of the teaching simulation game
 МОДЕЛЬ РЕГИОНА are the following staff of ОТСО and the biology faculty of
 KGU: Mamaeva L. A., Kotov Yu. S., Tarkaev A. N.
 
-Read it carefully. They are named as the developers of the *machine
-realisation*, which is the same wording the title screen uses. These
-three wrote the program. Whether they also devised the game is a
-different question and this screen does not answer it.
-
-`КГУ` is a state university and the initials do not say which one. `ОТСО`
-is not expanded anywhere in the program.
+Two of the three are identifiable and the university is Kazan. That took
+a second round of research and it is written up further down, under
+[Who made it](#who-made-it). Read the wording here carefully all the
+same: they are named as developers of the *machine realisation*, the
+same phrase the title screen uses, and that turns out to be exactly
+right.
 
 The program names itself in lines 3 and 4 and then gets on with it. It
 states its goal only once, in line 597, and it does so while telling the
@@ -395,23 +394,129 @@ The header flag byte is `0x20` on the three listings and `0x21` on
 `SIG1`, whose sectors are not text. One byte, one bit, and the reader
 knows whether to expect source.
 
+## Who made it
+
+<a id="who-made-it"></a>
+
+`КГУ` is **Казанский государственный университет**, Kazan State
+University. That is not read off the abbreviation, which fits nine
+universities. It follows from two of the three names in the credits
+being documented staff of that one institution, in the right faculties,
+in the right years.
+
+### Tarkaev, who did the machine
+
+**Александр Никитич Таркаев**, Alexander Nikitich Tarkaev, 1947 to 2009.
+A radiophysicist, KGU graduate of 1971, and from 1977 the head of the
+university's **лаборатория технических средств обучения**, the laboratory
+for technical teaching aids. That is what `ОТСО` almost certainly stands
+for, `отдел технических средств обучения`, the standard name for such a
+unit at Soviet universities.
+
+He was one of the people who brought computer aided teaching to the
+Soviet Union. His laboratory started building computer courses in 1978,
+had the university's first display classrooms running in 1983 and about
+fifty courses in use, and in 1984 he took the **Prize of the Council of
+Ministers of the USSR** for creating and introducing computer based
+automated teaching systems. By 1986 KGU counted among the three leading
+centres for computer aided learning in the country. In 1988 he folded
+the laboratory into a new computing centre and directed it.
+
+Then this, which dates and places the whole thing without needing the
+program at all:
+
+> 1987. За работы по экологическому моделированию коллектив
+> А. Н. Таркаева вновь награжден серебряной и пятью бронзовыми медалями
+> ВДНХ СССР.
+
+In 1987 Tarkaev's collective was awarded one silver and five bronze
+medals at the USSR exhibition of economic achievements **for work on
+ecological modelling**. Six medals means at least six people. This
+program is one of the things that group was making in those years.
+
+In 1989 he went to Dartmouth College as a research intern in the
+computer modelling of ecological systems. Afterwards he left the
+university, co-founded one of the first Soviet joint venture computer
+firms, and ended up a Tatarstan politician and head of the republic's
+chamber of commerce for seventeen years. He died of a heart attack in
+2009.
+
+### Kotov, who did the ecology
+
+**Юрий Степанович Котов**, Yuri Stepanovich Kotov, candidate of
+biological sciences. From 1986 he headed KGU's **кафедра охраны
+природы**, the nature conservation chair, which had been founded in 1969
+as the first of its kind in the Soviet Union. In June 1989 that chair
+became the **first ecological faculty in the USSR** and Kotov was its
+founding dean until 1994. He then went to Ulyanovsk and built another
+ecological faculty there.
+
+His field was water toxicology and the ecology of the Kazan lakes. And
+this is the sentence that puts the program in its place, from a 2015
+paper by Popova, Taranets and Pikulenko of Moscow State University:
+
+> В середине и в конце 1980-х годов лидером по разработке имитационных
+> экологических игр становятся сотрудники Казанского университета, так
+> под руководством Ю. С. Котова была создана целая серия учебных
+> компьютерных игр ... В основу были положены эколого-токсикологические и
+> гидроэкологические исследования по спасению городских озёр г. Казани.
+
+In the middle and at the end of the 1980s the leaders in developing
+simulation games for ecology were the staff of Kazan University, where a
+whole series of teaching computer games was created under Kotov's
+direction. What they were built on was the eco-toxicological and
+hydro-ecological research into saving the city lakes of Kazan.
+
+So the model in this program is not a thought experiment about a generic
+region. It comes out of a group that was in court over a chemical
+combine's effluent and was trying to keep two real lakes alive.
+
+### Mamaeva, who is still missing
+
+**МАМАЕВА Л. А.** could not be identified. No first name, no patronymic,
+no publication, no personnel record that can be tied to ОТСО or the
+biology faculty. Given how the other two divide, the specialist and the
+head of the computing unit, the reasonable guess is that she wrote the
+BASIC. That is a guess and it is labelled as one. Of the three names on
+this program she is the one who did the thing this repository is about,
+and she is the one nobody can name.
+
+### It is one of three
+
+The game is not a one off. Methodical instructions for students survive
+for a set of three programs: **«Малая река»** (small river), **«Озеро»**
+(lake) and **«Модель региона»**. «Озеро» was later ported to the IBM PC
+and ran under MS-DOS as `LAKE`.
+
+That is the printed guide this program keeps telling the player to read,
+or at least its family. Two cautions. The surviving instructions
+describe the later PC versions, not this one, and they name no
+developers, so they do not confirm the credits screen. And a fourth
+game, «Остров», is sometimes attributed to this group but belongs to
+D. N. Kavtaradze at Moscow State University.
+
+### What this does to the dating
+
+The credits and the award between them place the program at Kazan in the
+middle 1980s, in a laboratory whose ecological modelling work was
+decorated in 1987, and on a diskette that cannot have been assembled
+before October 1985. Those three fit each other. None of them is a date
+in the program, which still has none.
+
 ## The tradition it belongs to
 
-Three people signed the program, at the end, where hardly anyone would
-look. What they signed for is the machine realisation. So the next
-questions are what kind of thing this is, and what it was a realisation
-of. The first has an answer. The second does not, yet.
+Kazan and the two names answer where this came from. They do not answer
+what kind of thing it is, or why a university was building it at all.
 
-**It was not a published game, as far as I can find.** Searching for the
-title in library catalogues, methodical literature and the bibliographies
-of Soviet деловые игры turns up nothing. The printed guide the program
-tells the player to read again has not been found either. Both are
-negative results and not proof of absence: the Russian State Library and
-the National Electronic Library are hard to query from outside, the
-Soviet book register is not online, and university methodical booklets
-were printed in runs of a few hundred. What the negative result does is
-move the likely origin away from a known series and toward something made
-in house at one institution.
+**It was never a published game in the ordinary sense.** The title is
+not in library catalogues or in the bibliographies of Soviet деловые
+игры, and no separate edition of it turns up anywhere. What exists is
+teaching material for a set of three programs used inside a course. That
+is the normal fate of this kind of work: printed in runs of a few
+hundred, catalogued locally if at all, and not the sort of thing the
+Soviet book register recorded. An earlier round of this research called
+the whole thing a negative result. It was, until the credits screen
+turned up and gave it a place to look.
 
 **The genre is documented in detail.** The first Soviet business game,
 «Пуск цеха», was developed at the Leningrad Engineering and Economics
@@ -463,26 +568,43 @@ paper version, finding it would answer most of this section.
 
 ### On the sourcing of the above
 
-I have not held any of the Russian primary works in my hands. The
-genre history rests on the standard monograph, Belchikov and Birstein,
+I have not held any of the Russian primary works in my hands, and I have
+not been to Kazan.
+
+The biography of Tarkaev comes from the foundation that carries his name,
+tarkaev.ru, which is a source with an interest in its subject; the dates
+and prizes there are consistent with the Russian Wikipedia entry and with
+his obituary, and the two of those disagree about his birthplace and
+about the day he died. Kotov's positions come from the Kazan Federal
+University's own institute history at kpfu.ru and from the Ulyanovsk
+faculty page. The sentence about the games under his direction comes from
+a 2015 paper in Современные проблемы науки и образования. The set of
+three programs is documented by student materials uploaded to a file
+sharing site, which is a weak carrier for a real document. The genre
+history rests on the standard monograph, Belchikov and Birstein,
 «Деловые игры», Riga: АВОТС, 1989, which I know through material
-reproducing it rather than from the book itself, and on secondary
-Russian web sources. The Forrester imprint details come from the book's
-own front matter as reproduced online. Anyone who can get to the printed
-bibliographies of Soviet business games, or to the catalogues of the RGB
-and the NEB, is in a position to overturn the negative result in the
-first paragraph, and I would like to hear about it if they do.
+reproducing it rather than from the book itself.
+
+Two things would settle what is left. A list of the six people who took
+the 1987 medals would probably name Mamaeva. The Kazan university
+yearbooks and the catalogue of its own press would show whether the guide
+for this version was ever printed. Both are in Kazan, and I am not.
 
 ## What is not established
 
-* **Which `КГУ`, and what `ОТСО` stands for.** The credits give a
-  university by initials only and a unit by an abbreviation the program
-  never expands. Until both are resolved, the three names in the credits
-  cannot be attached to an institution.
-* **Who devised the game, as opposed to programming it.** The credits
-  claim the machine realisation and nothing more, and the title screen
-  uses the same phrase. That wording implies something earlier that is
-  not in this file.
+* **Who Mamaeva L. A. was.** The one name in the credits that no search
+  has touched, and on the division of labour between the other two, the
+  likeliest author of the actual BASIC.
+* **What `ОТСО` stood for at Kazan in those years.** `отдел технических
+  средств обучения` is the standard expansion and the unit under Tarkaev
+  is documented, but it is called a `лаборатория` in the sources rather
+  than an `отдел`. The letters fit the function, not a quoted name.
+* **The guide for this version.** Instructions survive for the later PC
+  programs. Nothing has surfaced for the Iskra one, and nothing names its
+  developers, so the credits screen still stands alone.
+* **Whether an Iskra-226 stood in that laboratory.** It is the obvious
+  machine for the job and the diskette is real, but no inventory or
+  report has been found that says so.
 * **No date anywhere in the program.** The diskette can be dated, the
   program cannot.
 * **`M3` does not reproduce.** Line 22 stores seven reference values.
@@ -529,8 +651,8 @@ The image of side `012 1` came from **dk_spb**, who read the physical
 diskettes and has kept this material alive for years. Without his
 archive there is no folder here and no repository either. The program
 itself is the work of **Mamaeva L. A., Kotov Yu. S. and Tarkaev A. N.**
-of ОТСО and the biology faculty of KGU, who put their names at the far
-end of it where almost no player would arrive.
+of Kazan State University, who put their names at the far end of it where
+almost no player would arrive.
 
 My code in this folder is MIT and my prose is CC BY 4.0, the same as the
 rest of the repository. The decoded listing is a Soviet work of the
