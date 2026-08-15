@@ -39,6 +39,8 @@ class Region:
         self.Y2 = 0.0         # the score of turn 17, line 886
         self.F1 = self.H1
         self.A8 = self.H1 / 14 + self.G1 ** 2 * 0.002     # line 20
+        self.Q = 0            # consecutive declining turns, line 804
+        self.A1 = 0.0         # quality shown last turn, line 320
         if hard:
             # Lines 27 and 28, the second run: almost double the pollution
             # and two thirds of the quality of life.
@@ -110,6 +112,9 @@ class Region:
         The four arguments are the player's allocation of the profit.
         """
         self.V += self.profit_gain()                      # line 300
+        # line 320: the quality shown at the top of the turn, kept in A1
+        # for next turn's five-decline comparison
+        shown_now = self.quality_of_life()
         spend = to_economy + to_environment + to_life + abs(to_birth)
         if spend > self.V + 0.01:
             raise ValueError("allocated more than the profit in hand")
@@ -129,8 +134,25 @@ class Region:
         self.G1 += self.environment() + L                 # line 770
         self.G1 += self.prosperity_drift()                # line 790
 
+        # lines 800 to 815: five declining turns in a row end the game
+        # (Q counts them, 1030 zeroes the population). model.py lacked
+        # this rule; the emulator run against the real program found it.
+        shown = self.A1
+        self.A1 = shown_now
+        died_q = False
+        if self.G1 < 12:
+            if self.G1 - 12 > shown:
+                self.Q = 0                                # line 815
+            else:
+                self.Q += 1                               # line 804
+                if self.Q > 4:
+                    died_q = True
+                    self.H1 = 0.0                         # line 1030
+
         before = self.H1
-        if self.G1 >= 12:                                 # line 830
+        if died_q:
+            pass
+        elif self.G1 >= 12:                               # line 830
             self.A8 = self.H1 / 14 + self.G1 ** 2 * 0.002
             self.F1 = self.H1
             self.H1 += self.A8 * (1 - self.K1 / 8 + 1 / (10 * self.K1))
@@ -150,7 +172,7 @@ class Region:
         return {"turn": self.M, "pollution": self.Z1, "prosperity": self.G1,
                 "population": self.H1, "profit": self.V,
                 "cleaning": self.self_cleaning(), "degraded": degraded,
-                "dead": self.H1 <= 0}
+                "dead": self.H1 <= 0 or died_q}
 
     def score(self):
         """Line 940. Turn 17 counts four times over. The code does not say why."""

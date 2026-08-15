@@ -41,6 +41,22 @@ executed. The distinction matters and I am not going to bury it.
 `emulator/iskra_basic.py` is the decoder underneath: catalog, format, LIST,
 hex dump.
 
+Since 15 August the interpreter also runs the mathematics the payroll
+corpus never needed: the functions ABS INT RND SGN SQR LOG EXP SIN COS
+TAN, the power operator, fractional constants, HEX() screen control,
+PRINTUSING with image lines, STEP in FOR, and full expression
+precedence. The token forms were decoded out of the statistics packages
+on the 2026 archive, where the formulas are textbook and give every
+byte away; `docs/basic-expression-tokens.md` holds the evidence. Two
+earlier readings fell in the process, and the file says which and why.
+
+What that bought: **МОДЕЛЬ РЕГИОНА runs.** `model-region/verify_run.py`
+assembles the recovered 1980s teaching game from its listing, plays all
+26 turns against the independent re-implementation in lockstep, and the
+state agrees to nine decimals through to the final mark. The thirteen
+game sources still assemble byte-identically, which is the regression
+test.
+
 `emulator/iskra226_emu.py` is a research tool at the CPU level. It loads a
 firmware build, disassembles it, executes the instruction classes whose
 semantics are documented and traps precisely on the rest. Coverage is about

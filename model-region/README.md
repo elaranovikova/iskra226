@@ -624,6 +624,44 @@ for this version was ever printed. Both are in Kazan.
   through the machine it sat on rather than through any catalogue, and
   that route has not been walked yet.
 
+## It runs
+
+Since 15 August the program actually executes. The expression tokens
+its mathematics needs were decoded from the statistics packages on the
+same archive (`docs/basic-expression-tokens.md`), the assembler learned
+the machine's own variable names and PRINTUSING, and the interpreter
+learned functions, powers, fractional constants and HEX(). The
+tokenised build is `region-tokenised.dsk`, made by
+`build_tokenised.py`; it is a build, not a find, and every byte form on
+it is corpus-attested.
+
+`verify_run.py` is the proof: it plays the full game in the interpreter
+and in `model.py` side by side, both steering by the same rule, a tenth
+of the profit to the economy, four tenths to the environment, five
+tenths to quality of life. Twenty-six turns in lockstep, largest state
+deviation zero to nine decimals, and the final mark agrees: 5.490.
+
+Playing it taught three things the listing alone had not:
+
+* **The game runs 26 years, not 25.** Line 315 tests M>25 before the
+  allocation and M starts at zero, so the years run 1 to 26. The
+  program's own rules text says 25 tours. The original has an
+  off-by-one and nobody can have counted.
+* **The five-decline rule bites early and hard.** Lines 803 to 815: five
+  consecutive turns of falling quality while prosperity is under 12 end
+  the game through the same line 1030 as a dead population. Almost
+  every simple policy dies of it around turn six, because the opening
+  position declines on its own. `model.py` lacked the rule; the
+  emulator run exposed that, and it is now implemented.
+* **Zero is not a legal offering.** Lines 500 and 580 refuse a zero
+  payment into the environment or quality of life. The game forces the
+  player to fund both every single year.
+
+`emu_screens.py` renders `screens/emu-*.png` from the running
+interpreter: the title, year 1 with the machine's own PRINTUSING
+output, and the credits screen reached by finishing all 26 turns and
+declining another game.
+
 ## Files here
 
     README.md             this
@@ -632,9 +670,15 @@ for this version was ever printed. Both are in Kazan.
     region.dsk            a side holding only REGION, built by
                           listing_format.py and equal to the original
                           sectors byte for byte
+    region-tokenised.dsk  the same program tokenised for the interpreter,
+                          built by build_tokenised.py
     listing_format.py     read and write the flat listing format
+    build_tokenised.py    assemble REGION onto a catalogued disk
+    verify_run.py         the lockstep proof against model.py
+    emu_screens.py        screens rendered from the running interpreter
     model.py              the state machine, re-implemented, with the
-                          self check against line 22
+                          self check against line 22 and the five-decline
+                          rule the emulator run exposed
     screens.py            renders screens/
     screens/*.png         the images above, plus the same screens as .txt
 

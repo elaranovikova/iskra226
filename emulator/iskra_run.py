@@ -22,6 +22,8 @@ Usage:
     python3 iskra_run.py <image.dsk> <FILE> --screenshot out.png
 """
 
+import math
+import random
 import sys
 from iskra_basic import Disk, load_token_map, koi8, bcd2, find
 
@@ -71,6 +73,22 @@ class Screen:
 
     def render_text(self):
         return "\n".join("".join(r).rstrip() for r in self.buf)
+
+
+# Function tokens: the firmware name area at 0x1A4D lists ABS( INT( RND(
+# SGN( SQR( LOG( EXP( SIN( COS( TAN( in fixed order and the token values
+# run consecutively from 0xF2. Corpus proof: ABS clamps |r|>=1 and SGN
+# rebuilds the sign (STAT01:650), INT rounds via INT(W+0.50)
+# (WILCOX:1565), SQR forms the standard errors SQR(N), SQR(N-1),
+# SQR(2(N-1)) (STAT01:510), LOG accumulates LOG(x)^2 in the linearised
+# regression (STAT01:540).
+FN_NAMES = {0xF2: "ABS", 0xF3: "INT", 0xF4: "RND", 0xF5: "SGN",
+            0xF6: "SQR", 0xF7: "LOG", 0xF8: "EXP", 0xF9: "SIN",
+            0xFA: "COS", 0xFB: "TAN"}
+
+
+def _is_bcd(b):
+    return (b >> 4) <= 9 and (b & 0xF) <= 9
 
 
 def parse_expr(pl, tokens):
@@ -131,7 +149,8 @@ def parse_expr(pl, tokens):
             i += 2 + n
         elif b in (0xEA, 0xEE, 0xEB, 0xE4, 0xDF) and items \
                 and items[-1][0] in (
-                "num", "str", "var", "aref", "arefl", "rpar", "strfn"):
+                "num", "str", "var", "aref", "arefl", "rpar", "strfn",
+                "lineref", "lenfn", "divfn"):
             # arithmetic operators in operand position.
             #   EA = +   (16 accumulator patterns "X = X EA ...", 4 of
             #             them "X = X EA 1"; E9 appears once)
@@ -143,7 +162,8 @@ def parse_expr(pl, tokens):
                                  0xDF: "*"}[b]))
             i += 1
         elif b == 0xE9 and items and items[-1][0] in (
-                "num", "str", "var", "aref", "arefl", "rpar", "strfn"):
+                "num", "str", "var", "aref", "arefl", "rpar", "strfn",
+                "lineref", "lenfn", "divfn"):
             # E9 after an OPERAND is binary minus; after an operator or at
             # the start of an expression it introduces a negative literal
             # (the "-1" end code). The earlier lookahead-based rule
@@ -155,13 +175,27 @@ def parse_expr(pl, tokens):
             v = pl[i + 2]
             items.append(("num", -((v >> 4) * 10 + (v & 0xF))))
             i += 3
+        elif b == 0xE9:
+            # unary minus before a variable, paren or function (REGION's
+            # -L and -(...) forms); eval_rex applies it with the right
+            # precedence
+            items.append(("op", "-")); i += 1
         elif b == 0xE8 and i + 1 < len(pl):
             v = pl[i + 1]
             items.append(("num", (v >> 4) * 10 + (v & 0xF)))
             i += 2
-        elif b == 0xE2 and i + 2 < len(pl):
-            items.append(("at", pl[i + 1], pl[i + 2]))
-            i += 3
+        elif b == 0xE2 and i + 1 < len(pl) and pl[i + 1] >= 1 \
+                and i + 2 + pl[i + 1] <= len(pl):
+            # HEX( with a LENGTH byte, then that many raw bytes. The old
+            # compact-AT reading (fixed two bytes) is refuted by the
+            # corpus: E2 01 03 clears the screen in LFORMAT:1530, E2 01
+            # 12 / E2 01 11 bracket the input prompt in S0:190, klerk's
+            # tools carry seven-byte escape sequences E2 07 1B ...  The
+            # AT reading survived because S0's E2 02 03 07 happened to
+            # parse as a row/column pair.
+            n = pl[i + 1]
+            items.append(("hexs", bytes(pl[i + 2:i + 2 + n])))
+            i += 2 + n
         elif b == 0xD5 and i + 6 < len(pl) and pl[i + 1] == 0xE8 \
                 and pl[i + 3] == 0xDE and pl[i + 4] == 0xE8 \
                 and pl[i + 6] == 0xD0:
@@ -177,6 +211,13 @@ def parse_expr(pl, tokens):
             nn = pl[i + 2]
             items.append(("tab", (nn >> 4) * 10 + (nn & 0xF)))
             i += 4 if (i + 3 < len(pl) and pl[i + 3] == 0xD0) else 3
+        elif b == 0xDF:
+            # TAB( with a full expression argument (TAB(V17) in
+            # STAT01:60, TAB(78-I*I) in REGION); the closing rpar stays
+            # in the stream and ends the argument. The operand-position
+            # multiplication reading is handled above.
+            items.append(("tabx",))
+            i += 1
         elif b == 0xD3 and i + 2 < len(pl):
             items.append(("goto", bcd2(pl[i + 1], pl[i + 2])))
             i += 3
@@ -196,6 +237,48 @@ def parse_expr(pl, tokens):
             items.append(("op", ">")); i += 1
         elif b == 0xCF:
             items.append(("op", "<")); i += 1
+        elif b == 0xD6:
+            # <= by the firmware relation order D4 > D5 <> D6 <= D7 >=;
+            # in DBACKSPACE context the same byte is the BEG suffix and
+            # is recognised there by item value.
+            items.append(("op", "<=")); i += 1
+        elif b == 0xD7:
+            # >=, proven by IF ABS(A0A(I)) >= 1 THEN clamp (STAT01:650);
+            # doubles as the END suffix in DSKIP.
+            items.append(("op", ">=")); i += 1
+        elif b == 0xDC:
+            # the power operator: A03(I)^A06(I) and X^(N-1) in the
+            # polynomial regression (STAT01:860, STAT01A:550), and
+            # FOR V4E = V3E^2-1 ... (LVSTAV:1050)
+            items.append(("op", "^")); i += 1
+        elif b == 0xD2:
+            # STEP in FOR: 60 5F D1 E8 01 D2 E9 E8 01 is
+            # FOR V60 = V5F TO 1 STEP -1 (LFORMAT:1400)
+            items.append(("stepmark",)); i += 1
+        elif b in FN_NAMES:
+            items.append(("func", FN_NAMES[b])); i += 1
+        elif b == 0xE5 and i + 1 < len(pl) and _is_bcd(pl[i + 1]) \
+                and pl[i + 1] != 0:
+            # the general numeric literal: E5 <ab> <digit nibbles...>
+            # with a integer and b fraction digits, right-padded to whole
+            # bytes, trailing zero bytes droppable. Verified against 60+
+            # corpus constants: 0.5, 0.05, 0.01, 0.999, 1.96 and 2.58
+            # side by side (WILCOX:2055), 3.14, 0.301 = log10(2).
+            a2 = pl[i + 1] >> 4
+            b2 = pl[i + 1] & 0xF
+            need = (a2 + b2 + 1) // 2
+            digs = []
+            j = i + 2
+            while j < len(pl) and len(digs) < 2 * need and _is_bcd(pl[j]):
+                digs += [pl[j] >> 4, pl[j] & 0xF]
+                j += 1
+            while len(digs) < a2 + b2:
+                digs.append(0)
+            ip = "".join(map(str, digs[:a2])) or "0"
+            fp = "".join(map(str, digs[a2:a2 + b2]))
+            items.append(("num", float(ip + "." + fp) if fp else
+                          float(ip)))
+            i = j
         elif b in (0x2B, 0x2D, 0x2A, 0x2F):
             # context-sensitive: an operator only AFTER an operand;
             # otherwise these byte values are variable slots (0x2A-0x2F).
@@ -359,9 +442,10 @@ class Interp:
             rec = body[i + 3:i + 2 + length]
             if ln not in lines:
                 if rec[:1] == b"\x3f":
-                    # % image line: keep the raw mask text for PRINTUSING
-                    mask = "".join(chr(c) if 0x20 <= c < 0x7F else " "
-                                   for c in rec[2:])
+                    # % image line: keep the mask text for PRINTUSING.
+                    # Decoded through the KOI-8 map: REGION's masks carry
+                    # their Cyrillic labels inside the image line.
+                    mask = koi8(rec[2:])
                     lines[ln] = [("IMAGE", mask)]
                 else:
                     lines[ln] = parse_line(rec, self.tokens)
@@ -420,6 +504,10 @@ class Interp:
                 return round(float(v), int(n2)), j
             except (TypeError, ValueError):
                 return 0, j
+        if k == "hexs":
+            # in value position a HEX string is its characters (BAM3:331
+            # assigns a pseudographic ruler to a string variable)
+            return koi8(it[1]), idx + 1
         if k == "lineref":
             # E7 <bcd><bcd> is a 4-digit numeric literal in expressions;
             # the same encoding serves as a line reference in PRINTUSING
@@ -433,6 +521,125 @@ class Interp:
             ln2 = int(ln2) if ln2 else 1
             return s[pos - 1:pos - 1 + ln2], idx + 1
         return 0, idx + 1
+
+    @staticmethod
+    def _apply_fn(name, v):
+        try:
+            v = float(v)
+        except (TypeError, ValueError):
+            return 0
+        try:
+            if name == "ABS":
+                return abs(v)
+            if name == "INT":
+                return float(math.floor(v))
+            if name == "SGN":
+                return (v > 0) - (v < 0)
+            if name == "SQR":
+                return math.sqrt(v) if v >= 0 else 0
+            if name == "LOG":
+                return math.log(v) if v > 0 else 0
+            if name == "EXP":
+                return math.exp(v)
+            if name == "RND":
+                return random.random()
+            if name == "SIN":
+                return math.sin(v)
+            if name == "COS":
+                return math.cos(v)
+            if name == "TAN":
+                return math.tan(v)
+        except (OverflowError, ValueError):
+            return 0
+        return 0
+
+    def eval_rex(self, items, idx):
+        """Recursive-descent evaluation with real precedence:
+        unary minus over a power, ^ (right associative), then * /,
+        then + -. Leaves go through eval_value, so array references,
+        STR() and the corpus specials keep their existing behaviour."""
+
+        def prim(i):
+            if i >= len(items):
+                return 0, i
+            it = items[i]
+            if it[0] == "op" and it[1] == "-":
+                v, j = powr(i + 1)
+                try:
+                    return -v, j
+                except TypeError:
+                    return 0, j
+            if it[0] == "op" and it[1] == "+":
+                return powr(i + 1)
+            if it[0] == "lpar":
+                v, j = summ(i + 1)
+                if j < len(items) and items[j][0] == "rpar":
+                    j += 1
+                return v, j
+            if it[0] == "func":
+                v, j = summ(i + 1)
+                if j < len(items) and items[j][0] == "rpar":
+                    j += 1
+                return self._apply_fn(it[1], v), j
+            if it[0] == "roundfn":
+                v, j = self.eval_value(items, i)
+                return v, j
+            return self.eval_value(items, i)
+
+        def powr(i):
+            v, j = prim(i)
+            if j < len(items) and items[j] == ("op", "^"):
+                r, j = powr(j + 1)
+                # unary minus binds looser than the power: -3^x is
+                # -(3^x). The parser folds E9 E8 03 into the literal -3,
+                # so the sign is peeled off again here.
+                neg = (items[i][0] == "num" and i + 1 == j - 1 - 0
+                       and isinstance(v, (int, float)) and v < 0)
+                neg = (items[i][0] == "num"
+                       and isinstance(v, (int, float)) and v < 0)
+                try:
+                    base = -v if neg else v
+                    v = float(base) ** float(r)
+                    if neg:
+                        v = -v
+                except (TypeError, ValueError, OverflowError,
+                        ZeroDivisionError):
+                    v = 0
+                if isinstance(v, complex):
+                    v = 0
+            return v, j
+
+        def term(i):
+            v, j = powr(i)
+            while j < len(items) and items[j][0] == "op" \
+                    and items[j][1] in "*/":
+                op = items[j][1]
+                r, j = powr(j + 1)
+                try:
+                    if op == "*":
+                        v = v * r
+                    else:
+                        v = v / r if r else 0
+                except TypeError:
+                    v = 0
+            return v, j
+
+        def summ(i):
+            v, j = term(i)
+            while j < len(items) and items[j][0] == "op" \
+                    and items[j][1] in "+-":
+                op = items[j][1]
+                r, j = term(j + 1)
+                try:
+                    if op == "+":
+                        v = v + r
+                    else:
+                        v = v - r
+                except TypeError:
+                    v = str(v) + str(r)
+            return v, j
+
+        return summ(idx)
 
     def eval_expr(self, items, idx):
         val, idx = self.eval_value(items, idx)
@@ -552,12 +759,24 @@ class Interp:
                 i += 1; trailing = True
             elif k == "tab":
                 self._pr_tab(items[i][1]); i += 1; trailing = True
+            elif k == "tabx":
+                v, j = self.eval_rex(items, i + 1)
+                if j < len(items) and items[j][0] == "rpar":
+                    j += 1
+                try:
+                    self._pr_tab(int(v))
+                except (TypeError, ValueError):
+                    pass
+                i = j; trailing = True
+            elif k == "hexs":
+                self._exec_hex(items[i][1]); i += 1; trailing = True
             elif k in ("semi", "comma"):
                 i += 1; trailing = True
             elif k in ("str", "asc"):
                 self._pr(items[i][1]); i += 1; trailing = False
-            elif k in ("num", "var", "aref", "arefl"):
-                val, i = self.eval_expr(items, i)
+            elif k in ("num", "var", "aref", "arefl", "func") \
+                    or (k == "op" and items[i][1] == "-"):
+                val, i = self.eval_rex(items, i)
                 self._pr(self._fmt(val)); trailing = False
             elif k in ("lpar", "rpar"):
                 i += 1
@@ -566,28 +785,68 @@ class Interp:
         if not trailing:
             self._pr_nl()
 
+    def _exec_hex(self, bs):
+        """PRINT HEX(..): raw bytes to the console. Control semantics as
+        far as the corpus pins them down: 03 clears (S0's opening
+        HEX(0307)), 0C form-feeds which on the CRT is also a clear, 0A
+        and 0D move the cursor, 01 homes it. Attribute codes 11/12
+        (around S0's input prompt and REGION's warnings) and the bell
+        have no visual effect in this renderer; escape sequences are
+        swallowed whole. Bytes from 0x20 up are ordinary characters:
+        BAM3 builds whole pseudographic rulers out of HEX strings."""
+        for b in bs:
+            if b == 0x1B:
+                break
+            if b in (0x03, 0x0C):
+                self.scr.clear()
+            elif b == 0x0A:
+                self._pr_nl()
+            elif b == 0x0D:
+                self.scr.cx = 0
+            elif b == 0x01:
+                self.scr.at(1, 1)
+            elif b >= 0x20:
+                self._pr(koi8(bytes([b])))
+
     def exec_printusing(self, items, lines):
         """Formatted print through a % image line (E7 line reference)."""
         ref = None
         vals = []
-        seen_ref = False
-        for it in items:
+        ri = None
+        for i, it in enumerate(items):
             if it[0] == "lineref":
                 ref = it[1]
-                seen_ref = True
-            elif seen_ref and it[0] in ("aref", "arefl", "var", "num",
-                                        "strfn"):
-                # every value item after the image reference is an
-                # argument; the first (before the first semicolon) is
-                # simply arg 1, e.g. the row counter V69
-                v, _ = self.eval_value([it], 0)
+                ri = i
+                break
+        trailing = bool(items) and items[-1][0] == "semi"
+        if ri is not None:
+            # arguments are the comma/semicolon separated segments after
+            # the reference; each segment is a full expression (REGION
+            # passes -L, S2 passes STR() slices and plain variables)
+            seg = []
+            depth = 0
+            for it in items[ri + 1:]:
+                if it[0] in ("lpar", "func"):
+                    depth += 1
+                elif it[0] == "rpar":
+                    depth -= 1
+                if depth == 0 and it[0] in ("comma", "semi"):
+                    if seg:
+                        v, _ = self.eval_rex(seg, 0)
+                        vals.append(v)
+                        seg = []
+                else:
+                    seg.append(it)
+            if seg:
+                v, _ = self.eval_rex(seg, 0)
                 vals.append(v)
         mask = ""
         if ref in lines and lines[ref] and lines[ref][0][0] == "IMAGE":
             mask = lines[ref][0][1]
         if not mask:
             self._pr(" ".join(str(v) for v in vals))
-            self._pr_nl()
+            if not trailing:
+                self._pr_nl()
             return
         out = []
         vi = 0
@@ -623,9 +882,40 @@ class Interp:
                 out.append(mask[i])
                 i += 1
         self._pr("".join(out))
-        self._pr_nl()
+        if not trailing:
+            self._pr_nl()
 
     def exec_assign(self, items):
+        # multiple targets before the '=': N,Y7=0 puts the comma
+        # separated left-hand items in front of the D9 (59 corpus
+        # examples in VIC); the right side is evaluated once
+        eq = None
+        depth = 0
+        for i, it in enumerate(items):
+            if it[0] in ("lpar", "func"):
+                depth += 1
+            elif it[0] == "rpar":
+                depth -= 1
+            elif depth == 0 and it[0] == "op" and it[1] == "=":
+                eq = i
+                break
+        if eq is not None and any(it[0] == "comma"
+                                  for it in items[:eq]):
+            targets = [it for it in items[:eq]
+                       if it[0] in ("var", "aref", "arefl")]
+            val, _ = self.eval_rex(items, eq + 1)
+            for tgt in targets:
+                if tgt[0] == "var":
+                    if isinstance(val, str):
+                        self.svars[tgt[1]] = val
+                    else:
+                        self.nvars[tgt[1]] = val
+                elif tgt[0] == "aref":
+                    index = int(self.nvars.get(tgt[2], 0))
+                    self.arrays.setdefault(tgt[1], {})[index] = val
+                else:
+                    self.arrays.setdefault(tgt[1], {})[tgt[2]] = val
+            return
         if items and items[0][0] == "strfn":
             opnd = items[0][1]
             pos, _ = self.eval_value([items[0][2]], 0)
@@ -638,7 +928,7 @@ class Interp:
                 j += 1
             if j >= len(items):
                 return
-            val, _ = self.eval_expr(items, j + 1)
+            val, _ = self.eval_rex(items, j + 1)
             repl = str(val).ljust(ln2)[:ln2]
             base, _ = self.eval_value([opnd], 0)
             s = str(base)
@@ -660,7 +950,7 @@ class Interp:
                 j += 1
             if j >= len(items):
                 return
-            val, _ = self.eval_expr(items, j + 1)
+            val, _ = self.eval_rex(items, j + 1)
             self.arrays.setdefault(arr, {})[index] = val
             return
         if items and items[0][0] == "aref":
@@ -671,7 +961,7 @@ class Interp:
                 j += 1
             if j >= len(items):
                 return
-            val, _ = self.eval_expr(items, j + 1)
+            val, _ = self.eval_rex(items, j + 1)
             index = int(self.nvars.get(ivar, 0))
             self.arrays.setdefault(arr, {})[index] = val
             return
@@ -684,24 +974,44 @@ class Interp:
             j += 1
         if j >= len(items):
             return
-        val, _ = self.eval_expr(items, j + 1)
+        val, _ = self.eval_rex(items, j + 1)
         if isinstance(val, str):
             self.svars[slot] = val
         else:
             self.nvars[slot] = val
 
+    _RELS = ("=", ">", "<", "<>", "<=", ">=")
+
     def eval_relation(self, items):
-        left, j = self.eval_value(items, 0)
-        if j >= len(items) or items[j][0] != "op":
+        # find the top-level relation, depth-aware, so that IF S-N1 >=
+        # -.01 and IF ABS(N1) <= P1 split at the right place
+        depth = 0
+        ri = None
+        for i, it in enumerate(items):
+            if it[0] in ("lpar", "func"):
+                depth += 1
+            elif it[0] == "rpar":
+                depth -= 1
+            elif depth == 0 and it[0] == "op" and it[1] in self._RELS:
+                ri = i
+                break
+            elif depth == 0 and it[0] == "roundfn":
+                # 0xD8 turns up relationally in IF (IF N D8 30 before the
+                # Wilcoxon normal approximation); reading it as >= keeps
+                # both corpora consistent, the S2 ROUND use is not inside
+                # an IF
+                ri = i
+                break
+        if ri is None:
             return None, None
-        op = items[j][1]
-        right, j = self.eval_value(items, j + 1)
+        op = items[ri][1] if items[ri][0] == "op" else ">="
+        rhs = list(items[ri + 1:])
         target = None
-        for it in items[j:]:
-            if it[0] == "goto":
-                target = it[1]
-            elif it[0] == "num" and target is None:
-                target = it[1]
+        while rhs and rhs[-1][0] == "goto":
+            target = rhs[-1][1]
+            rhs.pop()
+        left, _ = self.eval_rex(items[:ri], 0)
+        right, _ = self.eval_rex(rhs, 0)
         try:
             if op == "=":
                 cond = left == right
@@ -711,6 +1021,10 @@ class Interp:
                 cond = left < right
             elif op == "<>":
                 cond = left != right
+            elif op == "<=":
+                cond = left <= right
+            elif op == ">=":
+                cond = left >= right
             else:
                 cond = False
         except TypeError:
@@ -776,8 +1090,8 @@ class Interp:
                     sys.stderr.write("%4d %s %r\n" % (ln, nm, items))
                 if nm == "PRINT":
                     self.exec_print(items)
-                elif nm == "GOSUB'" and any(it[0] == "lineref"
-                                            for it in items):
+                elif nm in ("GOSUB'", "S28") and any(
+                        it[0] == "lineref" for it in items):
                     # PRINTUSING: token 0x28 with an E7 image-line reference.
                     # Must not catch ordinary assignments whose right-hand
                     # side happens to be an E7 numeric literal.
@@ -785,6 +1099,11 @@ class Interp:
                 elif nm in ("LET", "", "S36"):
                     self.exec_assign(items)
                 elif nm == "INPUT":
+                    for it in items:
+                        if it[0] == "str":
+                            self._pr(it[1])
+                            self._pr("? ")
+                            break
                     ans = self.get_input()
                     if self.halted:
                         break
@@ -799,6 +1118,8 @@ class Interp:
                             break
                         p = parts[pi]
                         pi += 1
+                        if p == "":
+                            continue
                         try:
                             self.nvars[slot] = int(p)
                         except ValueError:
@@ -865,32 +1186,32 @@ class Interp:
                         jump = targets[sel - 1]
                         break
                 elif nm == "FOR":
-                    # 57 <len> <var> E8 <start> D1 <limit>
+                    # 57 <len> <var> <start expr> D1 <limit expr>
+                    # [D2 <step expr>]; LFORMAT:1400 runs backwards with
+                    # STEP -1, REGION's explanation plots step by .5
                     var = None
-                    start = 1
-                    limit = 0
-                    seen_to = False
                     k = 0
-                    while k < len(items):
-                        it = items[k]
-                        if it[0] == "var" and var is None:
-                            var = it[1]
-                            k += 1
-                        elif it[0] == "to":
-                            seen_to = True
-                            k += 1
-                        elif it[0] in ("num", "var", "aref"):
-                            v, k = self.eval_value(items, k)
-                            if seen_to:
-                                limit = v
-                            else:
-                                start = v
-                        else:
-                            k += 1
+                    if items and items[0][0] == "var":
+                        var = items[0][1]
+                        k = 1
+                    ti = next((x for x, it in enumerate(items)
+                               if it[0] == "to"), len(items))
+                    sm = next((x for x, it in enumerate(items)
+                               if it[0] == "stepmark"), len(items))
+                    start, _ = self.eval_rex(items[k:ti], 0)
+                    limit, _ = self.eval_rex(items[ti + 1:sm], 0)                         if ti < len(items) else (0, 0)
+                    if sm < len(items):
+                        step, _ = self.eval_rex(items[sm + 1:], 0)
+                    else:
+                        step = 1
+                    try:
+                        step = float(step) if step else 1
+                    except (TypeError, ValueError):
+                        step = 1
                     if var is not None:
                         self.nvars[var] = start
                         # loop home: statement AFTER this FOR
-                        self.forstack.append((var, limit, pos, si))
+                        self.forstack.append((var, limit, step, pos, si))
                 elif nm == "NEXT":
                     var = None
                     for it in items:
@@ -902,13 +1223,17 @@ class Interp:
                             frame = f
                             break
                     if frame is not None:
-                        fvar, limit, fpos, fsi = frame
-                        self.nvars[fvar] = self.nvars.get(fvar, 0) + 1
+                        fvar, limit, step, fpos, fsi = frame
+                        v2 = self.nvars.get(fvar, 0) + step
+                        self.nvars[fvar] = v2
                         try:
                             lim2 = float(limit)
                         except (TypeError, ValueError):
                             lim2 = 0
-                        if self.nvars[fvar] <= lim2:
+                        eps = 1e-9
+                        keep = (v2 <= lim2 + eps if step >= 0
+                                else v2 >= lim2 - eps)
+                        if keep:
                             pos = fpos
                             start_si = fsi + 1
                             jump = None
@@ -947,8 +1272,8 @@ class Interp:
                     self.diskrecs[self.recptr] = rec
                     self.recptr += 1
                 elif nm == "DBACKSPACE":
-                    if any(it[0] == "byte" and it[1] == 0xD6
-                           for it in items):
+                    if any(it == ("op", "<=") or (it[0] == "byte"
+                           and it[1] == 0xD6) for it in items):
                         self.recptr = 0                    # DBACKSPACE BEG
                     else:
                         n2 = 1
@@ -957,8 +1282,8 @@ class Interp:
                                 n2 = it[1]
                         self.recptr = max(0, self.recptr - n2)
                 elif nm == "DSKIP":
-                    if any(it[0] == "byte" and it[1] == 0xD7
-                           for it in items):
+                    if any(it == ("op", ">=") or (it[0] == "byte"
+                           and it[1] == 0xD7) for it in items):
                         self.recptr = len(self.diskrecs)   # DSKIP END
                     else:
                         # DSKIP (index-1)*blocksize+hdr : one group occupies

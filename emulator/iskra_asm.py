@@ -121,15 +121,202 @@ def enc_lineref(v):
 
 
 # ------------------------------------------------------------ expressions
+#
+# Two layers of source dialect meet here. The game sources address
+# variables as V<hex slot> and array elements as A<arr>(V<idx>); REGION
+# and the other recovered 1980s listings use the machine's own names, N,
+# P1, Z1, A8. Names are resolved through a per-assembly symbol table to
+# free slots; the mapping is deterministic (first appearance) and is
+# reported by assemble() so a run can be read back against the listing.
 
 ARR_RE = re.compile(r'^A([0-9A-F]{1,2})\(V([0-9A-F]{1,2})\)$', re.I)
 ARRL_RE = re.compile(r'^A([0-9A-F]{1,2})\((\d+)\)$', re.I)
+NAME_RE = re.compile(r'^[A-ZА-Я][0-9]?[%$]?$')
 
-OPS = {'+': A_PLUS, '-': A_MINUS, '*': A_MUL, '/': A_DIV,
-       '=': A_EQ, '<>': A_NE, '<': A_LT, '>': A_GT}
+# extended atoms, decoded 2026-08-15 (research/note-expression-tokens.md)
+A_POW = 0xDC          # power operator, polynomial regression corpus
+A_LE = 0xD6           # <=
+A_GE = 0xD7           # >=
+A_STEP = 0xD2         # STEP in FOR
+A_HEX = 0xE2          # HEX( <len> <raw bytes>
+A_FLOAT = 0xE5        # E5 <ab bcd> <digit nibbles>, general number
+A_BRANCH = 0xD3
+T_PRINTUSING = 0x28
+T_IMAGE = 0x3F
+
+FN_TOKENS = {"ABS": 0xF2, "INT": 0xF3, "RND": 0xF4, "SGN": 0xF5,
+             "SQR": 0xF6, "LOG": 0xF7, "EXP": 0xF8, "SIN": 0xF9,
+             "COS": 0xFA, "TAN": 0xFB}
+
+OPS = {'+': A_PLUS, '-': A_MINUS, '*': A_MUL, '/': A_DIV, '^': A_POW,
+       '=': A_EQ, '<>': A_NE, '<': A_LT, '>': A_GT, '<=': A_LE,
+       '>=': A_GE}
+
+RELS = ('<=', '>=', '<>', '=', '<', '>')
 
 
-def enc_operand(tok):
+class Symbols:
+    """named variable -> slot, first come first served"""
+
+    def __init__(self):
+        self.map = {}
+        self.next = 0x01
+
+    def slot(self, name):
+        name = name.upper()
+        if name not in self.map:
+            if self.next > 0x7F:
+                raise ValueError("out of variable slots")
+            self.map[name] = self.next
+            self.next += 1
+        return self.map[name]
+
+
+def enc_float(text):
+    """the E5 literal, encoded from the written digits so that the byte
+    stream round-trips: .5 -> E5 01 50, 4.123 -> E5 13 41 23,
+    100 -> E5 30 10 (trailing zero bytes dropped, the parser pads)"""
+    neg = text.startswith('-')
+    if neg:
+        text = text[1:]
+    if '.' in text:
+        ip, fp = text.split('.', 1)
+    else:
+        ip, fp = text, ''
+    ip = ip.lstrip('0') or ('0' if not fp else '')
+    if len(ip) > 9 or len(fp) > 9:
+        raise ValueError("literal too long: %r" % text)
+    digits = ip + fp
+    if not digits:
+        digits = '0'
+    out = [A_FLOAT, (len(ip) << 4) | len(fp)]
+    if len(digits) % 2:
+        digits += '0'
+    mant = [int(digits[i]) << 4 | int(digits[i + 1])
+            for i in range(0, len(digits), 2)]
+    while len(mant) > 1 and mant[-1] == 0:
+        mant.pop()
+    body = bytes(out + mant)
+    return (bytes([A_MINUS]) + body) if neg else body
+
+
+def enc_num_literal(text):
+    """integers keep the compact corpus forms (E8 to 99, E7 to 9999);
+    fractions and anything larger take the general E5 literal"""
+    if re.fullmatch(r'\d+', text) and int(text) <= 9999:
+        return enc_number(int(text))
+    return enc_float(text)
+
+
+TOK_RE = re.compile(r"""
+    (?P<str>"[^"]*"|'[^']*') |
+    (?P<num>\d+\.\d*|\.\d+|\d+) |
+    (?P<word>[A-ZА-Я][A-ZА-Я0-9]*[%$]?) |
+    (?P<rel><=|>=|<>) |
+    (?P<ch>[-+*/^()=<>,;])
+""", re.X | re.I)
+
+
+def enc_expr(text, sym=None):
+    """expression source -> token bytes, linear translation; precedence
+    lives in the interpreter, the encoder just carries the parentheses"""
+    out = b''
+    prev_operand = False
+    i = 0
+    text = text.strip()
+    while i < len(text):
+        if text[i].isspace():
+            i += 1
+            continue
+        m = TOK_RE.match(text, i)
+        if not m:
+            raise ValueError("cannot encode operand: %r" % text[i:i + 20])
+        i = m.end()
+        if m.group('str'):
+            out += enc_string(m.group('str')[1:-1])
+            prev_operand = True
+        elif m.group('num'):
+            out += enc_num_literal(m.group('num'))
+            prev_operand = True
+        elif m.group('word'):
+            w = m.group('word').upper()
+            if w in FN_TOKENS and i < len(text) and text[i] == '(':
+                out += bytes([FN_TOKENS[w]])
+                i += 1
+                prev_operand = False
+            elif w == 'TAB' and i < len(text) and text[i] == '(':
+                out += bytes([A_TAB])
+                i += 1
+                prev_operand = False
+            elif w == 'HEX' and i < len(text) and text[i] == '(':
+                j = text.index(')', i)
+                hx = re.sub(r'\s', '', text[i + 1:j])
+                raw = bytes(int(hx[k:k + 2], 16)
+                            for k in range(0, len(hx), 2))
+                out += bytes([A_HEX, len(raw)]) + raw
+                i = j + 1
+                prev_operand = True
+            elif re.fullmatch(r'A[0-9A-F]{1,2}', w) and i < len(text) \
+                    and text[i] == '(' and not (NAME_RE.match(w)
+                                                and sym is not None
+                                                and w in sym.map):
+                # array element A<arr>(V<idx>) / A<arr>(<n>): slot, index,
+                # closing rpar, no marker byte (corpus form)
+                j = text.index(')', i)
+                inner = text[i + 1:j].strip()
+                arr = int(w[1:], 16)
+                mv = VAR_RE.match(inner)
+                if mv:
+                    out += bytes([arr, int(mv.group(1), 16), A_RPAR])
+                elif re.fullmatch(r'\d+', inner):
+                    out += bytes([arr]) + enc_number(int(inner)) \
+                        + bytes([A_RPAR])
+                elif NAME_RE.match(inner) and sym is not None:
+                    out += bytes([arr, sym.slot(inner), A_RPAR])
+                else:
+                    raise ValueError("cannot encode index: %r" % inner)
+                i = j + 1
+                prev_operand = True
+            else:
+                mv = VAR_RE.match(w)
+                if mv:
+                    out += bytes([int(mv.group(1), 16)])
+                elif NAME_RE.match(w) and sym is not None:
+                    out += bytes([sym.slot(w)])
+                else:
+                    raise ValueError("cannot encode operand: %r" % w)
+                prev_operand = True
+        elif m.group('rel'):
+            out += bytes([OPS[m.group('rel')]])
+            prev_operand = False
+        else:
+            ch = m.group('ch')
+            if ch == '(':
+                out += bytes([A_LPAR])
+                prev_operand = False
+            elif ch == ')':
+                out += bytes([A_RPAR])
+                prev_operand = True
+            elif ch == '-' and not prev_operand:
+                # unary minus; before a small integer it folds into the
+                # corpus negative-literal form E9 E8 <bcd>
+                out += bytes([A_MINUS])
+                prev_operand = False
+            elif ch in OPS:
+                out += bytes([OPS[ch]])
+                prev_operand = False
+            elif ch == ',':
+                out += bytes([A_COMMA])
+                prev_operand = False
+            elif ch == ';':
+                out += bytes([A_SEMI])
+                prev_operand = False
+            else:
+                raise ValueError("cannot encode operand: %r" % ch)
+    return out
+
+
+def enc_operand(tok, sym=None):
     tok = tok.strip()
     m = VAR_RE.match(tok)
     if m:
@@ -147,58 +334,83 @@ def enc_operand(tok):
         if int(tok) < 0:
             return bytes([A_MINUS]) + enc_number(-int(tok))
         return enc_number(int(tok))
+    if sym is not None and NAME_RE.match(tok.upper()):
+        return bytes([sym.slot(tok)])
     raise ValueError("cannot encode operand: %r" % tok)
 
 
-def split_expr(text):
-    """split on top-level operators, keeping them"""
-    out = []
+def _split_top(text, seps, quotes="\"'"):
+    """split at top-level separator characters, respecting quotes and
+    parentheses; returns (parts, separators)"""
+    parts, sepout = [], []
     buf = ''
+    depth = 0
+    q = None
+    for ch in text:
+        if q:
+            buf += ch
+            if ch == q:
+                q = None
+        elif ch in quotes:
+            q = ch
+            buf += ch
+        elif ch == '(':
+            depth += 1
+            buf += ch
+        elif ch == ')':
+            depth -= 1
+            buf += ch
+        elif depth == 0 and ch in seps:
+            parts.append(buf)
+            sepout.append(ch)
+            buf = ''
+        else:
+            buf += ch
+    parts.append(buf)
+    return parts, sepout
+
+
+def _find_rel(text):
+    """position and text of the top-level relation, quotes respected"""
+    depth = 0
+    q = None
     i = 0
     while i < len(text):
-        two = text[i:i + 2]
-        one = text[i]
-        if two == '<>':
-            out.append(buf.strip()); out.append('<>'); buf = ''; i += 2
-            continue
-        if one in '+-*/=<>' and buf.strip() and not buf.strip().endswith('('):
-            out.append(buf.strip()); out.append(one); buf = ''; i += 1
-            continue
-        buf += one
+        ch = text[i]
+        if q:
+            if ch == q:
+                q = None
+        elif ch in "\"'":
+            q = ch
+        elif ch == '(':
+            depth += 1
+        elif ch == ')':
+            depth -= 1
+        elif depth == 0:
+            two = text[i:i + 2]
+            if two in ('<=', '>=', '<>'):
+                return i, two
+            if ch in '=<>':
+                return i, ch
         i += 1
-    if buf.strip():
-        out.append(buf.strip())
-    return [p for p in out if p != '']
-
-
-def enc_expr(text):
-    out = b''
-    for part in split_expr(text):
-        if part in OPS:
-            out += bytes([OPS[part]])
-        else:
-            out += enc_operand(part)
-    return out
+    return None, None
 
 
 # ------------------------------------------------------------- statements
-def asm_statement(src):
+def asm_statement(src, sym=None, images=None):
     src = src.strip()
     if not src:
         return b''
     up = src.upper()
 
     if up.startswith('KEYIN'):
-        # KEYIN <var>, <line-if-key>, <line-if-special>
         parts = [p.strip() for p in src[5:].split(',')]
-        pl = enc_operand(parts[0])
+        pl = enc_operand(parts[0], sym)
         pl += enc_lineref(parts[1])
         pl += enc_lineref(parts[2] if len(parts) > 2 else parts[1])
         return bytes([0x25, len(pl)]) + pl
 
     if up.startswith('SELECT PRINT'):
-        # SELECT PRINT <device> : 005 = console, 012 = printer,
-        # 015 = communication line (host bridge)
         dev = int(src.split()[2])
         pl = bytes([0x07, dev])
         return bytes([0x54, len(pl)]) + pl
@@ -210,136 +422,198 @@ def asm_statement(src):
         body = bytes(enc_char(c) for c in src[3:].strip())
         return bytes([T_REM, len(body)]) + body
 
+    if up.startswith(('SCRATCH', 'SAVE', 'LIST')):
+        # the self-listing line of the recovered sources (REGION line 2);
+        # it never executes and is preserved as prose
+        body = bytes(enc_char(c) for c in src)
+        return bytes([T_REM, len(body)]) + body
+
+    if up.startswith('PRINTUSING'):
+        rest = src[len('PRINTUSING'):].strip()
+        parts, _ = _split_top(rest, ',')
+        mask = parts[0].strip()
+        if not (mask.startswith('"') and mask.rstrip(';').endswith('"')):
+            raise ValueError("PRINTUSING needs a mask string: %r" % src)
+        trailing = parts[-1].rstrip().endswith(';')
+        if trailing:
+            parts[-1] = parts[-1].rstrip().rstrip(';')
+        if images is None:
+            raise ValueError("PRINTUSING outside assemble()")
+        ref = images.line_for(mask.strip().strip('"'))
+        pl = bytes([A_NUM2]) + enc_lineref(ref)
+        for arg in parts[1:]:
+            if arg.strip():
+                pl += bytes([A_COMMA]) + enc_expr(arg, sym)
+        if trailing:
+            pl += bytes([A_SEMI])
+        return bytes([T_PRINTUSING, len(pl)]) + pl
+
     if up.startswith('PRINT'):
         rest = src[5:].strip()
         pl = b''
         for item in split_print(rest):
             if item == ';':
                 pl += bytes([A_SEMI])
+            elif item == ',':
+                pl += bytes([A_COMMA])
+            elif item.upper().startswith('ATV('):
+                inner = item[4:item.index(')')]
+                a, b = [x.strip() for x in inner.split(',')]
+                pl += bytes([0xE1, 0x31]) + enc_operand(a, sym) \
+                    + bytes([0xDE]) + enc_operand(b, sym) + bytes([0xD0])
             elif item.upper().startswith('AT('):
                 inner = item[3:item.rindex(')')]
                 a, b = [x.strip() for x in inner.split(',')]
                 pl += bytes([0xE1, 0x31]) + enc_at_arg(a) \
                     + bytes([A_COMMA]) + enc_at_arg(b) + bytes([A_RPAR])
-            elif item.upper().startswith('AT('):
-                # AT(row,col): D5 E8 rr DE E8 cc D0, the full form the
-                # interpreter requires to tell it from the <> relation
-                inner = item[3:item.index(')')]
-                r, c = [int(x) for x in inner.split(',')]
-                pl += bytes([0xD5, 0xE8, bcd(r), 0xDE,
-                             0xE8, bcd(c), 0xD0])
-            elif item.upper().startswith('ATV('):
-                # ATV(vr,vc): same shape but with variable slots
-                inner = item[4:item.index(')')]
-                a, b = [x.strip() for x in inner.split(',')]
-                # variable coordinates use the generic function atom
-                # E1 31 (= AT), whose arguments may be slots
-                pl += bytes([0xE1, 0x31]) + enc_operand(a) \
-                    + bytes([0xDE]) + enc_operand(b) + bytes([0xD0])
-            elif item.upper().startswith('TAB('):
-                n = int(item[4:item.index(')')])
-                pl += bytes([A_TAB, A_NUM1, bcd(n), A_RPAR])
-            elif item.startswith('"'):
+            elif item.startswith('"') and item.endswith('"'):
+                pl += enc_string(item[1:-1])
+            elif item.startswith("'") and item.endswith("'"):
                 pl += enc_string(item[1:-1])
             else:
-                pl += enc_expr(item)
+                pl += enc_expr(item, sym)
         return bytes([T_PRINT, len(pl)]) + pl
 
     if up.startswith('INPUT'):
         rest = src[5:].strip()
         pl = b''
-        parts = [p.strip() for p in rest.split(',')]
-        for k, p in enumerate(parts):
-            if k:
+        parts, _ = _split_top(rest, ',')
+        emitted = 0
+        for p in parts:
+            p = p.strip()
+            if not p:
+                continue
+            if emitted:
                 pl += bytes([A_COMMA])
-            if p.startswith('"'):
+            if p.startswith('"') or p.startswith("'"):
                 pl += enc_string(p[1:-1])
             else:
-                pl += enc_operand(p)
+                pl += enc_operand(p, sym)
+            emitted += 1
         return bytes([T_INPUT, len(pl)]) + pl
 
     if up.startswith('IF'):
-        m = re.match(r'IF\s+(.*?)\s+GOTO\s+(\d+)$', src, re.I)
+        m = re.match(r'IF\s*(.+?)\s*(?:THEN|GOTO)\s*(\d+)\s*$',
+                     src, re.I | re.S)
         if not m:
             raise ValueError("unsupported IF: %r" % src)
-        pl = enc_expr(m.group(1))
-        pl += bytes([0xD3]) + enc_lineref(m.group(2))
+        cond, target = m.group(1), m.group(2)
+        ri, rel = _find_rel(cond)
+        if ri is None:
+            pl = enc_expr(cond, sym)
+        else:
+            pl = enc_expr(cond[:ri], sym) + bytes([OPS[rel]]) \
+                + enc_expr(cond[ri + len(rel):], sym)
+        pl += bytes([A_BRANCH]) + enc_lineref(target)
         return bytes([T_IF, len(pl)]) + pl
 
-    if up.startswith('GOTO'):
-        pl = bytes([0xD3]) + enc_lineref(src[4:].strip())
+    if re.match(r'^GOTO\s*\d+$', up):
+        pl = bytes([A_BRANCH]) + enc_lineref(re.sub(r'\D', '', src))
         return bytes([T_GOTO, len(pl)]) + pl
 
-    if up.startswith('GOSUB'):
-        pl = bytes([0xD3]) + enc_lineref(src[5:].strip())
+    if re.match(r'^GOSUB\s*\d+$', up):
+        pl = bytes([A_BRANCH]) + enc_lineref(re.sub(r'\D', '', src))
         return bytes([T_GOSUB, len(pl)]) + pl
 
     if up.startswith('FOR'):
-        m = re.match(r'FOR\s+(V[0-9A-F]{1,2})\s*=\s*(.+?)\s+TO\s+(.+)$',
-                     src, re.I)
-        pl = (enc_operand(m.group(1)) + enc_expr(m.group(2))
-              + bytes([A_TO]) + enc_expr(m.group(3)))
+        m = re.match(
+            r'FOR\s*([A-ZА-Я][0-9]?[%$]?|V[0-9A-F]{1,2})\s*=\s*(.+?)'
+            r'TO(.+?)(?:STEP(.+))?$',
+            src, re.I)
+        if not m:
+            raise ValueError("unsupported FOR: %r" % src)
+        pl = enc_operand(m.group(1), sym) + enc_expr(m.group(2), sym) \
+            + bytes([A_TO]) + enc_expr(m.group(3), sym)
+        if m.group(4):
+            pl += bytes([A_STEP]) + enc_expr(m.group(4), sym)
         return bytes([T_FOR, len(pl)]) + pl
 
     if up.startswith('NEXT'):
-        pl = enc_operand(src[4:].strip())
+        pl = enc_operand(src[4:].strip(), sym)
         return bytes([T_NEXT, len(pl)]) + pl
 
-    if up in ('RETURN',):
-        return bytes([0x5E, 0])          # corpus: line 8007 = "5e 00"
     if up in ('END',):
         return bytes([T_END, 0])
     if up in ('STOP',):
         return bytes([T_STOP, 0])
 
-    # bare assignment
-    if '=' in src:
-        lhs, rhs = src.split('=', 1)
-        pl = enc_operand(lhs.strip()) + bytes([A_EQ]) + enc_expr(rhs.strip())
+    # assignment, including the multi-target form N,Y7=0 (targets are
+    # comma-separated in front of the D9, 59 corpus examples in VIC)
+    ri, rel = _find_rel(src)
+    if rel == '=':
+        lhs, rhs = src[:ri], src[ri + 1:]
+        tparts, _ = _split_top(lhs, ',')
+        pl = b''
+        for k, tp in enumerate(tparts):
+            if k:
+                pl += bytes([A_COMMA])
+            pl += enc_operand(tp.strip(), sym)
+        pl += bytes([A_EQ]) + enc_expr(rhs.strip(), sym)
         return bytes([T_LET, len(pl)]) + pl
 
     raise ValueError("unsupported statement: %r" % src)
 
 
 def split_print(rest):
-    """split a PRINT argument list, keeping quoted strings intact"""
+    """split a PRINT argument list at top-level ; and , keeping quoted
+    strings (both quote characters) intact"""
+    parts, seps = _split_top(rest, ';,')
     items = []
-    buf = ''
-    inq = False
-    for ch in rest:
-        if ch == '"':
-            inq = not inq
-            buf += ch
-        elif ch == ';' and not inq:
-            if buf.strip():
-                items.append(buf.strip())
-            items.append(';')
-            buf = ''
-        else:
-            buf += ch
-    if buf.strip():
-        items.append(buf.strip())
+    for k, p in enumerate(parts):
+        if p.strip():
+            items.append(p.strip())
+        if k < len(seps):
+            items.append(seps[k])
     return items
 
 
-def asm_line(num, text):
+class Images:
+    """PRINTUSING image-line allocator: identical masks share a line"""
+
+    def __init__(self, base=9000, step=2):
+        self.base = base
+        self.step = step
+        self.masks = {}
+
+    def line_for(self, mask):
+        if mask not in self.masks:
+            self.masks[mask] = self.base + self.step * len(self.masks)
+        return self.masks[mask]
+
+    def records(self):
+        out = b''
+        for mask, ln in sorted(self.masks.items(), key=lambda kv: kv[1]):
+            body = bytes(enc_char(c) for c in mask)
+            rec = bytes([T_IMAGE, len(body)]) + body
+            out += enc_lineref(ln) + bytes([len(rec) + 1]) + rec \
+                + bytes([0xFE])
+        return out
+
+
+def asm_line(num, text, sym=None, images=None):
     stmts = b''
     for part in split_statements(text):
-        stmts += asm_statement(part)
+        stmts += asm_statement(part, sym, images)
+    if len(stmts) + 1 > 0xFF:
+        raise ValueError("line %d too long (%d bytes)" % (num, len(stmts)))
     body = enc_lineref(num) + bytes([len(stmts) + 1]) + stmts + bytes([0xFE])
     return body
 
 
 def split_statements(text):
-    """split on ':' outside quotes"""
+    """split on ':' outside quotes (both quote characters)"""
     out = []
     buf = ''
-    inq = False
+    q = None
     for ch in text:
-        if ch == '"':
-            inq = not inq
+        if q:
             buf += ch
-        elif ch == ':' and not inq:
+            if ch == q:
+                q = None
+        elif ch in '\"\'':
+            q = ch
+            buf += ch
+        elif ch == ':':
             out.append(buf)
             buf = ''
         else:
@@ -349,8 +623,11 @@ def split_statements(text):
     return out
 
 
-def assemble(source):
-    """source text -> program body bytes"""
+def assemble(source, with_symbols=False):
+    """source text -> program body bytes; with_symbols also returns the
+    name->slot map and the PRINTUSING mask lines"""
+    sym = Symbols()
+    images = Images()
     body = b''
     for raw in source.split('\n'):
         raw = raw.strip()
@@ -359,7 +636,10 @@ def assemble(source):
         m = re.match(r'^(\d+)\s+(.*)$', raw)
         if not m:
             raise ValueError("line without number: %r" % raw)
-        body += asm_line(int(m.group(1)), m.group(2))
+        body += asm_line(int(m.group(1)), m.group(2), sym, images)
+    body += images.records()
+    if with_symbols:
+        return body, sym.map, dict(images.masks)
     return body
 
 
