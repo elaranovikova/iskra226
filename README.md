@@ -57,11 +57,19 @@ state agrees to nine decimals through to the final mark. The thirteen
 game sources still assemble byte-identically, which is the regression
 test.
 
-`emulator/iskra226_emu.py` is a research tool at the CPU level. It loads a
-firmware build, disassembles it, executes the instruction classes whose
-semantics are documented and traps precisely on the rest. Coverage is about
-12 % executable, 30 % class-known, 58 % unknown. It does not boot, and
-`findings/` says exactly why.
+`emulator/iskra226_emu.py` is a research tool at the CPU level. It loads
+a firmware build, disassembles it, and executes what is documented. For
+three months that meant trapping on most of the image; since 15 August
+it means the opposite. The machine documented itself twice in the same
+archive: DASB2, a disassembler written in BASIC on w005-s1v1, carries
+the complete mnemonic table of the 16-bit ISA, and the manufacturer's
+Assembler 226 manual (Shilko, Leningrad 1985) sits on w007/w011 as a
+text volume and carries the semantics with worked examples. The
+examples reproduce bit for bit in the self-test. Coverage on the words
+reachable from the cold-start vectors: 99.78 % documented, 0.22 %
+class-known, 0.00 % unknown. The cold start walks ten instructions and
+stops exactly at the handoff into the microprogram store, which is the
+one artefact no disk in the archive carries.
 
 `emulator/iskra.py` is the disk, sector and catalog toolkit.
 `emulator/firmware_extract.py` recovers the interpreter builds.
@@ -131,13 +139,20 @@ The layer map: K589 bit slices, the 3001 MCU and 3002 CPE with datasheets in
 the 16-bit macro ISA where control flow is solved, then the BASIC 02 format,
 which is solved.
 
-Not solved: the data operations. 49 arithmetic and logic instructions and
-the D-class addressing modes. These are not derivable from the binary by
-structural or statistical means, and that boundary is documented with its
-evidence. Closing it needs the processor's техническое описание, or a ПМК
-and ПЗУ dump from surviving hardware.
+Not solved, until 15 August 2026: the data operations, 49 arithmetic
+and logic instructions and the D-class addressing modes. I wrote here
+that they were not derivable from the binary by structural or
+statistical means, and that was true. They were derivable from the
+archive: the key was DASB2, the machine's own disassembler, written in
+BASIC by somebody at the Institute of Physical Chemistry, sitting on a
+disk I was sent in August. The paragraph above has the numbers. The
+earlier boundary statement stays in `findings/`, kept because being
+wrong about where the boundary was is part of the record.
 
-If you have either, I would like to hear from you.
+Still missing: the Iskra's own 8 KB ПЗУ plus 2 KB ПМК, the
+microprogram store. Nine entry points into it are written out in
+`findings/` so a future dump can be read on target. If you have
+surviving hardware, I would like to hear from you.
 
 ## Whose this is
 
