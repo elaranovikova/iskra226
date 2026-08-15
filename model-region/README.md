@@ -258,6 +258,83 @@ The header flag byte is `0x20` on the three listings and `0x21` on
 `SIG1`, whose sectors are not text. One byte, one bit, and the reader
 knows whether to expect source.
 
+## The tradition it belongs to
+
+Nobody signed this program, so the next question is what kind of thing it
+is. That has an answer. Whether this particular one was ever published
+does not.
+
+**It was not a published game, as far as I can find.** Searching for the
+title in library catalogues, methodical literature and the bibliographies
+of Soviet деловые игры turns up nothing. The printed guide the program
+tells the player to read again has not been found either. Both are
+negative results and not proof of absence: the Russian State Library and
+the National Electronic Library are hard to query from outside, the
+Soviet book register is not online, and university methodical booklets
+were printed in runs of a few hundred. What the negative result does is
+move the likely origin away from a known series and toward something made
+in house at one institution.
+
+**The genre is documented in detail.** The first Soviet business game,
+«Пуск цеха», was developed at the Leningrad Engineering and Economics
+Institute by M. M. Birstein, with the method ready at the end of 1931 and
+the first session run on 23 June 1932. Its subject was bringing a
+typewriter assembly shop into operation. The games were banned in 1938
+and taken up again at the end of the 1960s. In 1975 the school
+«Деловые игры и их программное обеспечение» was founded at Zvenigorod
+near Moscow on the initiative of the Central Economics and Mathematics
+Institute and the economics faculty of Moscow State University. Software
+was in its title from the first day, which is the short answer to why a
+game like this exists on an office machine in the 1980s.
+
+The claim that the 1932 game was the first in the world is the movement's
+own account of itself. I repeat it as that and not as a checked fact.
+
+**The way it thinks about thresholds has a documented home.** Forrester's
+*World Dynamics* appeared in Russian as «Мировая динамика» in 1978,
+translated by A. Voroshchuk and S. Pegov, edited by D. M. Gvishiani and
+N. N. Moiseev, with an afterword by Moiseev. Gvishiani was the route by
+which the Club of Rome reached the Soviet professional public. Moiseev's
+group at the Computing Centre of the Academy of Sciences modelled nuclear
+winter in 1983. Feedback, thresholds and self reinforcement were ordinary
+working ideas in that world. None of this connects to this program by any
+document. It is the water the author swam in, not a source.
+
+**One parallel, and it does not hold up as a source.** Frederic Vester's
+*Ökolopoly* of 1980, which grew out of his earlier «Kybernetien» of 1976,
+gives the player a fixed budget of action points each round to divide
+among remediation, production, environmental load, education, quality of
+life and population, all wired to each other. Read that list next to the
+six variables above and the resemblance is hard to miss.
+
+It does not survive checking. There is no Soviet translation of Vester,
+no licence, no reprint, and no mention of him in the Soviet journals
+where such a thing would have surfaced. Every Russian reference to Vester
+that exists is from after 2000. What would count as evidence: a Russian
+edition before 1991, a Soviet review, a methodical text naming Ökolopoly,
+or a shared numerical mechanism rather than a shared shape. None of that
+is present. Two people can arrive at the same small set of variables
+because the variables are obvious once you decide to model a region, and
+until something turns up that is the better explanation.
+
+**It calls itself a machine implementation.** Line 3160 announces
+«МАШИННАЯ РЕАЛИЗАЦИЯ ОБУЧАЮЩЕЙ ИМИТАЦИОННОЙ ИГРЫ», the machine
+realisation of a teaching simulation game. That wording points at
+something that existed before the computer did. If there was a board or
+paper version, finding it would answer most of this section.
+
+### On the sourcing of the above
+
+I have not held any of the Russian primary works in my hands. The
+genre history rests on the standard monograph, Belchikov and Birstein,
+«Деловые игры», Riga: АВОТС, 1989, which I know through material
+reproducing it rather than from the book itself, and on secondary
+Russian web sources. The Forrester imprint details come from the book's
+own front matter as reproduced online. Anyone who can get to the printed
+bibliographies of Soviet business games, or to the catalogues of the RGB
+and the NEB, is in a position to overturn the negative result in the
+first paragraph, and I would like to hear about it if they do.
+
 ## What is not established
 
 * **No author, no institute, no date for `МОДЕЛЬ РЕГИОНА`.** The
@@ -272,7 +349,15 @@ knows whether to expect source.
   rather than hiding it, and the state screenshot above shows the
   mismatch in the machine's own columns: 7.426 against 2.759.
 * **Turn 17 and its quadruple weight** have no explanation in the code.
-* **The printed guide the program refers to** has not been found.
+* **The printed guide, and any version older than this one.** See the
+  section above. The program says it is a machine realisation of
+  something, and that something has not been found.
+* **Who Gorpenko was.** The name on `MANAGEM` is a surname with no
+  initials, and a search turned up no candidate worth naming. I am not
+  going to attach a biography to a bare surname.
+* **Where this diskette stood.** The most direct route to the author runs
+  through the machine it sat on rather than through any catalogue, and
+  that route has not been walked yet.
 
 ## Files here
 
