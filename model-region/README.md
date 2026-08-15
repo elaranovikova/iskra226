@@ -13,10 +13,28 @@ Nothing in the program says so.
 
 ## What this is
 
-420 lines of BASIC, no author, no institute and no date anywhere in the
-source. The program names itself in lines 3 and 4 and then gets on with
-it. It states its goal only once, in line 597, and it does so while
-telling the player off:
+420 lines of BASIC. It has no date and no `REM` line anywhere, and for a
+while I said it had no author either. It does. The credits are at line
+1366, behind a door almost nobody opens: you have to finish all 25 turns
+and then decline to play again.
+
+![the credits](screens/credits.png)
+
+The developers of the machine realisation of the teaching simulation game
+МОДЕЛЬ РЕГИОНА are the following staff of ОТСО and the biology faculty of
+KGU: Mamaeva L. A., Kotov Yu. S., Tarkaev A. N.
+
+Read it carefully. They are named as the developers of the *machine
+realisation*, which is the same wording the title screen uses. These
+three wrote the program. Whether they also devised the game is a
+different question and this screen does not answer it.
+
+`КГУ` is a state university and the initials do not say which one. `ОТСО`
+is not expanded anywhere in the program.
+
+The program names itself in lines 3 and 4 and then gets on with it. It
+states its goal only once, in line 597, and it does so while telling the
+player off:
 
 > ВАША ЦЕЛЬ - ВЫСОКОЕ КАЧЕСТВО ЖИЗНИ ПРИ У М Е Л О М УПРАВЛЕНИИ
 > СИСТЕМОЙ В ЦЕЛОМ
@@ -24,8 +42,126 @@ telling the player off:
 A high quality of life under skilful management of the system as a
 whole. The spaced out letters are in the original. Whoever wrote this
 wanted the word *skilful* read slowly. Line 1140 calls the thing an
-имитационная система, a simulation system, which is what its author
-thought he had built.
+имитационная система, a simulation system, which is what its developers
+took themselves to be building.
+
+## How it plays
+
+You run a region for 25 years and the machine argues with you about it.
+It shows numbers, takes four inputs, and works out what your decisions
+did.
+
+On the first start it announces itself, and the wording is worth
+noticing:
+
+> **МАШИННАЯ РЕАЛИЗАЦИЯ ОБУЧАЮЩЕЙ ИМИТАЦИОННОЙ ИГРЫ**
+
+The machine realisation of a teaching simulation game. The word
+*realisation* points at something that existed before the computer did.
+Then it offers the rules and describes itself as practice in acquiring
+skills in the management of complex systems.
+
+After that the same cycle, 25 times.
+
+**The state.** Seven readings in three columns: this turn, last turn,
+and the value you started from. Quality of life, population density,
+growth rate, environmental quality, money spent on the environment,
+money invested, profit. So you see at a glance whether you improved
+since the last move and how far you have drifted from where you began.
+
+**The allocation.** You have a profit and you spend it. Four questions in
+order, each showing what is left:
+
+* how much to the national economy
+* how much to keeping the environment
+* how much to quality of life
+* how much to birth control, at most one unit, and the only one that
+  also takes a negative number
+
+What you do not spend is not lost, it stays as profit. Once per turn you
+may take it all back and divide it again. If you try to shrink the
+economy, the program refuses.
+
+**The answer.** Your investment makes dirt. Dirt lowers environmental
+quality, that lowers prosperity, and the rising population density lowers
+it further. At the same time prosperity raises the population. Two loops
+pulling against each other, both delayed, and prosperity decays on its
+own if you stop feeding it.
+
+**It interrupts constantly.** In turn 1 it explains that negative numbers
+mean a bad state and positive ones a good state. Through the first twelve
+turns it offers to show you how the system hangs together, and then draws
+four curves on the text screen with `PRINT`, `TAB` and a `FOR` loop.
+Fixed messages fire in turns 2, 4, 8, 13 and 20, among them
+*ВЫ НЕДООЦЕНИВАЕТЕ ПАГУБНОЕ ВЛИЯНИЕ ЗАГРЯЗНЕНИЯ ОКРУЖАЮЩЕЙ СРЕДЫ*, you
+are underestimating the ruinous effect of pollution.
+
+**The ending.** Each turn adds your prosperity surplus to a running
+total, and the final mark decides which of six speeches you get. From 18
+up it is one word, **П Р Е К Р А С Н О !**. From 16 to 18,
+**О Т Л И Ч Н О !** with congratulations. From 14 to 16 it says your
+work can be rated excellent and that you have learned to manage the
+system, but that you still do not trust yourself and should be more
+decisive. Below 5 the lesson comes in plain words: you must learn to
+think about the future and to take the interactions between the elements
+of the system into account.
+
+Answer no when it asks whether you want another game, and it prints its
+credits and says goodbye.
+
+### What it is actually about
+
+Growth alone loses, reliably. Put everything into the economy and you are
+finished in four turns, because prosperity falls under the threshold of
+12 and the population then collapses exponentially. Tend only the
+environment and you have nothing to live on. The program names its own
+victory condition and it is not production, it is skilful management of
+the whole.
+
+Underneath that sits the thing it never mentions. Above a pollution of
+50 the self cleaning term turns positive and the dirt becomes its own
+source. It warns at 35. At 50 it says nothing.
+
+## The second level, and what 1985 looks like from inside
+
+After turn 5 it asks whether you think you could handle a more
+complicated system. Say yes and it switches on random events.
+
+The randomness is not random. It is the fractional part of the last
+quality of life reading, `Y3 = A1 - INT(A1)`, sorted into thirteen
+buckets. A deterministic draw out of the model's own state, which is
+either a clever trick or the only one available on a machine with no
+random number source the author trusted.
+
+The events themselves are the period talking:
+
+> НАГНЕТАНИЕ МЕЖДУНАРОДНОЙ НАПРЯЖЕННОСТИ ИМПЕРИАЛИСТИЧЕСКИМИ
+> ГОСУДАРСТВАМИ И НЕОБХОДИМОСТЬ ОТВЕТНЫХ МЕР ПРИВЕЛО К ТОМУ, ЧТО ЧАСТЬ
+> БЮДЖЕТА ПЕРЕДАНА ВОЕННЫМ ВЕДОМСТВАМ.
+
+The stoking of international tension by the imperialist states and the
+necessity of countermeasures has meant that part of the budget has gone
+to the military departments. You lose two units of profit in each of the
+last two turns.
+
+Next to it: a hurricane that costs the economy five units, universal
+environmental education and effective propaganda in environmental
+protection that raise prosperity by two and hand you an extra unit of
+profit, and environmental legislation that works, bringing closed
+production cycles and cutting effluent.
+
+That is the shape of the thing. A student at a Soviet institution sits
+down at an office computer and is taught, by the machine, that
+production has a cost that comes back at you, that the environment can
+pass a point it does not return from, and that the arms race takes money
+out of the same pocket as the rest. The programmer put all three in the
+same program and let the student lose.
+
+**When.** The game itself carries no date. The diskette does: `SIG`
+version 1.4 of 18 October 1985 is on the same side, built against BASIC
+02 of 30 September 1984, and `MANAGEM` next to it is dated 28 April
+1983. So the side as assembled cannot be older than October 1985. That
+dates the diskette, not the game on it.
 
 ## Where it came from
 
@@ -170,23 +306,21 @@ which is as unphysical as it sounds. This is a teaching model of 1980s
 vintage, not a defensible simulation, and its interest is in what it
 chose to represent.
 
-## What the program teaches
+## Two more things it does to you
 
-It interrupts. Fixed messages fire on turns 1, 2, 4, 8, 13 and 20, among
-them *ВЫ НЕДООЦЕНИВАЕТЕ ПАГУБНОЕ ВЛИЯНИЕ ЗАГРЯЗНЕНИЯ ОКРУЖАЮЩЕЙ СРЕДЫ*,
-you are underestimating the ruinous effect of pollution. A weak result
-gets the lesson in plain words, line 1060 onward: you must learn to
-think about the future and to take the interactions between the elements
-of the system into account. A top result gets no praise to rest on, only
-*ПОПРОБУЙТЕ СЫГРАТЬ ЕЩЕ ЛУЧШЕ*, try to play better still.
+**No praise you can rest on.** A top result gets
+*ПОПРОБУЙТЕ СЫГРАТЬ ЕЩЕ ЛУЧШЕ*, try to play better still. Between 14 and
+16 the message is that you have learned to steer but are not yet decisive
+enough. The scale keeps going after you have won it.
 
-There was a printed booklet. Line 3620 tells the player to read the
-guide to the game again before starting the next one. I have not found
-it.
+**A harder start for the second run.** Lines 27 and 28 reset the opening
+position for a returning player: almost double the pollution, and two
+thirds of the quality of life. `python3 model.py` builds that position
+with `Region(hard=True)`.
 
-Lines 27 and 28 set a second difficulty for a repeat player: almost
-double the pollution to start with, and two thirds of the quality of
-life.
+There was a printed booklet. Line 3620 tells the player to read the guide
+to the game again before starting the next one. I have not found it, and
+the section on where this comes from says what that means.
 
 ## Scoring, and the clause against gaming it
 
@@ -233,7 +367,7 @@ The header line in that front material is worth reading twice:
 ```
 
 Yushchenko, Parkhaev and Kazakevich. The same side that carries an
-anonymous teaching game about the limits of growth also carries a
+teaching game about the limits of growth also carries a
 function and graphics package by three named people from the Institute of
 Physical Chemistry. Whoever assembled this diskette was not sorting by
 subject.
@@ -252,7 +386,8 @@ subroutine comments are in Russian throughout.
 
 So the side is a teaching set of business games, and one of the two is
 dated to April 1983. Elsewhere in the same archive, side `w006-s1`
-carries `PRESID`, a third one. `МОДЕЛЬ РЕГИОНА` itself stays anonymous.
+carries `PRESID`, a third one. `МОДЕЛЬ РЕГИОНА` names its programmers
+only in the credits screen almost no player reached.
 
 The header flag byte is `0x20` on the three listings and `0x21` on
 `SIG1`, whose sectors are not text. One byte, one bit, and the reader
@@ -260,9 +395,10 @@ knows whether to expect source.
 
 ## The tradition it belongs to
 
-Nobody signed this program, so the next question is what kind of thing it
-is. That has an answer. Whether this particular one was ever published
-does not.
+Three people signed the program, at the end, where hardly anyone would
+look. What they signed for is the machine realisation. So the next
+questions are what kind of thing this is, and what it was a realisation
+of. The first has an answer. The second does not, yet.
 
 **It was not a published game, as far as I can find.** Searching for the
 title in library catalogues, methodical literature and the bibliographies
@@ -337,10 +473,16 @@ first paragraph, and I would like to hear about it if they do.
 
 ## What is not established
 
-* **No author, no institute, no date for `МОДЕЛЬ РЕГИОНА`.** The
-  abbreviation `Н/Х` for the national economy and the tone of the
-  prompts point at a teaching institution. That is an impression, not a
-  finding.
+* **Which `КГУ`, and what `ОТСО` stands for.** The credits give a
+  university by initials only and a unit by an abbreviation the program
+  never expands. Until both are resolved, the three names in the credits
+  cannot be attached to an institution.
+* **Who devised the game, as opposed to programming it.** The credits
+  claim the machine realisation and nothing more, and the title screen
+  uses the same phrase. That wording implies something earlier that is
+  not in this file.
+* **No date anywhere in the program.** The diskette can be dated, the
+  program cannot.
 * **`M3` does not reproduce.** Line 22 stores seven reference values.
   Two of them, `M5` and `M6`, are copies of state and prove nothing. Of
   the remaining five, four fall out of the formulas exactly. The fifth,

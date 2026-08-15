@@ -252,8 +252,33 @@ def tipping():
                  "re-implementation; the messages are the program's own.")
 
 
+def credits():
+    """
+    Lines 1366 to 3100, the screen almost nobody saw. You reach it by
+    finishing all 25 turns and then answering no to one more game.
+    """
+    scr = Screen()
+    line(scr, "   " + SRC[1366].split('"')[1])
+    scr.newline()
+    tab(scr, 22, "М О Д Е Л Ь  Р Е Г И О Н А")
+    scr.newline()
+    scr.newline()
+    scr.newline()
+    line(scr, SRC[3070].split('"')[1])
+    scr.newline()
+    for num in (3075, 3080, 3085):
+        tab(scr, 30, SRC[num].split('"')[1])
+        scr.newline()
+    scr.newline()
+    scr.newline()
+    tab(scr, 30, SRC[3100].split('"')[1])
+    scr.newline()
+    return scr, "REGION.bas lines 1366 to 3100, its own text"
+
+
 SCREENS = [
     ("title", title),
+    ("credits", credits),
     ("state", state),
     ("profit-curve", profit_curve),
     ("pollution-curves", pollution_curves),
