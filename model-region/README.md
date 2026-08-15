@@ -568,8 +568,7 @@ paper version, finding it would answer most of this section.
 
 ### On the sourcing of the above
 
-I have not held any of the Russian primary works in my hands, and I have
-not been to Kazan.
+I have not held any of the Russian primary works in my hands.
 
 The biography of Tarkaev comes from the foundation that carries his name,
 tarkaev.ru, which is a source with an interest in its subject; the dates
@@ -588,7 +587,7 @@ reproducing it rather than from the book itself.
 Two things would settle what is left. A list of the six people who took
 the 1987 medals would probably name Mamaeva. The Kazan university
 yearbooks and the catalogue of its own press would show whether the guide
-for this version was ever printed. Both are in Kazan, and I am not.
+for this version was ever printed. Both are in Kazan.
 
 ## What is not established
 
